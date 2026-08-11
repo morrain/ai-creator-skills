@@ -42,7 +42,7 @@ description: 图文海报派生业务工作流。提取海报蓝图与版式映�
 2. **海报故事线蓝图提炼与版式映射**：
    - 规划 N 张海报（通常 3-6 张滑动组图），依据映射矩阵匹配各卡片版式，继承正文插图的 IP Mascot 动作。
 3. **阶段一 SubAgent 全局蓝图审稿**：
-   - 显式调用 `invoke_subagent` 发起 `poster_reviewer` 子进程，读取并执行 `skills/poster-designer/references/poster_reviewer_standards.md` 审查整体拆分逻辑，修正直至 `[PASS]`（上限 8 次）。
+   - 检查项目根目录是否存在自包含规则 `./learnings/poster_blueprint.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/poster_blueprint.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/poster-designer/references/poster_reviewer_standards.md`）。审查整体拆分逻辑，修正直至 `[PASS]`（上限 8 次）。
 
 ---
 
@@ -51,7 +51,7 @@ description: 图文海报派生业务工作流。提取海报蓝图与版式映�
 1. **并发调度原子技能 `poster-designer`**：
    - 针对获批的第 1~N 张海报，并发调用原子技能 `poster-designer` 生成各自的具体设计草稿。
 2. **并发 SubAgent 单张审稿与独立迭代**：
-   - 同时/并发启动 N 个独立 `poster_reviewer` SubAgent，读取并执行 `skills/poster-designer/references/poster_reviewer_standards.md` 审查单张海报（校验去乱码指令 `strictly NO fake subtext...`、单引号原生中文及莫兰迪 3:4 规范）。
+   - 检查项目根目录是否存在自包含规则 `./learnings/poster_config.md`。若存在，同时启动 N 个 `blind-reviewer` SubAgent（传入 `standards_file: ./learnings/poster_config.md`）；若不存在，启动 N 个 `blind-reviewer` SubAgent（传入 `standards_file: skills/poster-designer/references/poster_reviewer_standards.md`）。审查单张海报（校验去乱码指令 `strictly NO fake subtext...`、单引号原生中文及莫兰迪 3:4 规范）。
    - 重试直至全部判定 `[PASS]`，落盘为 `./<article-slug>/assets/poster_1.md` ~ `poster_N.md`。
 
 ---
@@ -64,6 +64,10 @@ description: 图文海报派生业务工作流。提取海报蓝图与版式映�
    - 🏷️ **6-10 个热门话题标签**：文案最末尾**强制输出 6-10 个**以 `#` 开头的相关热门话题标签（如 `#科普 #物理学原理 #干货总结 #冷知识 #光学原理 #涨知识`）。
    - ⚠️ **纯文本硬性限制 (Clean Plain Text Only)**：发布文案 `poster_post.md` **必须绝对使用纯文本格式**，严禁使用任何 Markdown 语法标记（如加粗 `**`、斜体 `*`、标题 `##`、列表 `- ` 或链接 `[text](url)`），仅靠换行与 Emoji 符号进行视觉结构分割。
 2. **阶段三 SubAgent 文案审稿与落盘**：
-   - 显式调用 `invoke_subagent` 发起 `poster_reviewer` 子进程，读取并执行 `skills/poster-designer/references/poster_reviewer_standards.md` 审查 `poster_post.md` 的顶部 20 字以内备选标题矩阵、高密度 Emoji 表情覆盖率、100 字限制、纯文本隔离度与 6-10 个 `#话题标签` 完整性，修正直至 `[PASS]`，落盘至 `./<article-slug>/poster_post.md`。
-3. **结构化汇报与懒加载提示**：
-   - 呈报成果，提示用户回复 **“开始生图”** 可批量渲染海报图片至 `./<article-slug>/images/poster_1.png ~ poster_N.png`。
+   - 检查项目根目录是否存在自包含规则 `./learnings/poster_post.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/poster_post.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/poster-designer/references/poster_reviewer_standards.md`）。审查 `poster_post.md` 的顶部 20 字以内备选标题矩阵、高密度 Emoji 表情覆盖率、100 字限制、纯文本隔离度与 6-10 个 `#话题标签` 完整性，修正直至 `[PASS]`，落盘至 `./<article-slug>/poster_post.md`。
+3. **结构化汇报与人工确认提示**：
+   - 呈报成果与可点击链接（[`./<article-slug>/poster_post.md`](./<article-slug>/poster_post.md) 及配置文件）。
+   - **统一人工确认提示**：
+     > 💡 **主编审阅与自进化提示**：
+     > 1. 预览海报配置及社媒文案满意后，请在对话框回复 **“开始生图”** 以批量渲染海报图片。
+     > 2. 如对海报配置文件、故事线拆分或社媒文案进行了人工修改，请在对话框回复 **`/学习`**，系统将自动提炼您的偏好规则并沉淀落盘，让后续盲审标准自动进化！

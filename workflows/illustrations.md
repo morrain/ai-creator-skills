@@ -37,9 +37,13 @@ description: 正文插图业务工作流。扫描主题工作区提取认知锚�
    - 对每一张拟设计的插图（`N = 1, 2, ...`），调度原子技能 `illustration-designer` 生成单图画风构图与双语 Prompt。
 4. **逐张落盘与 SubAgent 盲审**：
    - 将方案落盘为 `./<article-slug>/assets/illustration_N.md`。
-   - 显式调用 `invoke_subagent` 发起 `illustration_reviewer` 盲审（参考 `skills/illustration-designer/references/illustration_reviewer_standards.md`），若裁决 `[REJECT]`，修正重写直至 `[PASS]`（上限 5 次）。
-5. **结构化呈报结果**：
-   - 输出插图配置列表与可点击 Markdown 链接，提示用户回复 **“开始生图”** 以进入渲染阶段。
+   - 检查项目根目录是否存在自包含规则 `./learnings/illustrations.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/illustrations.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/illustration-designer/references/illustration_reviewer_standards.md`）。若裁决 `[REJECT]`，修正重写直至 `[PASS]`（上限 5 次）。
+5. **结构化呈报结果与人工确认提示**：
+   - 输出插图配置列表与可点击 Markdown 链接。
+   - **统一人工确认提示**：
+     > 💡 **主编审阅与自进化提示**：
+     > 1. 预览配置文件满意后，请在对话框回复 **“开始生图”** 以渲染图片。
+     > 2. 如对插图提示词进行了一次或多次人工修改，请在对话框回复 **`/学习`**，系统将自动提炼您的配图偏好并沉淀落盘，让后续盲审标准自动进化！
 
 ---
 

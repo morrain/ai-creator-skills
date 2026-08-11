@@ -48,6 +48,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计配图方案与英文提示词。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用的离线网页，自动消解表格与注入防擦除样式。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报蓝图与匹配经典版式，生成海报配置文件与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
+| **`/学习 [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 识别各创作环节的人工修改 Diff 或批注，沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
 
@@ -76,6 +77,8 @@ npx skills add morrain/ai-creator-skills --skill article-writer
    - **功能**：微信公众号离线排版，应用防擦除视觉样式系统，自动消解表格，输出带预览视口的原生 HTML。
 5. **`poster-designer`** ([`skills/poster-designer/SKILL.md`](skills/poster-designer/SKILL.md))
    - **功能**：手绘图文海报设计，匹配 10 大经典版式与莫兰迪配色，输出防乱码的生图配置。
+6. **`blind-reviewer`** ([`skills/blind-reviewer/SKILL.md`](skills/blind-reviewer/SKILL.md))
+   - **功能**：通用自进化盲审引擎，自动装载项目进化规则 (`./learnings/<phase_id>.md`) 与领域标准，二元裁决质检，可直接用于任意现有与新创作环节。
 
 ---
 
@@ -97,6 +100,14 @@ ai-creator-skills/
 ├── GEMINI.md                        # 项目 Agent 规则与配置
 ├── README.md                        # 本文档
 ├── character_ip.md                  # (可选) 项目级自定义 IP 规范模板
+├── learnings/                       # (动态按需生成) 首次人审运行 /学习 后自动创建的分环节自进化审稿规则库
+│   ├── article_outline.md           # 文章大纲自进化规则
+│   ├── article_content.md           # 文章正文自进化规则
+│   ├── illustrations.md             # 正文插图自进化规则
+│   ├── weixin.md                    # 微信排版自进化规则
+│   ├── poster_blueprint.md          # 海报蓝图自进化规则
+│   ├── poster_config.md             # 单张海报 Prompt 自进化规则
+│   └── poster_post.md               # 海报社媒文案自进化规则
 ├── docs/                            # 项目设计文档与 ADR 决策记录
 │   ├── adr/                         # 目录结构规范说明
 │   └── agents/
@@ -105,12 +116,14 @@ ai-creator-skills/
 │   ├── article-writer/              # 2. 文章与大纲写作
 │   ├── illustration-designer/       # 3. 单图视觉隐喻设计
 │   ├── wx-formatter/                # 4. 微信公众号排版
-│   └── poster-designer/             # 5. 手绘海报设计
+│   ├── poster-designer/             # 5. 手绘海报设计
+│   └── blind-reviewer/              # 6. 通用自进化盲审引擎
 ├── workflows/                       # 上层业务工作流 (自动化编排与审查)
 │   ├── article.md                   # 写文章工作流 (/写文章)
 │   ├── illustrations.md             # 正文插图工作流 (/正文插图)
 │   ├── weixin.md                    # 微信公众号排版工作流 (/微信公众号)
-│   └── poster.md                    # 图文海报工作流 (/海报)
+│   ├── poster.md                    # 图文海报工作流 (/海报)
+│   └── learn.md                     # 规则自进化反哺工作流 (/学习)
 └── <主题英文名>/                    # 实例：主题文件目录 (拟定大纲时自动新建)
     ├── outline.md                   # 文章大纲
     ├── <主题英文名>.md              # 文章正文
