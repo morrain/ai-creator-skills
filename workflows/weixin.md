@@ -25,7 +25,7 @@ description: 微信公众号排版业务工作流。读取主题工作区正文�
 2. **调度原子技能 `wx-formatter` 格式化重构**：
    - 调度原子技能 `wx-formatter`，将正文消解表格后套用居中 H2 胶囊角标、左立边 H3、**`💡 金句总结` 暖金虚线边框卡片**及居中插图容器（嵌合 `images/illustration_N.png`），并在文章最末尾嵌入 `🔥 结尾互动与引导关注卡片`（组件 7）。
 3. **SubAgent 盲审闭环**：
-   - 检查项目根目录是否存在自包含规则 `./learnings/weixin.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/weixin.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/wx-formatter/references/mp_reviewer_standards.md`）。苛刻校验零表格残留、零字句改动、草稿防擦除白名单属性与结尾互动卡片。
+   - 检查项目根目录是否存在项目进化规则 `./learnings/weixin.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/wx-formatter/references/mp_reviewer_standards.md` 与 `learnings_file: ./learnings/weixin.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/wx-formatter/references/mp_reviewer_standards.md`）。苛刻校验零表格残留、零字句改动、草稿防擦除白名单属性与结尾互动卡片。
    - 若判定 `[REJECT]`，针对性重构至 `[PASS]`（上限 8 次）。
 4. **离线 HTML 存盘交付与人工确认提示**：
    - 将通过盲审的完整 HTML 代码写入固定文件 `./<article-slug>/mp_article.html`。

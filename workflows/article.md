@@ -32,7 +32,7 @@ description: 文章创作业务工作流。负责前置联网检索、主题工�
 2. **调度原子技能 `article-writer` 智能识别文风并拟定大纲**：
    - 调度原子技能 `article-writer`（模式 `mode: outline`），基于检索到的事实与主题属性**自适应识别最佳文风**（干货指南/科技深度评论/社会观察/科普解说/故事叙事），生成 3 个爆款备选 H1 标题及带有 `【撰写指令】` 的大纲草案。
 3. **SubAgent 大纲盲审闭环**：
-   - 检查项目根目录是否存在自包含规则 `./learnings/article_outline.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/article_outline.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/article-writer/references/reviewer_standards.md`）。
+   - 检查项目根目录是否存在项目进化规则 `./learnings/article_outline.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/article-writer/references/reviewer_standards.md` 与 `learnings_file: ./learnings/article_outline.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/article-writer/references/reviewer_standards.md`）。
    - 若结论为 `[REJECT]`，针对性修正大纲草案直至 `[PASS]`（上限 8 次）。
 4. **创建主题工作区与强制落盘归档**：
    - 大纲 `[PASS]` 后，在根目录下新建 `./<article-slug>/` 目录。
@@ -53,7 +53,7 @@ description: 文章创作业务工作流。负责前置联网检索、主题工�
 2. **调度原子技能 `article-writer` 展开正文**：
    - 调度 `article-writer`（模式 `mode: full_article`），将 `【撰写指令】` 转化为行文推导与爆款金句，应用呼吸感排版（单段 2-4 行）与富 Markdown 组件（引用卡片、列表、加粗、对比表格）。
 3. **SubAgent 正文盲审闭环**：
-   - 检查项目根目录是否存在自包含规则 `./learnings/article_content.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: ./learnings/article_content.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `standards_file: skills/article-writer/references/reviewer_standards.md`）。
+   - 检查项目根目录是否存在项目进化规则 `./learnings/article_content.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/article-writer/references/reviewer_standards.md` 与 `learnings_file: ./learnings/article_content.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/article-writer/references/reviewer_standards.md`）。
    - 若打回，修正草稿直至 `[PASS]`（上限 8 次）。
 4. **纯净 Markdown 落盘交付**：
    - 中英文排版自动加空格处理。

@@ -4,14 +4,17 @@
 
 ---
 
-## 1. 规则装载规范 (Direct Single-File Loading)
+## 1. 规则装载规范 (Domain Baseline + Project Learnings Loading)
 
-上层工作流（Workflow）在发起盲审前，已提前完成 `./learnings/<phase_id>.md` 是否存在的逻辑判定，并精准选定了本次盲审需执行的规则文件 `standards_file`：
+上层工作流（Workflow）在发起盲审前，已提前完成 `./learnings/<phase_id>.md` 是否存在的逻辑判定，并向 `blind-reviewer` 显式透传参数：
 
-- **若 `./learnings/<phase_id>.md` 存在** ➔ 工作流直接向 `blind-reviewer` 传入 `standards_file: ./learnings/<phase_id>.md`；
-- **若 `./learnings/<phase_id>.md` 不存在** ➔ 工作流直接向 `blind-reviewer` 传入 `standards_file: skills/<domain-skill>/references/*_reviewer_standards.md`。
-
-盲审 SubAgent 启动后，**直接且仅装载 `standards_file` 文件**，不执行任何条件判断或多路径文件检索，实现最高的 Token 效率。
+- **若 `./learnings/<phase_id>.md` 存在** ➔ 工作流透传：
+  - `default_standards: skills/<domain-skill>/references/*_reviewer_standards.md`
+  - `learnings_file: ./learnings/<phase_id>.md`
+  - *审稿人装载逻辑*：优先校验 `learnings_file` 中的项目专属偏好，同时加载 `default_standards` 及其同级引用的核心知识文件（`anti_patterns.md`、`golden_examples.md`、`style_definitions.md`）。
+- **若 `./learnings/<phase_id>.md` 不存在** ➔ 工作流仅透传：
+  - `default_standards: skills/<domain-skill>/references/*_reviewer_standards.md`
+  - *审稿人装载逻辑*：仅装载技能默认标准及其引用的同级核心知识文件。
 
 ---
 
