@@ -1,6 +1,6 @@
 ---
 name: workflow-learn
-command: /学习
+command: /workflow-learn
 description: 审稿标准与案例库增量反哺工作流。识别各创作环节的人工修改 Diff 或反馈批注，触发 review_tuner 机制。按需懒加载创建精纯的项目规则增量文件 ./learnings/<phase_id>.md 并外科手术式追加落盘，保持底层 skills 零修改。
 ---
 
@@ -11,7 +11,7 @@ description: 审稿标准与案例库增量反哺工作流。识别各创作环�
 因为创作流中人工审核的环节不只一处，且不同环节的审查规则侧重不同，本工作流会自动识别用户针对的**具体创作环节 (Phase ID)**，将提炼出的人工偏好与规则，按需懒加载落盘至项目根目录 **`./learnings/<phase_id>.md`** 中。
 
 本工作流遵循 **【领域基线】+【项目增量】解耦原则**：
-- **`./learnings/<phase_id>.md` 仅存放主编通过 `/学习` 提炼出的项目专属增量偏好**（黑名单词、案例金句、硬指标）；
+- **`./learnings/<phase_id>.md` 仅存放主编通过 `/workflow-learn` 提炼出的项目专属增量偏好**（黑名单词、案例金句、硬指标）；
 - 不机械重复拷贝几百行的技能静态默认规则，彻底避免同级相对路径 (`references/anti_patterns.md` 等) 断裂的问题！
 
 ---
