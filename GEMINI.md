@@ -12,4 +12,4 @@ The skills speak in terms of five canonical triage roles mapped 1-to-1 to GitHub
 
 ### Domain docs
 
-Single-context repository layout (`CONTEXT.md` + `docs/adr/`). See `docs/agents/domain.md`.
+Single-context repository layout (`docs/adr/`). See `docs/agents/domain.md`.

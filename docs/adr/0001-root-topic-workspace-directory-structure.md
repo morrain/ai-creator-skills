@@ -19,7 +19,7 @@
 我们决定：
 1. 在 `articles` 技能的大纲阶段，自动提取/生成简短英文连字符命名的 `<article-slug>`（例如 `iphone-18-launch`）。
 2. 在项目根目录下直接新建主题工作区文件夹 `./<article-slug>/`，并将大纲保存为固定的 `outline.md`。
-3. 后续所有关联技能（`articles`、`illustrations`、`to-wx`、`to-poster`）的产物均统一存入该主题工作区中，不再采用深层嵌套的 `output/articles/<slug>` / `output/posters/<slug>` 分离目录。
+3. 后续所有关联业务工作流（`workflow: article`、`workflow: illustrations`、`workflow: weixin`、`workflow: poster`）的产物均统一存入该主题工作区中，不再采用深层嵌套的 `output/articles/<slug>` / `output/posters/<slug>` 分离目录。
 
 示例目录结构：
 ```text

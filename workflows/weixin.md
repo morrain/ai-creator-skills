@@ -1,0 +1,32 @@
+---
+name: workflow-weixin
+command: /微信公众号
+description: 微信公众号排版业务工作流。读取主题工作区正文与插图资产，调度 wx-formatter 套用微信草稿防擦除原生视觉 UI 系统，盲审后输出离线 mp_article.html。
+---
+
+# 📱 微信公众号排版业务工作流 (WeChat Business Workflow)
+
+本工作流为 `ai-creator-skills` 项目的微信公众号离线 HTML 排版与交付管道。负责扫描主题工作区 `./<article-slug>/`，读取正文 Markdown 与插图资产，调度底层原子技能 `wx-formatter` 套用微信草稿防擦除原生视觉 UI 系统（`references/mp_style_design_system.md`），运行 SubAgent 审稿闭环，并在 `./<article-slug>/mp_article.html` 生成内置 677px 预览视口的原生网页。
+
+---
+
+## 核心设计原则 (Core Principles)
+
+1. **大标题剔除规则 (NO H1 Rule)**：正文中绝对不包含 H1 大标题。
+2. **原文绝对零增删改 (Zero Text Alteration Rule)**：绝对禁止增加、删除或修改原文的任何话术与字句，严禁擅自插入 AI 总结卡片。
+3. **Markdown 表格 100% 彻底消解 (Table Deconstruction)**：原表格语法一律重构为双色 HTML 边框卡片或步骤解析卡片。
+
+---
+
+## 详细工作流步骤
+
+1. **定位工作区与读取资产**：
+   - 读取目标 `./<article-slug>/<article-slug>.md` 原文及 `./<article-slug>/assets/illustration_*.md` 方案文件。
+2. **调度原子技能 `wx-formatter` 格式化重构**：
+   - 调度原子技能 `wx-formatter`，将正文消解表格后套用居中 H2 胶囊角标、左立边 H3、**`💡 金句总结` 暖金虚线边框卡片**及居中插图容器（嵌合 `images/illustration_N.png`），并在文章最末尾嵌入 `🔥 结尾互动与引导关注卡片`（组件 7）。
+3. **SubAgent 盲审闭环**：
+   - 显式调用 `invoke_subagent` 发起 `mp_article_reviewer` 子进程，读取并执行 `skills/wx-formatter/references/mp_reviewer_standards.md`（校验零表格残留、零字句改动、草稿防擦除白名单属性）。
+   - 若判定 `[REJECT]`，针对性重构至 `[PASS]`（上限 8 次）。
+4. **离线 HTML 存盘交付**：
+   - 将通过盲审的完整 HTML 代码写入固定文件 `./<article-slug>/mp_article.html`。
+   - 呈报完成信息与本地点击查看链接（如 [`./<article-slug>/mp_article.html`](./<article-slug>/mp_article.html)）。
