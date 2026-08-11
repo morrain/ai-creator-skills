@@ -30,7 +30,7 @@ description: 文章创作业务工作流。负责前置联网检索、主题工�
    - 解析输入的 `title` / `summary` 或关键词。
    - **显式调用 `search_web` 工具**对主题进行多角度实时检索，收集最新事实。
 2. **调度原子技能 `article-writer` 智能识别文风并拟定大纲**：
-   - 调度原子技能 `article-writer`（模式 `mode: outline`），基于检索到的事实与主题属性**自适应识别最佳文风**（干货指南/科技深度评论/社会观察/科普解说/故事叙事），生成 3 个备选 H1 标题（每个 ≤ 20 字）及带有 `【撰写指令】` 的大纲草案。
+   - 调度原子技能 `article-writer`（模式 `mode: outline`），基于检索到的事实与主题属性**自适应识别最佳文风**（干货指南/科技深度评论/社会观察/科普解说/故事叙事），生成 3 个爆款备选 H1 标题及带有 `【撰写指令】` 的大纲草案。
 3. **SubAgent 大纲盲审闭环**：
    - 显式调用 `invoke_subagent` 发起 `article_reviewer` 子进程，读取并执行 `skills/article-writer/references/reviewer_standards.md`。
    - 若结论为 `[REJECT]`，针对性修正大纲草案直至 `[PASS]`（上限 8 次）。
