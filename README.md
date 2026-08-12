@@ -11,7 +11,7 @@
 </p>
 
 [✨ 核心亮点](#-为什么选择-ai-creator-studio) • [🏛️ 架构设计](#-双层架构设计-dual-layer-architecture) • [🚀 快速上手](#-安装与使用指引) • [🤖 业务工作流](#-端到端业务工作流-workflows)
-[🧠 规则自进化](#-审稿规则自进化机制-workflow-learn) • [🛠️ 原子技能库](#-底层纯粹原子技能库) • [🎨 IP 角色体系](#-配图角色-ip-自定义指引) • [📁 目录架构](#-项目目录结构)
+[🧠 规则自进化](#-审稿规则自进化机制-workflow-learn) • [🛠️ 原子技能库](#-底层纯粹原子技能库) • [🎨 IP 角色体系](#-配图角色-ip-自定义指引) • [📁 目录结构](#-项目目录结构)
 
 ---
 
@@ -175,6 +175,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 ```text
 ai-creator-skills/
 ├── GEMINI.md                               # 项目 Agent 规则与配置
+├── LICENSE                                 # MIT 开源协议许可文件
 ├── README.md                               # 本文档
 ├── character_ip.md                         # (可选) 项目级自定义 IP 规范模板 (小智 Mascot 预置)
 ├── learnings/                              # (动态按需生成) 首次人审运行 /workflow-learn 后自动创建的分环节自进化审稿规则库
@@ -215,6 +216,12 @@ ai-creator-skills/
         ├── illustration_1.png ~ illustration_N.png
         └── poster_1.png ~ poster_N.png
 ```
+
+---
+
+## 📄 开源协议 (License)
+
+本项目基于 [MIT License](LICENSE) 开源协议发布，您可以自由进行复制、修改、分发及商业化使用。详见 [LICENSE](LICENSE) 文件。
 
 ---
 
