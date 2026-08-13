@@ -27,6 +27,8 @@ description: 审稿标准与案例库增量反哺工作流。识别各创作环�
 | **`poster_blueprint`**| 海报故事线阶段 | 海报故事线草案 | `skills/poster-designer/references/poster_reviewer_standards.md` | `./learnings/poster_blueprint.md` |
 | **`poster_config`** | 单张海报配置阶段 | `./<slug>/assets/poster_*.md` | `skills/poster-designer/references/poster_reviewer_standards.md` | `./learnings/poster_config.md` |
 | **`poster_post`** | 海报社媒文案阶段 | `./<slug>/poster_post.md` | `skills/poster-designer/references/poster_reviewer_standards.md` | `./learnings/poster_post.md` |
+| **`video_script`** | 讲解剧本阶段 | `./<slug>/assets/video/video_script.json` | `skills/video-script-writer/references/script_reviewer_standards.md` | `./learnings/video_script.md` |
+| **`video_unit`**| 视频单元设计阶段 | `./<slug>/assets/video/unit_XX/BRIEF.md` | `skills/video-storyboard-designer/references/storyboard_reviewer_standards.md` | `./learnings/video_unit.md` |
 | **`<new_phase_id>`** | (未来扩展新环节) | (新场景产物) | `skills/<new_skill>/references/<standards>.md` | `./learnings/<new_phase_id>.md` |
 
 ---

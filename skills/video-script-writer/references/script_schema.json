@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExplainerVideoScript",
+  "description": "Schema definition for 4-track explainer video scripts in ai-creator-skills",
+  "type": "object",
+  "required": [
+    "metadata",
+    "units"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "title",
+        "target_duration_seconds",
+        "genre",
+        "mode"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Video title"
+        },
+        "target_duration_seconds": {
+          "type": "integer",
+          "minimum": 10,
+          "description": "Estimated total duration in seconds"
+        },
+        "genre": {
+          "type": "string",
+          "description": "Genre style (e.g. 科普解说, 科技评论)"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "article_derived",
+            "standalone_topic"
+          ],
+          "description": "Input mode: article_derived (模式1) or standalone_topic (模式2)"
+        },
+        "source_article_path": {
+          "type": "string",
+          "description": "Path to source article if mode is article_derived"
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "unit_id",
+          "duration_seconds",
+          "voiceover",
+          "visual_prompt",
+          "ip_action",
+          "on_screen_elements"
+        ],
+        "properties": {
+          "unit_id": {
+            "type": "string",
+            "description": "Unit identifier (e.g. Unit 01)"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Duration for this scene in seconds"
+          },
+          "voiceover": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Verbatim spoken text for TTS"
+          },
+          "visual_prompt": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Scene visual background and atmosphere description"
+          },
+          "ip_action": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Specific conceptual action performed by Xiao Zhi robot"
+          },
+          "on_screen_elements": {
+            "type": "object",
+            "required": [
+              "title_card",
+              "highlight_keywords",
+              "graphics_hint"
+            ],
+            "properties": {
+              "title_card": {
+                "type": "string",
+                "description": "On-screen heading or scene title"
+              },
+              "highlight_keywords": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Keywords to highlight on screen"
+              },
+              "graphics_hint": {
+                "type": "string",
+                "description": "UI component/diagram hint for Remotion"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

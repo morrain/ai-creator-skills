@@ -34,15 +34,15 @@
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                         上层业务工作流 (Workflows Layer)                         │
-│    workflows/article.md  │  illustrations.md  │  weixin.md  │  poster.md         │
+│    workflows/article.md  │  illustrations.md  │  weixin.md  │  poster.md  │  video.md │
 │    - 联网事实检索、文件夹自动创建、SubAgent 盲审调度、人工 Gate 确认卡点         │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │ 调度技能 & 传递上下文
                                          ▼
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                      底层纯粹原子技能 (Atomic Skills Layer)                      │
-│    skills/hot-topics  │  article-writer  │  illustration-designer  │ ...         │
-│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / HTML / Prompt 生图配置         │
+│    skills/hot-topics  │  article-writer  │  video-script-writer  │  video-renderer  │
+│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / 4轨剧本 / TTS音频 / Remotion视频   │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -84,6 +84,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
+| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 极速配音与 Remotion 合成导出。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/timestamps.json`<br>`./<主题目录>/video.mp4` |
 | **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 识别各创作环节的人工修改 Diff 或批注，沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
@@ -141,6 +142,8 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`poster_blueprint`** | 海报故事线蓝图 | 海报章节与版式拆分方案 | `./learnings/poster_blueprint.md` |
 | **`poster_config`** | 单张海报 Prompt | `./<slug>/assets/poster_*.md` | `./learnings/poster_config.md` |
 | **`poster_post`** | 海报社媒文案 | `./<slug>/poster_post.md` | `./learnings/poster_post.md` |
+| **`video_script`** | 讲解剧本阶段 | `./<slug>/assets/video/video_script.json` | `./learnings/video_script.md` |
+| **`video_unit`** | 视频单元设计阶段 | `./<slug>/assets/video/unit_XX/BRIEF.md` | `./learnings/video_unit.md` |
 | **`<new_phase_id>`** | (未来扩展新环节) | (新场景产物) | `./learnings/<new_phase_id>.md` |
 
 ---
@@ -155,6 +158,10 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`wx-formatter`** | [`skills/wx-formatter/SKILL.md`](skills/wx-formatter/SKILL.md) | 微信公众号离线排版，套用防擦除视觉样式系统，自动消解表格为双色卡片，输出带视口的原生 HTML。 |
 | **`poster-designer`** | [`skills/poster-designer/SKILL.md`](skills/poster-designer/SKILL.md) | 手绘图文海报设计，匹配 10 大经典版式与莫兰迪配色，输出防乱码的 3:4 生图配置与极简社媒文案。 |
 | **`blind-reviewer`** | [`skills/blind-reviewer/SKILL.md`](skills/blind-reviewer/SKILL.md) | **通用自进化盲审引擎**，接收审查资产与规则路径，执行苛刻质检并输出二元裁决报告。 |
+| **`video-script-writer`** | [`skills/video-script-writer/SKILL.md`](skills/video-script-writer/SKILL.md) | 4 轨讲解剧本提炼，生成包含时间轴、口播文案、视觉描述与屏幕花字的 4 轨 `video_script.json`。 |
+| **`voiceover-generator`** | [`skills/voiceover-generator/SKILL.md`](skills/voiceover-generator/SKILL.md) | TTS 极速配音与字幕生成，默认使用免 Key Edge-TTS 导出口播 MP3、SRT 字幕与 `audio_meta.json` 时间轴。 |
+| **`video-storyboard-designer`** | [`skills/video-storyboard-designer/SKILL.md`](skills/video-storyboard-designer/SKILL.md) | 视频单元需求构建，推演 3 幕动态动作链 (Hook ➔ Action ➔ Delivery) 并输出 HyperFrames `BRIEF.md` 契约。 |
+| **`video-renderer`** | [`skills/video-renderer/SKILL.md`](skills/video-renderer/SKILL.md) | 视频无损拼接与混流，使用 FFmpeg 快速拼合视频单元片段，混入配音与 BGM 并应用 Sidechain Audio Ducking。 |
 
 ---
 
@@ -185,9 +192,12 @@ ai-creator-skills/
 │   ├── weixin.md                           # 微信排版自进化规则
 │   ├── poster_blueprint.md                 # 海报蓝图自进化规则
 │   ├── poster_config.md                    # 单张海报 Prompt 自进化规则
-│   └── poster_post.md                      # 海报社媒文案自进化规则
+│   ├── poster_post.md                      # 海报社媒文案自进化规则
+│   ├── video_script.md                     # 讲解剧本自进化规则
+│   └── video_unit.md                       # 视频单元设计自进化规则
 ├── docs/                                   # 项目设计文档与 ADR 决策记录
-│   ├── adr/                                # 目录结构规范说明
+│   ├── adr/                                # 架构决策记录目录
+│   │   └── 0001-per-scene-hyperframes-ffmpeg-pipeline.md # 独立视频单元与 HyperFrames 拼接架构 ADR
 │   └── agents/
 ├── skills/                                 # 底层纯粹原子技能 (可单独安装)
 │   ├── hot-topics/                         # 1. 热门话题抓取
@@ -195,12 +205,17 @@ ai-creator-skills/
 │   ├── illustration-designer/              # 3. 单图视觉隐喻设计
 │   ├── wx-formatter/                       # 4. 微信公众号排版
 │   ├── poster-designer/                    # 5. 手绘海报设计
-│   └── blind-reviewer/                     # 6. 通用自进化盲审引擎
+│   ├── blind-reviewer/                     # 6. 通用自进化盲审引擎
+│   ├── video-script-writer/                # 7. 4 轨讲解剧本提炼
+│   ├── voiceover-generator/                # 8. TTS 配音与字幕轴提取
+│   ├── video-storyboard-designer/          # 9. 视频单元 3 幕动作链与 HyperFrames BRIEF 契约
+│   └── video-renderer/                     # 10. FFmpeg 视频拼接与 Sidechain Audio Ducking 混流
 ├── workflows/                              # 上层业务工作流 (自动化编排与审查)
 │   ├── article.md                          # 写文章工作流 (/写文章)
 │   ├── illustrations.md                    # 正文插图工作流 (/正文插图)
 │   ├── weixin.md                           # 微信公众号排版工作流 (/微信公众号)
 │   ├── poster.md                           # 图文海报工作流 (/海报)
+│   ├── video.md                            # 讲解视频工作流 (/讲解视频)
 │   └── learn.md                            # 规则自进化反哺工作流 (/workflow-learn)
 └── <topic-slug>/                           # 实例：主题文件目录 (拟定大纲时自动新建)
     ├── outline.md                          # 文章大纲

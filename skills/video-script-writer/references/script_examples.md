@@ -1,0 +1,53 @@
+# 4 轨讲解脚本规范范例 (Four-Track Explainer Script Example)
+
+本文件展示符合 `references/script_schema.json` 规范的标准 4 轨讲解脚本范例 JSON 内容。
+
+```json
+{
+  "metadata": {
+    "title": "Vue 3.5 响应式原理与双向绑定降维解构",
+    "target_duration_seconds": 60,
+    "genre": "科普解说",
+    "mode": "article_derived",
+    "source_article_path": "./vue35-reactivity/vue35-reactivity.md"
+  },
+  "units": [
+    {
+      "unit_id": "Unit 01",
+      "duration_seconds": 5,
+      "voiceover": "为什么你的 Vue 界面能自动更新？秘密藏在每一个数据的微小变化里。",
+      "visual_prompt": "16:9 纯白背景，黑色手绘线条风格，左侧为繁复的数据网格，右侧为发光的界面屏幕。",
+      "ip_action": "IP Mascot 角色站在数据网格旁，神情认真冷静（Deadpan），手持一根发光线缆连接数据点与屏幕。",
+      "on_screen_elements": {
+        "title_card": "Vue 3.5 响应式机制",
+        "highlight_keywords": ["自动更新", "微小变化"],
+        "graphics_hint": "显示 Vue Logo 浮动，数据流动箭头动画"
+      }
+    },
+    {
+      "unit_id": "Unit 02",
+      "duration_seconds": 8,
+      "voiceover": "在旧版 Vue 中，响应式就像一个无休止拉取消息的轮询管道，既吃内存又容易阻塞。",
+      "visual_prompt": "16:9 纯白背景，展示粗暴的转轮机械与堆积如山的数据管道。",
+      "ip_action": "IP Mascot 角色正奋力推着一个巨大的齿轮阀门，展现笨拙但认真的工作状态。",
+      "on_screen_elements": {
+        "title_card": "传统轮询机制的痛点",
+        "highlight_keywords": ["吃内存", "阻塞"],
+        "graphics_hint": "出现红色 [高内存占用] 警示卡片"
+      }
+    },
+    {
+      "unit_id": "Unit 03",
+      "duration_seconds": 7,
+      "voiceover": "而 Vue 3.5 重构了反应式双向链表，内存占用骤降 56%，更新性能直接拉满。",
+      "visual_prompt": "16:9 纯白背景，线条变得精简清爽，两条并行自愈的发光双向链表横跨画面。",
+      "ip_action": "IP Mascot 角色轻巧地将两块双向插头锁扣踩入槽位，手持钢印在数据节点上盖上 [56% OFF] 绿色印章。",
+      "on_screen_elements": {
+        "title_card": "Vue 3.5 双向链表重构",
+        "highlight_keywords": ["内存骤降 56%", "性能拉满"],
+        "graphics_hint": "内存对比柱状图从 100% 降至 44%"
+      }
+    }
+  ]
+}
+```
