@@ -42,7 +42,7 @@
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                      底层纯粹原子技能 (Atomic Skills Layer)                      │
 │    skills/hot-topics  │  article-writer  │  video-script-writer  │  video-renderer  │
-│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / 4轨剧本 / TTS音频 / Remotion视频   │
+│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / 4轨剧本 / TTS音频 / 视频合成   │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -54,6 +54,16 @@
 ---
 
 ## 🚀 安装与使用指引
+
+### 0. 运行依赖 (Dependencies)
+
+> [!NOTE]
+> 本套件包含以下环境与工具依赖。在实际工作流运行中，**Agent 会根据需要全自动补全与安装所需依赖**，无需用户手动预先配置：
+> * **Python 3.8+ & edge-tts**：驱动语音配音与字幕时间轴生成 (`voiceover-generator`)
+> * **FFmpeg 4.0+**：驱动 Sidechain Audio Ducking 音频混流与视频单元拼接 (`video-renderer`)
+> * **Node.js 22+ & HyperFrames Skills**：驱动矢量动画构建与视频单元片段渲染 (`video-storyboard-designer`)
+
+---
 
 ### 1. 单独安装与拆用原子技能
 
@@ -84,7 +94,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
-| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 极速配音与 Remotion 合成导出。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/timestamps.json`<br>`./<主题目录>/video.mp4` |
+| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 逐单元渲染，最终 FFmpeg 拼接导出。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video.mp4` |
 | **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 识别各创作环节的人工修改 Diff 或批注，沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
@@ -223,13 +233,23 @@ ai-creator-skills/
     ├── character_ip.md                     # (可选) 主题级自定义 IP 规范
     ├── mp_article.html                     # 微信公众号离线网页
     ├── poster_post.md                      # 社媒纯文本文案
-    ├── assets/                             # 生图提示词配置文件
+    ├── assets/                             # 生图提示词配置文件与视频资产
     │   ├── illustration_1.md               # 插图 1 配置文件
     │   ├── poster_1.md                     # 海报 1 配置文件
-    │   └── poster_2.md                     # 海报 2 配置文件
-    └── images/                             # 图片渲染产物目录 (按需生成)
-        ├── illustration_1.png ~ illustration_N.png
-        └── poster_1.png ~ poster_N.png
+    │   ├── poster_2.md                     # 海报 2 配置文件
+    │   └── video/                          # 讲解视频工作区
+    │       ├── video_script.json           # 4 轨讲解剧本定稿
+    │       ├── audio/                      # TTS 配音与字幕时间轴
+    │       │   ├── voiceover.mp3
+    │       │   └── timestamps.json
+    │       ├── unit_01/                    # 视频单元 01 (独立 HyperFrames 项目)
+    │       │   ├── BRIEF.md                # 分镜契约 (供 HyperFrames SubAgent 消费)
+    │       │   └── public/mascot.svg       # 矢量 IP 资产
+    │       └── unit_02/ ...               # 视频单元 02~N (结构同上)
+    ├── images/                             # 图片渲染产物目录 (按需生成)
+    │   ├── illustration_1.png ~ illustration_N.png
+    │   └── poster_1.png ~ poster_N.png
+    └── video.mp4                           # 最终合成视频 (FFmpeg 拼接导出)
 ```
 
 ---
