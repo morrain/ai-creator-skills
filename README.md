@@ -24,7 +24,7 @@
 
 * **⚡ 双层解耦架构设计**：底层原子技能 (`skills/`) 纯粹无状态、零依赖，可拆分单独安装；上层工作流 (`workflows/`) 串联检索、编排、盲审与人审卡点。
 * **🔍 独立 SubAgent 盲审引擎 (`blind-reviewer`)**：打破“AI 既当作者又当裁判”的自夸误区，启动独立审稿子进程进行苛刻质检与诊断打回。
-* **🧠 审稿规则自进化机制 (`/workflow-learn`)**：主编在编辑器中手工修饰一次，系统自动提取 Diff 并沉淀为项目级规则，实现“主编修改一次，AI 盲审永久记住”。
+* **🧠 审稿规则自进化机制 (`/workflow-learn`)**：自动搜集最近一轮审核中的意见归纳，呈报带编号候选条目供主编选择，所选规则精准沉淀至项目规范，实现“精准关卡控制与规则自进化”。
 * **🎨 离线美学排版系统**：提供微信公众号离线 HTML 防擦除视觉系统、以及防乱码的 3:4 莫兰迪手绘社媒海报套件。
 
 ---
@@ -95,7 +95,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
 | **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 逐单元渲染，最终 FFmpeg 拼接导出。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video.mp4` |
-| **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 识别各创作环节的人工修改 Diff 或批注，沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
+| **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 搜集最近一轮审核意见归纳供用户选择，将所选规则沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
 
@@ -110,14 +110,14 @@ npx skills add morrain/ai-creator-skills --skill article-writer
    - 执行 `/正文插图` 或 `/海报` 时，**默认只生成提示词配置文件**（`assets/*.md`），不直接消耗算力 / API 配额。
    - 当你预览配置文件满意后，回复 **“开始生图”** 显式指令，系统才会批量渲染图片。
 3. **审稿规则自进化与反哺**：
-   - 每次产物生成后，如果你在编辑器中对大纲、正文、提示词、HTML 或社媒文案进行了人工修改，只需在对话框回复 **`/workflow-learn`**。
-   - 系统会自动比对 Diff 并将你的偏好沉淀落盘至根目录 `./learnings/<phase_id>.md`，让后续盲审越用越懂你！
+   - 每次产物生成或审核后，在对话框回复 **`/workflow-learn`**。
+   - 系统会自动搜集最近一轮审核中的意见归纳，呈报带编号候选清单供你选择，仅将你选中的偏好沉淀落盘至 `./learnings/<phase_id>.md`，实现精准规则进击！
 
 ---
 
 ## 🧠 审稿规则自进化机制 (`/workflow-learn`)
 
-为了解决 AI 创作中“重复踩坑”、“不长记性”的痛点，套件内置了**分环节审稿规则自进化机制**，实现“主编修改一次，AI 盲审永久记住”的品质进化闭环：
+为了解决 AI 创作中“重复踩坑”、“不长记性”的痛点，套件内置了**分环节审稿规则自进化机制**，实现“主编审查一次，AI 盲审精准记住”的品质进化闭环：
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -134,10 +134,10 @@ npx skills add morrain/ai-creator-skills --skill article-writer
                                          │ 在对话框中回复 /workflow-learn
                                          ▼
 ┌──────────────────────────────────────────────────────────────────────────────────┐
-│  3. 规则沉淀与自动进化 (Self-Evolving Learning)                                  │
-│  - 系统自动比对人工修改 Diff，提炼出黑名单 (Anti-Patterns) 与金句例句 (Golden)   │
-│  - 首次反哺自动按需建库，增量落盘至根目录 `./learnings/<phase_id>.md`            │
-│  - 以后每次盲审该环节时，SubAgent 自动吸收主编的新偏好，实现免人工审查！         │
+│  3. 意见归纳与交互选择 (Recent Feedback & User Selection)                       │
+│  - 系统自动搜集最近一轮审核中的意见归纳，呈报带编号的规则候选清单                 │
+│  - 由主编回复编号勾选需要沉淀的条目，所选规则增量落盘至 `./learnings/<phase_id>.md`│
+│  - 以后每次盲审该环节时，SubAgent 自动吸收主编选中的新偏好，实现精准自进化！     │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
