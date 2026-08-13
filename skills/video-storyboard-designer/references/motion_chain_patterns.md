@@ -33,3 +33,23 @@
 - **Act 1**: 巨大的机械齿轮疯狂转动，管道压力指针飙升至红色警示区。
 - **Act 2**: IP Mascot 站在高台梯子上，奋力用细手旋转巨大的金属摇杆阀门。
 - **Act 3**: 压力指针瞬间回落至绿区，管道喷出清爽冷气，IP Mascot 面露平静收工。
+
+---
+
+## 长单元（>20s）二次分镜拆解模式 (Secondary Storyboard Subdivision)
+
+当视频单元时长大于 20 秒时，在 `BRIEF.md` 中需深度结合口播文案（Voiceover）进行多切片二次分镜：
+
+### 模式范例：多阶段智能闸机分流链 (Multi-Subshot Intelligent Gate Chain)
+- **口播文本**: *"这就好比把传统的漫长排队大厅改造为了智能分流窗口。当数据发生变动时，系统不再通知所有无关节点，而是通过双向链表精准找到订阅者，实现毫秒级响应。"*
+- **画面元素全量清单**: `#bg-hall` (办事大厅), `#queue-lines` (长队伍), `#gate-system` (智能闸机), `#light-beam` (精准光束), `#timer-card` (毫秒计时卡片), `#mascot-*` (IP 角色节点)。
+- **镜头切片划分**:
+  - **[Sub-shot 1: 00:00-00:10] (传统痛点/引出问题)**:
+    - *Voiceover*: "这就好比把传统的漫长排队大厅改造为了智能分流窗口。"
+    - *画面/动作*: `#bg-hall` 背景淡入，`#queue-lines` 人群拥挤晃动。IP Mascot 手持警告牌指示队伍（`[Action Recipe: HOLD_SIGN]`）。
+  - **[Sub-shot 2: 00:10-00:20] (智能重构/核心动作)**:
+    - *Voiceover*: "当数据发生变动时，系统不再通知所有无关节点，而是通过双向链表精准找到订阅者..."
+    - *画面/动作*: `#bg-hall` 向两侧展开退场，`#gate-system` 旋转降入中央，`#light-beam` 绿色光束穿透两端。IP Mascot 踩下切换闸机踏板（`[Action Recipe: KICK_STEP]`）并拉动分流杠杆。
+  - **[Sub-shot 3: 00:20-00:25] (毫秒响应/交付结果)**:
+    - *Voiceover*: "...实现毫秒级响应。"
+    - *画面/动作*: `#timer-card`（`[0.1ms]`）自底部弹显跳变，IP Mascot 手持盖章器在闸机旁盖上 `[PASS]` 绿色印章（`[Action Recipe: STAMP_SEAL]`）。

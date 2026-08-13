@@ -29,6 +29,11 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 6. **16:9 纯白手绘美学与矢量 IP 节点**：
    - 美学基调：16:9 横版构图、纯白背景 (`#FFFFFF`)、黑色手绘线条风格。
    - 每个单元下落盘 `public/mascot.svg`，遵循 `mascot_svg_contract.md` 节点规范（如 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`），供下游 HyperFrames 内部分镜 GSAP 驱动。
+7. **融合口播与画面描述的二次分镜拆解 (Secondary Storyboard Subdivision)**：
+   - 在生成 `BRIEF.md` 时，必须深度结合当前单元的 `voiceover` 口播逐字稿、`visual_prompt` 场景视觉与 `ip_action` 的多阶段描述，在 `BRIEF.md` 的 `## Intent` 中对动画细节和画面元素进行**二次分镜拆解 (Secondary Storyboard Subdivision)**。
+   - 拆解必须包含：
+     - **画面元素与构件全量清单 (Scene Element & Asset Inventory)**：精细列出所有背景、物理道具、UI 卡片、数据流向及 IP Mascot 构件。
+     - **带精准时间轴的二次分镜切片 (Sub-shot Timeline Breakdown)**：结合口播节奏划分为具体镜头切片（如 `[Sub-shot 1: 00:00-00:10]`、`[Sub-shot 2: 00:10-00:25]`），详细指明各元素的显隐入场/退场动画、IP 关节 Recipe 动作与 UI 图表弹显规则，确保下游 HyperFrames 制作 SubAgent 生成代码时具备完整、连续且丰富的动态渲染依据。
 
 ---
 
@@ -40,10 +45,10 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 1. 检查是否存在 `./<slug>/character_ip.md`；若无，检查是否存在 `./character_ip.md`；若无，读取技能内置 [references/character_ip.md](references/character_ip.md)。
 2. 提取文件中的 `Master Visual Prompt`（如 `Xiao Zhi robot, a 2D minimalist hand-drawn mascot...`）作为全局 IP 描述。
 
-### 步骤二：逐单元智能推演 3 幕动态动作链与计算时长
-读取 `video_script.json` 中的 `units` 数组：
+### 步骤二：结合口播与剧本描述进行二次分镜拆解与 3 幕动态推演
+读取 `video_script.json` 中的 `units` 数组及 TTS 时长：
 1. 遍历每个单元 `unit_id`，提取 `duration_seconds`、`voiceover`、`visual_prompt` 及 `ip_action`。
-2. 将 `ip_action` 深度推演为具象的 3 幕动态动作链 (Act 1 ➔ Act 2 ➔ Act 3)，并梳理**画面元素清单**与**时间轴关键帧轨迹**，显式绑定特定的 **Physical Action Recipe**（如 `[Action Recipe: PULL_DRAG]`）。
+2. 深度结合口播台词与 `visual_prompt` / `ip_action` 的阶段描述，执行**二次分镜拆解**：梳理全量**画面元素清单**，并按时间轴/切片划分为带时间戳的关键帧轨迹与分分镜切片（如 `[Sub-shot 1]`、`[Sub-shot 2]`），显式绑定特定的 **Physical Action Recipe**（如 `[Action Recipe: PULL_DRAG]`）。
 
 ### 步骤三：创建独立视频单元工作区、初始化 HyperFrames 项目并落盘 BRIEF.md
 针对每个视频单元 `XX`（如 `01`, `02` ...）：
@@ -57,7 +62,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 4. **⚠️ 强制前置读取规范（写入 BRIEF.md 之前必须完成）**：使用 `view_file` 依次读取项目根目录下 HyperFrames 官方的以下两份规范文件，理解 BRIEF.md 的完整结构与字段语义后，方可开始编写：
    - 格式规范：`.agents/skills/hyperframes-core/references/brief-format.md`（定义 BRIEF.md 的 YAML Frontmatter 字段清单、Body 四板块结构 `## Intent` / `## Assets` / `## Customizations` / `## Notes`、生命周期规则）
    - 字段契约：`.agents/skills/hyperframes-core/references/brief-contract.md`（定义 `flow` / `storyboard` / `mode` 运行形态派生规则、`message` / `destination` / `aspect` / `length` / `angle` 等共享字段的枚举值与语义）
-5. 存盘写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`。**严格按照上述两份规范**填写 YAML Frontmatter（必须包含 `workflow`、`flow`、`storyboard`、`message`、`length`、`aspect` 等字段）与 Body 正文。在 `## Intent` 中必须详尽列出**画面元素清单**、**带时间戳的 3 幕动作轨迹**及 **IP 节点与道具互动细节（含 GSAP Action Recipe 绑定）**。
+5. 存盘写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`。**严格按照上述两份规范**填写 YAML Frontmatter（必须包含 `workflow`、`flow`、`storyboard`、`message`、`length`、`aspect` 等字段）与 Body 正文。在 `## Intent` 中必须详尽列出**画面元素清单**、**结合口播时间轴的二次分镜切片与 3 幕动作轨迹**及 **IP 节点与道具互动细节（含 GSAP Action Recipe 绑定）**。
    - **强制写入 `## Assets` 板块**：声明 `public/mascot.svg` 矢量 IP 资产。
    - **强制写入 `## Notes` 规程**：为确保下游 HyperFrames 官方 SubAgent 读取 `BRIEF.md` 时遵循正确的矢量关节动画机制，`BRIEF.md` 的 `## Notes` 板块中必须包含以下说明：
      > `- SVG Mascot Joint Animation: When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. svgOrigin: "90 205"), NEVER use CSS transformOrigin: "px px", to prevent arm dislocation.`

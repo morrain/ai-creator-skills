@@ -74,12 +74,12 @@
           "visual_prompt": {
             "type": "string",
             "minLength": 1,
-            "description": "Scene visual background and atmosphere description"
+            "description": "Scene visual background and atmosphere description. For units >20s, must combine voiceover text to detail multi-stage visual progression (e.g. [0-10s] -> [10-20s] -> [20-30s])."
           },
           "ip_action": {
             "type": "string",
             "minLength": 1,
-            "description": "Specific conceptual action performed by Xiao Zhi robot"
+            "description": "Specific action performed by IP Mascot. For units >20s, must detail multi-stage physical action sequence mapped to voiceover pacing."
           },
           "on_screen_elements": {
             "type": "object",

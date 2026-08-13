@@ -18,7 +18,7 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
    - 每个视频单元解耦为 4 个独立轨道：
      - `time_code` & `duration_seconds`: 单元编号与精准预估时长（单位：秒）。
      - `voiceover`: 极具知识博主/科普解说听感的逐字口播文案。
-     - `visual_prompt & ip_action`: 画面背景描述与 IP Mascot（IP 角色）的具体物理动作指示。
+     - `visual_prompt & ip_action`: 画面背景描述与 IP Mascot（IP 角色）的具体物理动作指示。对于 **`duration_seconds > 20s`** 的较长单元，必须结合 `voiceover` 口播逐字逻辑进行详细的多阶段描绘（划分 `[0-10s] ➔ [10-20s] ➔ [20-30s]` 等连续演进切片），严禁写成单句概括！
      - `on_screen_elements` (可选与克制原则): 画面标题花字 `title_card`（**通常仅在 Unit 01 Hook 开篇或重大章节转折时设置，严禁在每个单元机械堆叠**）、唱词高亮词 `highlight_keywords`（可选，非必要不堆砌）及视觉组件提示 `graphics_hint`（可选）。主要视觉布局与节奏交由下游 `video-storyboard-designer` 灵活排布。
 3. **双模式支持 (Dual-Mode Support)**：
    - **模式 1 (文章衍生 `article_derived`)**：分析长文的正文脉络与金句，保留文章插图中已确立的物理隐喻方向，将其重构为流畅的视频单元。
@@ -28,6 +28,9 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
    - 语速控制在 **4 ~ 5 字/秒**（例如 10 秒单元，口播在 35 ~ 45 字之间），单句控制在 25 字以内，具备自然呼吸停顿。
 5. **IP 角色动作核心化 (IP Action Centricity)**：
    - 剧本提炼阶段无须加载具体的 IP 形象规范。在 `ip_action` 与 `visual_prompt` 字段中，统一使用泛称 **`IP Mascot 角色`**，确保剧本绝对无状态与解耦。角色不是背景贴纸或卖萌吉祥物，而是正在拉扯线缆、推推闸门、盖章或操作机器的核心系统操作员。
+6. **长单元（>20s）结合口播的多阶段画面与动作详细描绘 (Multi-Stage Visual & Action Progression)**：
+   - 当视频单元时长大于 20 秒（`duration_seconds > 20s`）或口播包含多层次逻辑时，`visual_prompt` 与 `ip_action` 必须紧密结合当前单元的 `voiceover` 文本进行逐层深入的描述。
+   - 必须按时间轴划分为多阶段演进（例如 `[0-10s]` 场景背景与动作一 ➔ `[10-20s]` 画面演变与动作二 ➔ `[20-30s]` 结果呈现与动作三），详细交代随口播推进画面构件的变迁、视觉焦点的转移以及 IP Mascot 角色的具体物理交互链，为下游分镜设计提供极其充实的多幕推演依据。
 
 ---
 
