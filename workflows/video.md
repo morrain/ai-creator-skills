@@ -77,9 +77,28 @@ description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本�
    - 收到用户回复 **“开始渲染视频”** 或 **“开始全自动渲染”**。
 2. **派发 SubAgent 制作各视频单元 MP4 片段**：
    - 遍历 `./<article-slug>/assets/video/unit_XX/` 目录：
-     - 主 Orchestrator 显式调用 `invoke_subagent` 启动独立的 `unit-worker` SubAgent，隔离上下文与 DOM/GSAP 逻辑干扰。
-     - SubAgent 在单元工程目录下装载 HyperFrames 官方主控入口 Skill (`/hyperframes`)。
-     - `/hyperframes` 读取单元 `BRIEF.md`（此时 `length` 已精准匹配口播）与 `public/mascot.svg`，独立执行分镜设计、GSAP HTML 编写（`compositions/frames/NN-*.html`）、`npx hyperframes check` 校验，并导出 1080P 30fps 视频片段。
+     - 显式调用 `invoke_subagent` 启动独立的 `unit-worker` SubAgent，隔离上下文与 DOM/GSAP 逻辑干扰。必须使用如下提示词模板，不能自己生成提示词。
+     - **SubAgent 唤起提示词模板**：派发 SubAgent 时，必须 100% 格式化传入以下标准提示词：
+       ```text
+       你是一个精通 HyperFrames 动画引擎与 GSAP 物理特效的专家 SubAgent。
+       你的任务是为当前视频单元构建完全符合 BRIEF.md 契约的高质量 1080P 矢量动画网页并导出为 MP4 片段。
+
+       【工作目录与上下文】
+       - 工作目录：./<article-slug>/assets/video/unit_<XX>/
+       - 核心契约：必须读取并严格遵循本目录下的 `BRIEF.md`（包含精准时长 length、workflow: faceless-explainer、3幕动作轨迹与元素清单）。
+       - 矢量 IP 资产：必须读取并引用 `./public/mascot.svg`（包含命名节点 #mascot-head, #mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-body, #mascot-prop-slot, #mascot-stamp）。
+
+       【HyperFrames 官方 Skill 规范与工程约束】
+       1. 画幅与时长：固定 16:9 横版 1920x1080，HTML 画布与 timeline 严格卡点匹配 `BRIEF.md` 声明的 `length`（如 4.8s）。
+       2. 矢量关节动画硬性规则 (GSAP svgOrigin Rule)：
+          - 使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。
+          - **⚠️ 严禁使用 CSS `transformOrigin: "px px"`**，防止关节脱臼断裂。
+       3. 物理隐喻动作绑定 (Action Recipe Execution)：
+          - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]` 拖拽发力、`[Action Recipe: PUSH_PRESS]` 蓄力下压、`[Action Recipe: KICK_STEP]` 单腿踢飞、`[Action Recipe: OPERATE_LEVER]` 摇手柄/转阀门、`[Action Recipe: LIFT_DISPLAY]` 托举展示）。
+          - **⚠️ 严禁生成仅对 `#mascot-head` 施加微弱旋转的偷懒代码！**
+       【产物交付】
+       完成渲染后，请仅回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4`。
+       ```
 3. **根据模式执行审核或连续渲染**：
    - **逐单元审核模式**：单单元渲染完成后暂停，等待用户回复 `[通过]` 后启动下一个；
    - **全自动/批次渲染模式**：SubAgent 完成后自动开启下一个单元渲染，全部完成后统一提示进入阶段四合并。

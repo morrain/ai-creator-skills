@@ -126,7 +126,7 @@ def split_long_sentence(text, start_s, end_s, max_len=15):
         curr_t = c_end
     return res
 
-async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=4):
+async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=2):
     """Generates audio for a single video unit with retry logic and captures sentence boundaries"""
     try:
         import edge_tts
@@ -134,24 +134,27 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
         print("ERROR: 'edge-tts' module is not installed! Please install it with 'pip install edge-tts'.", file=sys.stderr)
         return False, []
 
+    async def _do_tts():
+        communicate = edge_tts.Communicate(text, voice)
+        boundaries = []
+        with open(output_mp3_path, 'wb') as f:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    f.write(chunk["data"])
+                elif chunk["type"] == "SentenceBoundary":
+                    off_s = chunk["offset"] / 10000000.0
+                    dur_s = chunk["duration"] / 10000000.0
+                    boundaries.append((off_s, off_s + dur_s, chunk["text"].strip()))
+        return boundaries
+
     for attempt in range(max_retries):
         try:
-            communicate = edge_tts.Communicate(text, voice)
-            boundaries = []
-            with open(output_mp3_path, 'wb') as f:
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        f.write(chunk["data"])
-                    elif chunk["type"] == "SentenceBoundary":
-                        off_s = chunk["offset"] / 10000000.0
-                        dur_s = chunk["duration"] / 10000000.0
-                        boundaries.append((off_s, off_s + dur_s, chunk["text"].strip()))
-            
+            boundaries = await asyncio.wait_for(_do_tts(), timeout=3.0)
             if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 1000:
                 return True, boundaries
         except Exception as e:
             print(f"EdgeTTS Notice (Attempt {attempt+1}/{max_retries}): {e}")
-            await asyncio.sleep(1.0 * (attempt + 1))
+            await asyncio.sleep(0.2)
             
     return False, []
 
