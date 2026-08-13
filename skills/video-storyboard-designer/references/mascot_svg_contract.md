@@ -6,17 +6,20 @@
 
 生成的 `mascot.svg` 文件内部，矢量根元素与各关节/器官子元素必须包含以下标准的 `id` 属性：
 
-| Element ID | 元素类型 | 作用与动画说明 |
-| :--- | :--- | :--- |
-| `id="xiao-zhi-svg"` | `<svg>` 根节点 | 全局 SVG 容器 |
-| `id="mascot-head"` | `<g>` 头部组 | 头部动作（倾斜、点头、摇头） |
-| `id="mascot-eye-left"` | `<g>` 左眼 | 左眼眨眼与闭眼 (`scaleY`) |
-| `id="mascot-eye-right"` | `<g>` 右眼 | 右眼眨眼与闭眼 (`scaleY`) |
-| `id="mascot-mouth"` | `<g>` 嘴部 | 嘴部表情与微调 |
-| `id="mascot-arm-left"` | `<g>` 左手臂组 | 左臂姿态/摆动 (`rotation`) |
-| `id="mascot-arm-right"` | `<g>` 右手臂组 | 右臂姿态/摆动（挥手、指向、按按纽、拉阀门） |
-| `id="mascot-body"` | `<g>` 躯干组 | 身体核心躯干与标志 |
-| `id="mascot-stamp"` | `<g>` 盖章组 (可选) | Act 3 交付阶段的 `[PASS]` 印章 drop 效果 |
+| Element ID | 元素类型 | 作用与动画说明 | 标准 svgOrigin (viewBox 300x400) |
+| :--- | :--- | :--- | :--- |
+| `id="xiao-zhi-svg"` | `<svg>` 根节点 | 全局 SVG 容器 (viewBox="0 0 300 400") | N/A |
+| `id="mascot-head"` | `<g>` 头部组 | 头部动作（倾斜、点头、摇头） | `"150 160"` (颈部) |
+| `id="mascot-eye-left"` | `<g>` 左眼 | 左眼眨眼与闭眼 (`scaleY`) | `"115 105"` |
+| `id="mascot-eye-right"` | `<g>` 右眼 | 右眼眨眼与闭眼 (`scaleY`) | `"185 105"` |
+| `id="mascot-mouth"` | `<g>` 嘴部 | 嘴部表情与微调 | `"150 140"` |
+| `id="mascot-arm-left"` | `<g>` 左手臂组 | 左臂姿态/摆动/拉动/托举 | `"90 205"` (左肩) |
+| `id="mascot-arm-right"` | `<g>` 右手臂组 | 右臂姿态/摆动/挥手/拉手柄 | `"210 205"` (右肩) |
+| `id="mascot-leg-left"` | `<g>` 左腿组 | 左腿行走/跨步/踢腿 (`rotation`) | `"120 300"` (左髋关节) |
+| `id="mascot-leg-right"` | `<g>` 右腿组 | 右腿行走/跨步/踢飞 (`rotation`) | `"180 300"` (右髋关节) |
+| `id="mascot-body"` | `<g>` 躯干组 | 身体核心躯干与标志 | `"150 245"` (腹心) |
+| `id="mascot-prop-slot"`| `<g>` 道具插槽 | 绑定绳索、手柄、放大镜或工具等互动道具 | `"260 270"` |
+| `id="mascot-stamp"` | `<g>` 盖章组 (可选) | Act 3 交付阶段的 `[PASS]` 印章 drop 效果 | `"150 350"` |
 
 ---
 
@@ -25,19 +28,28 @@
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" id="xiao-zhi-svg">
   <g id="mascot-body">
-    <!-- 躯干线条与画幅 -->
+    <!-- 躯干线条 (x=90, y=190, w=120, h=110, rx=12) -->
+  </g>
+  <g id="mascot-leg-left">
+    <!-- 左腿线条与脚掌 (x1=120, y1=300, x2=120, y2=360, cx=120, cy=366, r=6) -->
+  </g>
+  <g id="mascot-leg-right">
+    <!-- 右腿线条与脚掌 (x1=180, y1=300, x2=180, y2=360, cx=180, cy=366, r=6) -->
   </g>
   <g id="mascot-arm-left">
-    <!-- 左手臂线条 -->
+    <!-- 左手臂线条 (x1=90, y1=205, x2=40, y2=270) -->
   </g>
   <g id="mascot-arm-right">
-    <!-- 右手臂线条 -->
+    <!-- 右手臂线条 (x1=210, y1=205, x2=260, y2=270) -->
+  </g>
+  <g id="mascot-prop-slot" transform="translate(260, 270)">
+    <!-- 绑定的绳索/手柄/放大镜等手持道具 -->
   </g>
   <g id="mascot-head">
-    <!-- 方块头部轮廓与天线 -->
-    <g id="mascot-eye-left"><!-- 左眼 --></g>
-    <g id="mascot-eye-right"><!-- 右眼 --></g>
-    <g id="mascot-mouth"><!-- 嘴巴 --></g>
+    <!-- 方块头部轮廓 (x=75, y=50, w=150, h=130, rx=16) 与天线 -->
+    <g id="mascot-eye-left"><!-- 左眼 (cx=115, cy=105, r=6) --></g>
+    <g id="mascot-eye-right"><!-- 右眼 (cx=185, cy=105, r=6) --></g>
+    <g id="mascot-mouth"><!-- 嘴巴 (x1=135, y1=140, x2=165, y2=140) --></g>
   </g>
 </svg>
 ```
@@ -46,15 +58,17 @@
 
 ## 3. GSAP 关节旋转动画最佳实践 (svgOrigin 强制规范)
 
-在下游 HyperFrames HTML 页面中，使用 GSAP 对 `mascot.svg` 的 `<g>` 节点（如 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-head`）施加旋转 (`rotation`) 或缩放 (`scale`) 动画时：
+在下游 HyperFrames HTML 页面中，使用 GSAP 对 `mascot.svg` 的 `<g>` 节点（如 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-head`）施加旋转 (`rotation`) 或缩放 (`scale`) 动画时：
 
 - **⚠️ 严禁使用** CSS `transformOrigin: "90px 200px"` 属性：因为 CSS 像素坐标会以元素自身的包围盒 (Bounding Box) 左上角为原点进行二次偏移，导致旋转中心错位到胸口或体外，出现**手臂断裂/脱臼现象**。
-- **✅ 强制使用** GSAP 专属属性 `svgOrigin: "X Y"`：直接传入该节点在全局 `viewBox` 画布中的绝对关节点坐标（例如左臂肩膀 `svgOrigin: "90 200"`，右臂肩膀 `svgOrigin: "210 200"`），确保旋转轴心牢固锁定在关节处，动画自然流畅不脱节。
+- **✅ 强制使用** GSAP 专属属性 `svgOrigin: "X Y"`：直接传入该节点在全局 `viewBox` 画布中的绝对关节点坐标（例如左臂肩膀 `svgOrigin: "90 205"`，右臂肩膀 `svgOrigin: "210 205"`，右腿髋关节 `svgOrigin: "180 300"`），确保旋转轴心牢固锁定在关节处，动画自然流畅不脱节。
 
 ```javascript
 // ✅ 正确写法：锁定 SVG viewBox 坐标系中的关节点
-gsap.set("#mascot-arm-left", { svgOrigin: "90 200", rotation: 0 });
-gsap.set("#mascot-arm-right", { svgOrigin: "210 200", rotation: 0 });
+gsap.set("#mascot-arm-left", { svgOrigin: "90 205", rotation: 0 });
+gsap.set("#mascot-arm-right", { svgOrigin: "210 205", rotation: 0 });
+gsap.set("#mascot-leg-left", { svgOrigin: "120 300", rotation: 0 });
+gsap.set("#mascot-leg-right", { svgOrigin: "180 300", rotation: 0 });
 gsap.set("#mascot-head", { svgOrigin: "150 160", rotation: 0 });
 ```
 
