@@ -8,6 +8,7 @@ Uses scene-by-scene Edge-TTS generation with exponential retry and audio concate
 import sys
 import json
 import os
+import re
 import argparse
 import asyncio
 import time
@@ -41,7 +42,18 @@ def format_srt_timestamp(seconds):
     millis = int(round((seconds - int(seconds)) * 1000))
     return f"{hrs:02d}:{mins:02d}:{secs:02d},{millis:03d}"
 
-import re
+
+def strip_ssml(text):
+    """Strips SSML/XML tags from text, returning plain text for subtitles and JSON output.
+
+    When voiceover fields contain SSML markup for polyphone disambiguation (e.g.,
+    <phoneme alphabet='sapi' ph='hang2'>行</phoneme>), the raw SSML must be passed
+    to TTS but must NOT appear in subtitle files or timeline JSON.
+    Edge-TTS SentenceBoundary events already return clean text, so this function is
+    mainly needed for the fallback path and for the `text` fields in output JSON.
+    """
+    return re.sub(r'<[^>]+>', '', text).strip()
+
 
 def format_ass_timestamp(seconds):
     """Converts seconds into ASS timestamp format H:MM:SS.cc"""
@@ -191,7 +203,10 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
 
     for idx, unit in enumerate(units):
         unit_id = unit.get("unit_id", f"Unit {idx+1:02d}")
-        text = unit.get("voiceover", "").strip()
+        # tts_text: raw voiceover (may contain SSML tags for polyphone disambiguation)
+        # plain_text: SSML-stripped version used for subtitles and JSON output
+        tts_text = unit.get("voiceover", "").strip()
+        plain_text = strip_ssml(tts_text)
         desired_dur = float(unit.get("duration_seconds", 5))
         
         unit_mp3_filename = f"unit_{idx+1:02d}.mp3"
@@ -200,9 +215,9 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
         # Try generating real TTS for unit
         success = False
         boundaries = []
-        if provider == "edge_tts" and text:
+        if provider == "edge_tts" and tts_text:
             try:
-                success, boundaries = asyncio.run(generate_single_unit_tts(text, unit_mp3_path, voice))
+                success, boundaries = asyncio.run(generate_single_unit_tts(tts_text, unit_mp3_path, voice))
                 time.sleep(0.5) # Gentle pause between websocket connections
             except Exception as e:
                 print(f"Unit {idx+1} TTS Error: {e}")
@@ -233,14 +248,15 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
                 clauses = split_long_sentence(b_text, g_start, g_end, max_len=18)
                 unit_sub_items.extend(clauses)
         else:
-            clauses = split_long_sentence(text, start_time, end_time, max_len=18)
+            # Fallback: use plain_text (SSML stripped) to avoid tags leaking into subtitles
+            clauses = split_long_sentence(plain_text, start_time, end_time, max_len=18)
             unit_sub_items.extend(clauses)
 
         all_srt_entries.extend(unit_sub_items)
 
         timeline.append({
             "unit_id": unit_id,
-            "text": text,
+            "text": plain_text,  # SSML stripped: subtitle/JSON consumers expect plain text
             "start_seconds": round(start_time, 3),
             "end_seconds": round(end_time, 3),
             "duration_seconds": round(actual_dur, 3),
