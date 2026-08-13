@@ -45,13 +45,20 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 1. 遍历每个单元 `unit_id`，提取 `duration_seconds`、`voiceover`、`visual_prompt` 及 `ip_action`。
 2. 将 `ip_action` 深度推演为具象的 3 幕动态动作链 (Act 1 ➔ Act 2 ➔ Act 3)，并梳理**画面元素清单**与**时间轴关键帧轨迹**，显式绑定特定的 **Physical Action Recipe**（如 `[Action Recipe: PULL_DRAG]`）。
 
-### 步骤三：创建独立视频单元工作区并落盘 HyperFrames BRIEF.md
+### 步骤三：创建独立视频单元工作区、初始化 HyperFrames 项目并落盘 BRIEF.md
 针对每个视频单元 `XX`（如 `01`, `02` ...）：
-1. 创建目录 `./<article-slug>/assets/video/unit_XX/` 与 `./<article-slug>/assets/video/unit_XX/public/`。
-2. 复制/生成矢量 IP 资产到 `./<article-slug>/assets/video/unit_XX/public/mascot.svg`。
-3. 存盘写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`。在 `## Intent` 中必须详尽列出**画面元素清单**、**带时间戳的 3 幕动作轨迹**及 **IP 节点与道具互动细节（含 GSAP Action Recipe 绑定）**。Agent 在编写 `BRIEF.md` 时，必须直接参考并遵循 HyperFrames 官方最新的规范与契约链接：
-   - 格式规范：https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/references/brief-format.md
-   - 字段契约：https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/references/brief-contract.md
+1. 创建目录 `./<article-slug>/assets/video/unit_XX/`。
+2. **初始化 HyperFrames 项目（必须在写入 BRIEF.md 之前执行）**：在 `unit_XX/` 目录下执行以下命令，生成 `hyperframes.json` 与 `package.json`，使其成为合法的 HyperFrames 项目：
+   ```bash
+   npx hyperframes init "./<article-slug>/assets/video/unit_XX" --non-interactive --example=blank
+   ```
+   > ⚠️ `init` 要求目标目录为空或不存在，因此必须在拷贝 `public/mascot.svg` 和写入 `BRIEF.md` **之前**执行。
+3. 创建 `public/` 子目录并复制/生成矢量 IP 资产到 `./<article-slug>/assets/video/unit_XX/public/mascot.svg`。
+4. **⚠️ 强制前置读取规范（写入 BRIEF.md 之前必须完成）**：使用 `view_file` 依次读取项目根目录下 HyperFrames 官方的以下两份规范文件，理解 BRIEF.md 的完整结构与字段语义后，方可开始编写：
+   - 格式规范：`.agents/skills/hyperframes-core/references/brief-format.md`（定义 BRIEF.md 的 YAML Frontmatter 字段清单、Body 四板块结构 `## Intent` / `## Assets` / `## Customizations` / `## Notes`、生命周期规则）
+   - 字段契约：`.agents/skills/hyperframes-core/references/brief-contract.md`（定义 `flow` / `storyboard` / `mode` 运行形态派生规则、`message` / `destination` / `aspect` / `length` / `angle` 等共享字段的枚举值与语义）
+5. 存盘写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`。**严格按照上述两份规范**填写 YAML Frontmatter（必须包含 `workflow`、`flow`、`storyboard`、`message`、`length`、`aspect` 等字段）与 Body 正文。在 `## Intent` 中必须详尽列出**画面元素清单**、**带时间戳的 3 幕动作轨迹**及 **IP 节点与道具互动细节（含 GSAP Action Recipe 绑定）**。
+   - **强制写入 `## Assets` 板块**：声明 `public/mascot.svg` 矢量 IP 资产。
    - **强制写入 `## Notes` 规程**：为确保下游 HyperFrames 官方 SubAgent 读取 `BRIEF.md` 时遵循正确的矢量关节动画机制，`BRIEF.md` 的 `## Notes` 板块中必须包含以下说明：
      > `- SVG Mascot Joint Animation: When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. svgOrigin: "90 205"), NEVER use CSS transformOrigin: "px px", to prevent arm dislocation.`
 
@@ -59,6 +66,8 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 
 ## 交付产物
 
+- `./<article-slug>/assets/video/unit_01/hyperframes.json` ~ `unit_N/hyperframes.json` (HyperFrames 项目配置)
+- `./<article-slug>/assets/video/unit_01/package.json` ~ `unit_N/package.json` (锁定 HyperFrames CLI 版本)
 - `./<article-slug>/assets/video/unit_01/BRIEF.md` ~ `unit_N/BRIEF.md` (HyperFrames 官方标准 BRIEF 契约)
 - `./<article-slug>/assets/video/unit_01/public/mascot.svg` ~ `unit_N/public/mascot.svg` (按节点契约规范生成的矢量 IP 资产)
 
@@ -66,8 +75,8 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 
 ## 关联参考规范
 
-- [HyperFrames 官方 BRIEF 格式规范](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/references/brief-format.md)：`BRIEF.md` YAML Frontmatter 与 Body 结构定义。
-- [HyperFrames 官方 BRIEF 字段契约](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/references/brief-contract.md)：`BRIEF.md` 字段枚举与模式派生定义。
+- `.agents/skills/hyperframes-core/references/brief-format.md`：`BRIEF.md` YAML Frontmatter 与 Body 结构定义（HyperFrames 官方源文件，动态读取以保持最新）。
+- `.agents/skills/hyperframes-core/references/brief-contract.md`：`BRIEF.md` 字段枚举与模式派生定义（HyperFrames 官方源文件，动态读取以保持最新）。
 - [`references/character_ip.md`](references/character_ip.md)：IP Mascot 视觉形象（支持短路路由加载自定义 IP，默认小智）规范说明。
 - [`references/mascot_svg_contract.md`](references/mascot_svg_contract.md)：IP Mascot 矢量节点契约规范说明（指导生成下游 GSAP 可驱动的命名节点）。
 - [`references/action_recipes.md`](references/action_recipes.md)：IP Mascot GSAP 物理动作范例库（提供推、拉、拖、踢、操作阀门的真实动作模式）。
