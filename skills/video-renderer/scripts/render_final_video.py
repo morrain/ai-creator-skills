@@ -41,6 +41,18 @@ def find_first_existing(project_dir, candidates):
             return full
     return None
 
+def get_best_h264_encoder():
+    """Detects if macOS h264_videotoolbox hardware encoder is available, falls back to libx264."""
+    try:
+        res = subprocess.run(['ffmpeg', '-encoders'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if 'h264_videotoolbox' in res.stdout:
+            print("[Video Renderer] Detected macOS Hardware Acceleration (h264_videotoolbox). Enabling VideoToolbox GPU Encoder!")
+            return ['-c:v', 'h264_videotoolbox', '-b:v', '6000k', '-pix_fmt', 'yuv420p', '-r', '30']
+    except Exception:
+        pass
+    print("[Video Renderer] Using libx264 CPU Encoder.")
+    return ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'fast', '-r', '30']
+
 def main():
     parser = argparse.ArgumentParser(description="Concat scenes and mux audio via FFmpeg")
     parser.add_argument('--project-dir', required=True, help="Path to the project assets/video directory")
@@ -241,7 +253,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         else:
             sub_filter = f"subtitles=filename={sub_rel}:force_style='PlayResX=1920,PlayResY=1080,FontSize=36,FontName=PingFang SC,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,MarginV=54,MarginL=120,MarginR=120,WrapStyle=0'"
         print(f"[Video Renderer] Burning subtitles from {sub_rel}...")
-        vcodec_args = ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'fast']
+        vcodec_args = get_best_h264_encoder()
         vf_args = ['-vf', sub_filter]
     else:
         vcodec_args = ['-c:v', 'copy']
@@ -264,7 +276,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             '-map', '0:v',
             '-map', '[aout]',
         ] + vcodec_args + [
-            '-c:a', 'aac', '-b:a', '192k',
+            '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
             '-shortest',
             final_output
         ]
@@ -279,7 +291,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             '-map', '0:v',
             '-map', '1:a',
         ] + vcodec_args + [
-            '-c:a', 'aac', '-b:a', '192k',
+            '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
             '-shortest',
             final_output
         ]

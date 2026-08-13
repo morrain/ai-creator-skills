@@ -17,12 +17,12 @@ description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本�
    - **模式 2 (独立知识主题创作 `standalone_topic`)**：基于输入的知识主题，自动规划从引钩到原理结语的 0 到 1 讲解剧本。
 2. **四阶段交互与人工卡点 (Four-Stage Human Gate Protocol)**：
    - **阶段一 (剧本提炼与盲审卡点)**：生成 4 轨 `assets/video/video_script.json` 剧本草案，经 SubAgent 盲审打回修正通过后，全量呈现剧本文本，**显式暂停等待用户回复 `[通过/修改]`**。
-   - **阶段二 (视频单元需求构建与试听预览卡点)**：调度 `video-storyboard-designer` 推演各视频单元 3 幕动作链，在 `./<article-slug>/assets/video/unit_XX/` 输出遵循 HyperFrames 官方 [`brief-format.md`](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/references/brief-format.md) 规范的 `BRIEF.md` 与矢量 IP `public/mascot.svg`；调度 `voiceover-generator` 生成完整试听音频 `assets/video/audio/voiceover.mp3` 与时间轴 `assets/video/audio_meta.json`，呈现预览信息，**等待用户显式发送“开始渲染视频”指令**。
-   - **阶段三 (HyperFrames 官方 Skill SubAgent 独立单元串行制作与人工审核卡点)**：按顺序遍历每个视频单元目录，通过 `invoke_subagent` 派发独立 SubAgent 唤起 `/hyperframes` 主控入口技能，彻底隔离上下文干涉；每个 SubAgent 压制完成单元视频后，**显式暂停呈报单元预览，等待用户回复 `[通过]` 后方才启动下一个视频单元的 SubAgent 制作；若不符合要求，修改 `BRIEF.md` 后回复 `[重新生成 unit_XX]`**。
-   - **阶段四 (FFmpeg 跨单元视频无损拼接与 Sidechain Audio Ducking)**：所有单元确认通过后，外层 `video-renderer` 遍历每个视频单元目录获取 HyperFrames 生成的视频片段，调用 FFmpeg 执行秒级无损拼接并应用 Sidechain Audio Ducking，导出最终 1920x1080 30fps 的 `video.mp4` 成果（根目录）。
+   - **阶段二 (TTS 口播生成、时长反向契约锁定与 BRIEF.md 构建)**：首先调度 `voiceover-generator` 导出真实 TTS 口播音频，准确获取各单元口播时长 $A_i$；接着调度 `video-storyboard-designer` 写入 `BRIEF.md`（**强行将口播真实时长注入契约 `length: A_i + 0.3s`**），保证 HyperFrames GSAP 组帧设计从源头匹配口播速度；呈现预览信息，**等待用户显式发送“开始渲染视频”指令**。
+   - **阶段三 (HyperFrames 官方 Skill SubAgent 单元制作与双模式卡点)**：支持 **【逐单元审核模式】** 或 **【批次/全自动渲染模式】**。通过 `invoke_subagent` 派发独立 SubAgent 唤起 `/hyperframes` 主控入口技能，彻底隔离上下文干涉。全自动模式下自动连续渲染全部单元，免去大长视频频繁中断回复的交互摩擦。
+   - **阶段四 (FFmpeg 硬件加速拼接、流规范化与 Sidechain Audio Ducking)**：外层 `video-renderer` 自动优先调起 macOS `h264_videotoolbox` 硬件加速编码器，规范化音视频采样流并执行无损拼接与 Sidechain Audio Ducking，导出最终 1920x1080 30fps 的 `video.mp4` 成果（根目录）。
 
-3. **自进化规则闭环 (`/workflow-learn`)**：
-   - 支持主编对剧本口播词、分镜 Prompt 进行人工修改后，回复 `/workflow-learn` 提炼偏好规则沉淀至 `./learnings/video_script.md`，实现盲审规程自进化。
+3. **双轨自进化规则闭环 (`/workflow-learn`)**：
+   - 支持主编对剧本口播词或分镜视觉效果修改后，回复 `/workflow-learn video_script`（提炼文案规程）或 `/workflow-learn video_storyboard`（提炼动画视觉规程），沉淀至 `./learnings/`。
 
 ---
 
@@ -45,56 +45,54 @@ description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本�
 5. **阶段一人工 Confirm 卡点提示**：
    - **暂停并等待确认**：
      > 💡 **主编审阅与自进化提示**：
-     > 1. 剧本满意请回复 **`[通过]`** 或 **`[继续]`**，系统将生成视频单元需求与试听音频。
+     > 1. 剧本满意请回复 **`[通过]`** 或 **`[继续]`**，系统将生成 TTS 配音与视频单元契约。
      > 2. 如对剧本字句进行了人工修饰，请回复 **`/workflow-learn video_script`** 提炼您对视频脚本的偏好规程！
 
 ---
 
-### 阶段二：视频单元需求构建、TTS 音频生成与 HyperFrames 契约落盘
+### 阶段二：TTS 音频生成、时长反向契约锁定与 HyperFrames BRIEF.md 落盘
 
 1. **读取剧本定稿与插图继承**：
    - 用户确认 `[通过]` 后，读取 `./<article-slug>/assets/video/video_script.json`。
-2. **调度原子技能 `voiceover-generator` 生成全局音频与音频时间轴**：
-   - 提取 `voiceover` 文案，调用 Edge-TTS (音色 `zh-CN-YunxiNeural`) 导出完整配音音频 `./<article-slug>/assets/video/audio/voiceover.mp3` 与官方标准字幕时间轴 `./<article-slug>/assets/video/audio_meta.json` 及 `SCRIPT.md`。计算各视频单元的精准口播时长 `target_duration`。
-3. **调度原子技能 `video-storyboard-designer` 构建视频单元工作区与 HyperFrames BRIEF.md 契约**：
+2. **调度原子技能 `voiceover-generator` 生成 TTS 音频与精确时间轴（先生成）**：
+   - 提取 `voiceover` 文案，调用 Edge-TTS (音色 `zh-CN-YunxiNeural`) 导出完整配音音频 `./<article-slug>/assets/video/audio/voiceover.mp3` 与字幕时间轴 `./<article-slug>/assets/video/audio/timestamps.json`。
+   - 精确计算出各视频单元的**实际口播时长 $A_i$**。
+3. **调度原子技能 `video-storyboard-designer` 反向注入口播时长并构建 BRIEF.md 契约**：
    - 扫描 `./<article-slug>/assets/illustration_*.md`（若存在），提取静态物理隐喻。
    - 将 `video_script.json` 拆解为 $N$ 个独立视频单元（`unit_01`, `unit_02`, ...），在 `./<article-slug>/assets/video/unit_XX/` 下建立独立工作区。
-   - 针对每个视频单元，写入符合 HyperFrames 官方标准规范的 `./<article-slug>/assets/video/unit_XX/BRIEF.md`（包含单元核心 Message、单元内分镜设计与 3 幕动态动作链 Visual Prompt、口播时长卡点 `length: X.Xs`），并按 `mascot_svg_contract.md` 节点契约规范在各单元目录下同步落盘矢量 IP 资产 `./<article-slug>/assets/video/unit_XX/public/mascot.svg`。
+   - 针对每个视频单元，写入符合 HyperFrames 官方标准规范的 `./<article-slug>/assets/video/unit_XX/BRIEF.md`。
+   - **关键时长契约注入**：显式将该单元的实际 TTS 时长注入契约中 `length: max(A_i + 0.3s, 4.0s)`，确保下一步 HyperFrames GSAP 动画构建时天然匹配口播长度。按契约落盘矢量 IP 资产 `./<article-slug>/assets/video/unit_XX/public/mascot.svg`。
 4. **呈报预览与阶段二 Confirm 卡点提示**：
    - 在对话框呈现各视频单元 3 幕动作链摘要及试听音频生成信息。
    - **暂停并等待显式渲染指令**：
      > 💡 **视频单元预览与渲染确认提示**：
-     > 1. 请预览视频单元动作链与音轨试听。确认满意请在对话框显式发送 **“开始渲染视频”**，系统将调度 HyperFrames 官方技能与 FFmpeg 执行单元制作与音频混流！
-     > 2. 如需微调单元动作链或 Prompt，可在修改后回复 **`[更新单元]`**。
+     > 1. 回复 **“开始渲染视频”**：开启【单单元逐个审核模式】（每单元渲染后暂停确认）。
+     > 2. 回复 **“开始全自动渲染”**：开启【全自动批次渲染模式】（自动连续渲染全部单元后一次性呈报）。
 
 ---
 
-### 阶段三：HyperFrames 官方 Skill SubAgent 独立单元制作与串行人工审核卡点
+### 阶段三：HyperFrames 官方 Skill SubAgent 独立单元制作与双模式渲染
 
 1. **触发显式渲染指令**：
-   - 收到用户回复 **“开始渲染视频”**。
-2. **串行遍历并派发 SubAgent 制作各视频单元 MP4 片段**：
-   - 顺序遍历 `./<article-slug>/assets/video/unit_XX/` 目录（当前处理单元 `unit_XX`）：
-     - 主 Orchestrator 显式调用 `invoke_subagent` 启动独立的 `unit-worker` SubAgent，彻底隔离上下文与 DOM/GSAP 逻辑干扰。
+   - 收到用户回复 **“开始渲染视频”** 或 **“开始全自动渲染”**。
+2. **派发 SubAgent 制作各视频单元 MP4 片段**：
+   - 遍历 `./<article-slug>/assets/video/unit_XX/` 目录：
+     - 主 Orchestrator 显式调用 `invoke_subagent` 启动独立的 `unit-worker` SubAgent，隔离上下文与 DOM/GSAP 逻辑干扰。
      - SubAgent 在单元工程目录下装载 HyperFrames 官方主控入口 Skill (`/hyperframes`)。
-     - `/hyperframes` 读取单元 `BRIEF.md` 与 `public/mascot.svg`，自主根据需求匹配并进入相应的工作流（如 `/faceless-explainer`），独立执行单元内分镜设计、GSAP HTML 编写（`compositions/frames/NN-*.html`）、`npx hyperframes check` 校验，并由 HyperFrames 内部自主压制导出该单元的 1080P 30fps H.264 视频片段。
-3. **单元视频人工审核与串行卡点闭环 (Per-Unit Human Review & Sequential Gate)**：
-   - SubAgent 运行完成返回后，主 Orchestrator 在对话框呈报该单元 HyperFrames 生成的视频片段预览信息。
-   - **显式暂停并等待确认（未确认前禁止启动下一个单元的 SubAgent）**：
-     > 💡 **单元视频人工审核提示 (串行阻塞卡点)**：
-     > 1. 如单元 `unit_XX` 视频符合要求，请回复 **`[通过]`**，系统将启动下一个单元 (`unit_XX+1`) 的 SubAgent 制作；若为最后一个单元，将进入阶段四合并。
-     > 2. 如该单元画面或动作不符合要求，请修改该单元 `./<article-slug>/assets/video/unit_XX/BRIEF.md` 后回复 **`[重新生成 unit_XX]`**，系统将再次派发 SubAgent 重新调起 `/hyperframes` 重新制作该单元！
+     - `/hyperframes` 读取单元 `BRIEF.md`（此时 `length` 已精准匹配口播）与 `public/mascot.svg`，独立执行分镜设计、GSAP HTML 编写（`compositions/frames/NN-*.html`）、`npx hyperframes check` 校验，并导出 1080P 30fps 视频片段。
+3. **根据模式执行审核或连续渲染**：
+   - **逐单元审核模式**：单单元渲染完成后暂停，等待用户回复 `[通过]` 后启动下一个；
+   - **全自动/批次渲染模式**：SubAgent 完成后自动开启下一个单元渲染，全部完成后统一提示进入阶段四合并。
 
 ---
 
-### 阶段四：FFmpeg 跨单元无损合并与 Sidechain Audio Ducking
+### 阶段四：FFmpeg 硬件加速拼接、流规范化与 Sidechain Audio Ducking
 
 1. **遍历单元目录获取 HyperFrames 生成视频**：
-   - 所有视频单元审核 `[通过]` 后，遍历各个 `./<article-slug>/assets/video/unit_XX/` 单元目录，获取 HyperFrames 在各单元内生成的视频文件。
-2. **调度原子技能 `video-renderer` 执行 FFmpeg 无损合并与音频 Ducking**：
-   - 运行 FFmpeg 快速无损拼接 (`-c:v copy`) 所有单元视频片段，混入全局配音 `audio/voiceover.mp3` 与背景音乐 `bgm.mp3`（自动开启 Sidechain Audio Ducking 动态闪避）。
-3. **落盘 MP4 最终交付**：
-   - 导出最终视频 `./<article-slug>/video.mp4` 与中间清单 `./<article-slug>/assets/video/render_manifest.json`。
-4. **呈报成果与自进化提示**：
-   - 呈报视频完成信息及本地播放链接（[`./<article-slug>/video.mp4`](./<article-slug>/video.mp4)）。
+   - 所有视频单元制作完成（或审核通过）后，遍历各个 `./<article-slug>/assets/video/unit_XX/` 单元目录，获取 HyperFrames 生成的视频文件。
+2. **调度原子技能 `video-renderer` 执行 FFmpeg 硬件加速合并与音频 Ducking**：
+   - 运行 `video-renderer`（自动启用 macOS `h264_videotoolbox` 硬件加速编码，重采样规范化音视频流），混入全局配音与背景音乐（ Sidechain Audio Ducking），压制 `\an8\pos(960,960)` 顶基线硬锁定字幕。
+3. **落盘 MP4 最终交付与自进化提示**：
+   - 导出最终视频 `./<article-slug>/video.mp4`，呈报视频完成信息及本地播放链接（[`./<article-slug>/video.mp4`](./<article-slug>/video.mp4)）。
+   - **视觉规程自进化提示**：如对某些单元的视觉呈现进行了人工修正，回复 **`/workflow-learn video_storyboard`** 沉淀动画视觉规程！
 
