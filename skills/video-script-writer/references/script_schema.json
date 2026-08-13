@@ -54,8 +54,7 @@
           "duration_seconds",
           "voiceover",
           "visual_prompt",
-          "ip_action",
-          "on_screen_elements"
+          "ip_action"
         ],
         "properties": {
           "unit_id": {
@@ -84,26 +83,21 @@
           },
           "on_screen_elements": {
             "type": "object",
-            "required": [
-              "title_card",
-              "highlight_keywords",
-              "graphics_hint"
-            ],
             "properties": {
               "title_card": {
                 "type": "string",
-                "description": "On-screen heading or scene title"
+                "description": "Optional scene title (typically only for Unit 01 Hook or major section breaks)"
               },
               "highlight_keywords": {
                 "type": "array",
                 "items": {
                   "type": "string"
                 },
-                "description": "Keywords to highlight on screen"
+                "description": "Optional keywords to highlight on screen"
               },
               "graphics_hint": {
                 "type": "string",
-                "description": "UI component/diagram hint for Remotion"
+                "description": "Optional UI component/diagram hint"
               }
             }
           }

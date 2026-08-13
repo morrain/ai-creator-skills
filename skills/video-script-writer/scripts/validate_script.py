@@ -43,9 +43,8 @@ def validate_script(script_path, schema_path=None):
 
     req_unit_fields = [
         "unit_id", "duration_seconds", "voiceover",
-        "visual_prompt", "ip_action", "on_screen_elements"
+        "visual_prompt", "ip_action"
     ]
-    req_elem_fields = ["title_card", "highlight_keywords", "graphics_hint"]
 
     for idx, unit in enumerate(data["units"]):
         if not isinstance(unit, dict):
@@ -55,16 +54,13 @@ def validate_script(script_path, schema_path=None):
             if f not in unit:
                 return False, f"Unit {idx+1} ({unit.get('unit_id', 'unknown')}) missing required field: '{f}'"
 
-        elems = unit["on_screen_elements"]
-        if not isinstance(elems, dict):
-            return False, f"Unit {idx+1} 'on_screen_elements' must be an object"
-
-        for ef in req_elem_fields:
-            if ef not in elems:
-                return False, f"Unit {idx+1} 'on_screen_elements' missing field: '{ef}'"
-
-        if not isinstance(elems["highlight_keywords"], list):
-            return False, f"Unit {idx+1} 'highlight_keywords' must be an array"
+        if "on_screen_elements" in unit and unit["on_screen_elements"] is not None:
+            elems = unit["on_screen_elements"]
+            if not isinstance(elems, dict):
+                return False, f"Unit {idx+1} 'on_screen_elements' must be an object"
+            if "highlight_keywords" in elems and elems["highlight_keywords"] is not None:
+                if not isinstance(elems["highlight_keywords"], list):
+                    return False, f"Unit {idx+1} 'highlight_keywords' must be an array"
 
     return True, "Script validation successful! Passed all 4-track schema gates."
 

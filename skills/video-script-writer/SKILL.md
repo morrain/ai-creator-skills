@@ -19,7 +19,7 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
      - `time_code` & `duration_seconds`: 单元编号与精准预估时长（单位：秒）。
      - `voiceover`: 极具知识博主/科普解说听感的逐字口播文案。
      - `visual_prompt & ip_action`: 画面背景描述与 IP Mascot（IP 角色）的具体物理动作指示。
-     - `on_screen_elements`: 画面标题花字 `title_card`、唱词高亮词 `highlight_keywords` 及 HyperFrames 视觉组件提示 `graphics_hint`。
+     - `on_screen_elements` (可选与克制原则): 画面标题花字 `title_card`（**通常仅在 Unit 01 Hook 开篇或重大章节转折时设置，严禁在每个单元机械堆叠**）、唱词高亮词 `highlight_keywords`（可选，非必要不堆砌）及视觉组件提示 `graphics_hint`（可选）。主要视觉布局与节奏交由下游 `video-storyboard-designer` 灵活排布。
 3. **双模式支持 (Dual-Mode Support)**：
    - **模式 1 (文章衍生 `article_derived`)**：分析长文的正文脉络与金句，保留文章插图中已确立的物理隐喻方向，将其重构为流畅的视频单元。
    - **模式 2 (独立主题 `standalone_topic`)**：直接根据输入的知识主题，自动规划引钩 (Hook)、原理解析与总结，生成 0 到 1 的讲解脚本。

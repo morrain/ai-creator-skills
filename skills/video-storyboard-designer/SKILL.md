@@ -19,6 +19,10 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 3. **3 幕动态动作链深度推演 (3-Act Motion Chain)**：
    - 将静态场景解耦并演化为 3 幕连续的戏剧性动态描述：
        - **IP 节点与道具互动指引 (Mascot Joint & Prop Interaction)**：明确指出调用的 SVG 节点 ID（`#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-prop-slot`）及绑定的物理动作 Recipe 模式（引自 [`references/action_recipes.md`](references/action_recipes.md)，如 `[Action Recipe: PULL_DRAG]`, `[Action Recipe: PUSH_PRESS]`, `[Action Recipe: KICK_STEP]`, `[Action Recipe: OPERATE_LEVER]`）。严禁生成单纯“摇头晃脑”的无隐喻描述！
+4. **视觉克制与呼吸感 (Visual Restraint & Layout Rhythm)**：
+   - 分镜设计师拥有画面排版与视觉元素的最高决策权。并非每个单元都必须添加标题卡片或唱词高亮词。
+   - **标题卡片裁剪原则**：通常仅在 Unit 01 开篇 Hook 或重大章节转换单元放置 `title_card`；中间原理解析单元一律省略标题卡片，保持 16:9 纯白画布干净连贯，避免每个单元机械悬挂标题导致的死板与重复感。
+   - 保持画面留白，将视觉焦点集中于 IP Mascot 的物理动作与关键逻辑构件。
 5. **视频单元隔离与 HyperFrames 原生 BRIEF.md 契约**：
    - 每个视频单元为独立的构建空间 `./<article-slug>/assets/video/unit_XX/`。
    - 单元内 `BRIEF.md` 包含 YAML Frontmatter（声明 `workflow: faceless-explainer`、`message`、`length` 精准时长卡点、`aspect: 1920x1080`）及 Body 正文（`## Intent` 描述 3 幕动作链与视觉指导、`## Assets` 声明 `public/mascot.svg`）。
