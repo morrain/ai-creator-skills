@@ -1,6 +1,6 @@
 ---
 name: poster-designer
-description: 纯粹的单张手绘海报设计与 Prompt 生成原子技能。接收单点知识文本与指定版式要求，结合 IP Mascot 动态姿态（支持短路路由加载自定义 IP，默认小智）与 10 大经典海报版式库 (references/layouts.md)，输出包含了暖米白纸张 (#FAF6F0)、莫兰迪粉彩配色、3:4 比例、单引号原生中文与去乱码指令的单张海报 Markdown 配置文件。不依赖特定项目路径。
+description: 单张手绘知识海报 Prompt 与配置设计技能。当需要根据知识点与 10 大经典版式生成 3:4 莫兰迪配色海报生图 Prompt 时调用。
 ---
 
 # Poster Designer Skill (`poster-designer`)

@@ -1,6 +1,6 @@
 ---
 name: illustration-designer
-description: 纯粹的单图视觉隐喻与生图提示词设计原子技能。接收单点认知锚点或正文段落，提炼物理动作与低科技物件，搭配IP Mascot 视觉形象（支持短路路由加载自定义 IP，默认小智），生成包含 16:9 纯白背景、黑线质感与原生中文批注的生图 Prompt 设计。不依赖特定项目路径，可独立安装与调用。
+description: 单图认知隐喻与生图 Prompt 设计技能。当需要将正文段落转化为结合 IP Mascot 的 16:9 手绘隐喻图 Prompt 与图注时调用。
 ---
 
 # Illustration Designer Skill (纯粹插图视觉隐喻设计技能)

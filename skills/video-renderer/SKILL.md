@@ -1,6 +1,6 @@
 ---
 name: video-renderer
-description: 基于 FFmpeg 的最终视频合并与混流技能。无损拼接各视频单元片段 (unit_XX.mp4)，混入 Voiceover 和 BGM 轨道，并应用自动音乐闪避 (Audio Ducking)，输出最终 final_video.mp4。
+description: FFmpeg 视频拼接与音频 Ducking 混流技能。当需要将各单元视频片段无损拼接，混入配音与 BGM 并压制硬字幕导出最终 MP4 时调用。
 ---
 
 # Video Renderer (视频最终合成器)

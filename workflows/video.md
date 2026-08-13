@@ -1,7 +1,7 @@
 ---
 name: workflow-video
 command: /讲解视频
-description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本、结合正文插图推演 IP Mascot 3 幕动态动作链、生成 TTS 配音与字幕时间轴、调度 SubAgent 剧本盲审、3 阶段人工 Gate 确认卡点以及基于 HyperFrames 官方 Skills 与 FFmpeg 的无损视频合成导出。
+description: 动画讲解视频全流程生成工作流。当用户发送 /讲解视频 指令、或需要将文章/知识主题转化为带有配音、IP Mascot 动作链与视频渲染的 MP4 时唤起。
 ---
 
 # 🎬 动画讲解视频生成业务工作流 (Explainer Video Business Workflow)
@@ -12,17 +12,15 @@ description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本�
 
 ## 核心设计原则 (Core Principles)
 
-1. **双模式自适应输入 (Dual-Mode Input Handling)**：
-   - **模式 1 (文章转视频 `article_derived`)**：扫描 `./<article-slug>/` 目录，读取正文 Markdown 与 `./assets/illustration_*.md` 认知隐喻资产，继承并延伸 IP Mascot 的物理隐喻动作。
-   - **模式 2 (独立知识主题创作 `standalone_topic`)**：基于输入的知识主题，自动规划从引钩到原理结语的 0 到 1 讲解剧本。
-2. **四阶段交互与人工卡点 (Four-Stage Human Gate Protocol)**：
-   - **阶段一 (剧本提炼与盲审卡点)**：生成 4 轨 `assets/video/video_script.json` 剧本草案，经 SubAgent 盲审打回修正通过后，全量呈现剧本文本，**显式暂停等待用户回复 `[通过/修改]`**。
-   - **阶段二 (TTS 口播生成、时长反向契约锁定与 BRIEF.md 构建)**：首先调度 `voiceover-generator` 导出真实 TTS 口播音频，准确获取各单元口播时长 $A_i$；接着调度 `video-storyboard-designer` 写入 `BRIEF.md`（**强行将口播真实时长注入契约 `length: A_i + 0.3s`**），保证 HyperFrames GSAP 组帧设计从源头匹配口播速度；呈现预览信息，**等待用户显式发送“开始渲染视频”指令**。
-   - **阶段三 (HyperFrames 官方 Skill SubAgent 单元制作与双模式卡点)**：支持 **【逐单元审核模式】** 或 **【批次/全自动渲染模式】**。通过 `invoke_subagent` 派发独立 SubAgent 唤起 `/hyperframes` 主控入口技能，彻底隔离上下文干涉。全自动模式下自动连续渲染全部单元，免去大长视频频繁中断回复的交互摩擦。
-   - **阶段四 (FFmpeg 硬件加速拼接、流规范化与 Sidechain Audio Ducking)**：外层 `video-renderer` 自动优先调起 macOS `h264_videotoolbox` 硬件加速编码器，规范化音视频采样流并执行无损拼接与 Sidechain Audio Ducking，导出最终 1920x1080 30fps 的 `video.mp4` 成果（根目录）。
+> ⚠️ **单一事实源 (Single Source of Truth) 执行约束**：
+> 本板块仅对管道的核心架构与卡点原则进行高层定义。Agent 在实际执行工作流时，**必须且只能以下方【详细工作流步骤】中的具体规程、算法逻辑与 100% 固化的 SubAgent Prompt 模板作为唯一执行依据**，绝对禁止根据高层摘要直接提取指令或自由生成 SubAgent 提示词！
 
+1. **双模式自适应输入 (Dual-Mode Input Handling)**：
+   - 支持文章转视频 (`article_derived`) 与独立知识主题创作 (`standalone_topic`) 双模式自适应流。
+2. **四阶段交互与人工卡点闭环 (Four-Stage Human Gate Protocol)**：
+   - 管道分为 **阶段一 (剧本盲审卡点)** ➔ **阶段二 (TTS 时长反向锁定卡点)** ➔ **阶段三 (SubAgent 单元制作卡点)** ➔ **阶段四 (FFmpeg 硬件加速导出)** 4 个递进阶段。
 3. **双轨自进化规则闭环 (`/workflow-learn`)**：
-   - 支持主编对剧本口播词或分镜视觉效果修改后，回复 `/workflow-learn video_script`（提炼文案规程）或 `/workflow-learn video_storyboard`（提炼动画视觉规程），沉淀至 `./learnings/`。
+   - 支持主编通过 `/workflow-learn video_script` 与 `/workflow-learn video_storyboard` 沉淀动画与文案规程。
 
 ---
 
@@ -96,6 +94,10 @@ description: 动画讲解视频生成业务工作流。负责提炼 4 轨脚本�
        3. 物理隐喻动作绑定 (Action Recipe Execution)：
           - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]` 拖拽发力、`[Action Recipe: PUSH_PRESS]` 蓄力下压、`[Action Recipe: KICK_STEP]` 单腿踢飞、`[Action Recipe: OPERATE_LEVER]` 摇手柄/转阀门、`[Action Recipe: LIFT_DISPLAY]` 托举展示）。
           - **⚠️ 严禁生成仅对 `#mascot-head` 施加微弱旋转的偷懒代码！**
+       4. 动效音与字幕隔离规程 (SFX & No-Subtitles Protocol)：
+          - **🔊 允许添加动作动效音 (SFX 30% Volume Rule)**：允许在 HTML 中为 IP Mascot 核心动作（如按压、拉拽、踢飞、点击等）添加短促动效音，但**音量必须强制限制为 30% (`volume: 0.3` 或 HTML `<audio volume="0.3">`)** 作为背景音，严禁包含口播配音或盖过主配音。
+          - **🚫 严禁读取字幕信息与添加字幕**：绝对禁止读取字幕数据（如 `timestamps.json` / `subtitles.ass`），绝对禁止在 HTML DOM 中创建 `#subtitle-bar` 或添加任何形式的口播字幕。所有字幕由阶段四 FFmpeg 统一在全局压制！
+
        【产物交付】
        完成渲染后，请仅回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4`。
        ```

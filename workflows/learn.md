@@ -1,7 +1,7 @@
 ---
 name: workflow-learn
 command: /workflow-learn
-description: 审稿标准与案例库增量反哺工作流。识别各创作环节的人工修改 Diff 或反馈批注，触发 review_tuner 机制。按需懒加载创建精纯的项目规则增量文件 ./learnings/<phase_id>.md 并外科手术式追加落盘，保持底层 skills 零修改。
+description: 偏好提取与规则自进化反哺工作流。当用户发送 /workflow-learn 指令、或在审核通过/人工修饰后需要将主编偏好沉淀为长期规则时唤起。
 ---
 
 # 🧠 分环节审稿标准与案例库反哺工作流 (Targeted Review Tuner Workflow)

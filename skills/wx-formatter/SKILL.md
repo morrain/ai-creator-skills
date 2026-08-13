@@ -1,6 +1,6 @@
 ---
 name: wx-formatter
-description: 纯粹的微信公众号草稿安全 HTML 排版转换原子技能。接收任意纯文本或 Markdown 文章输入，应用草稿防擦除原生 UI 设计系统 (references/mp_style_design_system.md)，消解 Markdown 表格，注入居中 H2 胶囊、左边框 H3、金句框、行内高亮与插图图注，输出符合 677px 预览视口的原生离线 HTML。不包含长文写作或主题工作区目录搜寻逻辑。
+description: 微信公众号原生 HTML 排版转换技能。当需要将 Markdown 文章转换为符合微信防擦除原生视觉 UI 规范的离线 HTML 时调用。
 ---
 
 # WeChat Off-line HTML Formatter Skill (`wx-formatter`)

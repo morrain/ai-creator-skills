@@ -149,7 +149,7 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
 
     for attempt in range(max_retries):
         try:
-            boundaries = await asyncio.wait_for(_do_tts(), timeout=3.0)
+            boundaries = await asyncio.wait_for(_do_tts(), timeout=15.0)
             if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 1000:
                 return True, boundaries
         except Exception as e:

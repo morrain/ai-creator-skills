@@ -1,7 +1,7 @@
 ---
 name: workflow-poster
 command: /海报
-description: 图文海报派生业务工作流。提取海报蓝图与版式映射，调度 poster-designer 并发生成海报配置，合成纯文本社媒文案 poster_post.md，并执行按需延迟生图。
+description: 知识总结与社媒海报生成工作流。当用户发送 /知识海报 指令、或需要将长文/知识点转化为多张手绘风格海报与社媒文案时唤起。
 ---
 
 # 🖼️ 图文海报派生业务工作流 (Poster Business Workflow)

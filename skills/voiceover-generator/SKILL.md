@@ -1,6 +1,6 @@
 ---
 name: voiceover-generator
-description: 纯粹的 TTS 极速语音生成与音画字幕时间轴提炼原子技能。接收 4 轨讲解剧本 video_script.json，默认使用免 Key 高品质 Edge-TTS (zh-CN-YunxiNeural) 导出全量口播配音 .mp3，并自动对齐生成带有句级时间戳的 .srt 字幕与 timestamps.json 时间轴。支持拓展商业 API。
+description: TTS 配音生成与字幕时间轴提炼技能。当需要基于视频剧本生成语音配音文件（.mp3）及带有时间戳的字幕文件（.srt/.ass/timestamps.json）时调用。
 ---
 
 # Voiceover Generator Skill (极速配音与字幕时间轴生成技能)

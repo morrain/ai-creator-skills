@@ -1,6 +1,6 @@
 ---
 name: video-storyboard-designer
-description: 视频单元分镜与 3 幕动态动作链需求构建技能。接收 4 轨讲解剧本 video_script.json 与正文插图隐喻，将长视频解耦为独立视频单元 (unit_XX)，推演 3 幕动态动作链 (Hook -> Core Action -> Delivery)，输出遵循 HyperFrames 官方 BRIEF 规范的 BRIEF.md 契约与 public/mascot.svg 矢量 IP 资产。
+description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将 4 轨剧本解耦为独立视频单元、推演 3 幕动作链并落盘 BRIEF.md 契约时调用。
 ---
 
 # Video Storyboard & Unit Designer Skill (视频单元分镜与 3 幕动作链构建技能)

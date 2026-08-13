@@ -1,7 +1,7 @@
 ---
 name: workflow-article
 command: /写文章
-description: 文章创作业务工作流。负责前置联网检索、主题工作区管理、调度 article-writer 拟定大纲与展开正文、两阶段人工卡点与 SubAgent 盲审闭环。
+description: 深入探讨类长文写作工作流。当用户发送 /长文 指令、要求基于知识主题或参考资料撰写深度文章、或进行长文创作时唤起。
 ---
 
 # 📝 文章创作业务工作流 (Article Business Workflow)

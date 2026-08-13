@@ -1,6 +1,6 @@
 ---
 name: video-script-writer
-description: 纯粹的 4 轨动画讲解视频剧本提炼与格式化原子技能。接收文章 Markdown 或知识主题，按 4 轨规范（时间轴、口播文案、画面与 IP 动作描述、屏幕花字与组件）输出结构化 video_script.json。支持从长文衍生与独立主题创作双模式，零存盘依赖，纯粹做剧本工程化提炼。
+description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正文或知识主题拆解提炼为包含口播、画面与 IP 动作的 video_script.json 剧本时调用。
 ---
 
 # Video Script Writer Skill (4 轨讲解剧本提炼技能)

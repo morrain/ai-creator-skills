@@ -1,7 +1,7 @@
 ---
 name: workflow-illustrations
 command: /正文插图
-description: 正文插图业务工作流。扫描主题工作区提取认知锚点，调度 illustration-designer 设计双语 Prompt Specs 与配置落盘，并执行按需延迟生图。
+description: 正文认知隐喻插图设计工作流。当用户发送 /文章配图 指令、或需要为已生成的文章批量提炼隐喻插图与生成生图 Prompt 时唤起。
 ---
 
 # 🎨 正文插图业务工作流 (Illustrations Business Workflow)

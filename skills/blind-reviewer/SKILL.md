@@ -1,6 +1,6 @@
 ---
 name: blind-reviewer
-description: 通用自进化盲审引擎原子技能。完全无状态与业务解耦。接收审查目标资产 (target_file)、技能默认基线标准 (default_standards) 及可选的项目进化增量文件 (learnings_file)。若 learnings_file 存在则优先校验项目增量偏好并结合技能基线标准与关联同级文件 (如 anti_patterns.md) 进行综合质检，输出 [PASS] 或包含结构化重写指南的 [REJECT] 诊断报告。
+description: 通用规则盲审与质检引擎原子技能。当需要对剧本、正文、分镜或排版内容进行规范盲审，输出 [PASS] 或包含结构化修改指南的 [REJECT] 报告时调用。
 ---
 
 # Universal Blind Reviewer Skill (`blind-reviewer`)

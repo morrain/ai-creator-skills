@@ -1,7 +1,7 @@
 ---
 name: workflow-weixin
 command: /微信公众号
-description: 微信公众号排版业务工作流。读取主题工作区正文与插图资产，调度 wx-formatter 套用微信草稿防擦除原生视觉 UI 系统，盲审后输出离线 mp_article.html。
+description: 微信公众号富文本排版工作流。当用户发送 /公众号排版 指令、或需要将 Markdown 文章转换为符合微信原生渲染规范的离线 HTML 时唤起。
 ---
 
 # 📱 微信公众号排版业务工作流 (WeChat Business Workflow)
