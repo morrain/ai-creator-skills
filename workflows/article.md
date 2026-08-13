@@ -17,7 +17,10 @@ description: 深入探讨类长文写作工作流。当用户发送 /长文 指�
 1. **两阶段交互与人工卡点 (Two-Stage Human Gate)**：
    - **阶段一**：基于搜索事实由原子 Skill `article-writer` 拟定大纲草案，经 SubAgent 盲审后归档至 `./<article-slug>/outline.md`，呈现全量原文给用户，**显式暂停并卡点等待用户回复 `[通过/修改]`**。
    - **阶段二**：用户确认后，读取 `./<article-slug>/outline.md` 定稿，由原子 Skill `article-writer` 展开纯 Markdown 正文，经 SubAgent 盲审通过后存盘至 `./<article-slug>/<article-slug>.md`。
-2. **主题工作区规范 (ADR-0001)**：
+2. **磁盘文件最高事实源与强制重新读取 (Disk Single Source of Truth Gate)**：
+   - 在进入阶段二生成完整正文前，Agent **必须首先强制显式调用 `view_file` 重新读取磁盘上的大纲源文件 `./<article-slug>/outline.md`**。
+   - **绝对禁止复用对话内存中的大纲旧缓存**，确保完整吸收主编在外部编辑器中对大纲进行的手工修饰与结构微调。
+3. **主题工作区规范**：
    - 提取 H1 标题对应的英文连字符 Slug（`<article-slug>`），全量资产落盘在项目根目录 `./<article-slug>/` 下。
 
 ---
@@ -48,8 +51,8 @@ description: 深入探讨类长文写作工作流。当用户发送 /长文 指�
 
 ### 阶段二：定稿读取、正文展开、SubAgent 盲审与正文交付
 
-1. **读取归档大纲定稿**：
-   - 用户批准后，直接读取 `./<article-slug>/outline.md` 文件（以文件实际内容为准）。
+1. **强制重新读取大纲源文件 (Disk Pre-Read Gate)**：
+   - 用户批准后，Agent **必须首先显式调用 `view_file` 重新读取磁盘上的 `./<article-slug>/outline.md` 文件**（以磁盘最新文件内容为唯一事实源，绝对禁止复用 Memory 里的旧大纲缓存，确保完整包含主编在编辑器中修改的大纲字句）。
 2. **调度原子技能 `article-writer` 展开正文**：
    - 调度 `article-writer`（模式 `mode: full_article`），将 `【撰写指令】` 转化为行文推导与爆款金句，应用呼吸感排版（单段 2-4 行）与富 Markdown 组件（引用卡片、列表、加粗、对比表格）。
 3. **SubAgent 正文盲审闭环**：

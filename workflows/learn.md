@@ -64,7 +64,9 @@ description: 偏好提取与规则自进化反哺工作流。当用户发送 /wo
 
 1. **自动匹配 / 显式识别环节 ID**：
    - 根据被修改/审查资产的文件名自动推断（如 `mp_article.html` ➔ `phase_id: weixin`），或由用户直接传入参数。
-2. **搜集最近一轮审核意见 (Collect Opinions from Latest Review Round)**：
+2. **强制重新读取磁盘文件 (Disk Single Source of Truth)**：
+   - **必须首先显式调用 `view_file` 重新读取磁盘上目标资产的最新内容**。绝对禁止使用 Context 对话记忆中的陈旧缓存，确保捕获主编在外部编辑器中最新保存的手工修改与批注。
+3. **搜集最近一轮审核意见 (Collect Opinions from Latest Review Round)**：
    - 读取该资产在**最近一轮审核**（包括 SubAgent 最近一次盲审打回/通过记录，或主编最新一轮批注与意见）中提出的具体修正要求与问题定位。
    - 仅搜集该**最近一轮**的意见归纳，忽略早期历史轮次。
 
