@@ -155,16 +155,24 @@ def split_long_sentence(text, start_s, end_s, max_len=15):
         curr_t = c_end
     return res
 
-async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=4):
-    """Generates audio for a single video unit with retry logic and captures sentence boundaries"""
+def sanitize_tts_text(text):
+    """Sanitizes text by stripping SSML, special quotes, symbols and non-spoken marks that break Edge-TTS."""
+    t = strip_ssml(text)
+    bad_chars = ['‘', '’', '“', '”', '"', "'", '《', '》', '【', '】', '―', '—', '…', '*', '#', '`']
+    for c in bad_chars:
+        t = t.replace(c, '')
+    return t.strip()
+
+async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=5):
+    """Generates audio for a single video unit with voice fallback, exponential backoff, and strict self-check verification."""
     try:
         import edge_tts
     except ImportError:
         print("ERROR: 'edge-tts' module is not installed! Please install it with 'pip install edge-tts'.", file=sys.stderr)
         return False, []
 
-    async def _do_tts(tts_prompt):
-        communicate = edge_tts.Communicate(tts_prompt, voice)
+    async def _do_tts(tts_prompt, tts_voice):
+        communicate = edge_tts.Communicate(tts_prompt, tts_voice)
         boundaries = []
         with open(output_mp3_path, 'wb') as f:
             async for chunk in communicate.stream():
@@ -176,20 +184,41 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
                     boundaries.append((off_s, off_s + dur_s, chunk["text"].strip()))
         return boundaries
 
-    prompts = [text]
-    cleaned = strip_ssml(text).replace('‘', '').replace('’', '')
-    if cleaned != text:
-        prompts.append(cleaned)
+    cleaned = sanitize_tts_text(text)
+    prompts = [cleaned]
+    if text.strip() != cleaned:
+        prompts.append(text.strip())
+    ultra_clean = re.sub(r'[^\w\s\u4e00-\u9fa5]', '', cleaned)
+    if ultra_clean and ultra_clean not in prompts:
+        prompts.append(ultra_clean)
+
+    # Lock strictly to specified voice to ensure 100% all-unit voice consistency
+    voices = [voice]
 
     for p_idx, prompt in enumerate(prompts):
-        for attempt in range(max_retries):
-            try:
-                boundaries = await asyncio.wait_for(_do_tts(prompt), timeout=30.0)
-                if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 1000:
-                    return True, boundaries
-            except Exception as e:
-                print(f"EdgeTTS Notice (Prompt {p_idx+1}, Attempt {attempt+1}/{max_retries}): {e}")
-                await asyncio.sleep(0.5 * (attempt + 1))
+        for v_idx, current_voice in enumerate(voices):
+            for attempt in range(max_retries):
+                # Clean up stale/corrupt file before retry
+                if os.path.exists(output_mp3_path):
+                    try:
+                        os.remove(output_mp3_path)
+                    except Exception:
+                        pass
+                try:
+                    boundaries = await asyncio.wait_for(_do_tts(prompt, current_voice), timeout=35.0)
+                    # Self-Check Verification Gate: verify file size > 8KB and audio duration > 1.5s
+                    if os.path.exists(output_mp3_path):
+                        f_size = os.path.getsize(output_mp3_path)
+                        f_dur = get_audio_duration(output_mp3_path, fallback_duration=0.0)
+                        if f_size > 8000 and f_dur > 1.5:
+                            print(f"[自检确认通过 ✅] 音频成功生成: {os.path.basename(output_mp3_path)} (音色: {current_voice}, 时长: {f_dur:.2f}s, 大小: {f_size} bytes)")
+                            return True, boundaries
+                        else:
+                            print(f"[自检发现异常 ⚠️] 音频文件效能不足 (size={f_size}, dur={f_dur:.2f}s), 正在重新尝试...", file=sys.stderr)
+                except Exception as e:
+                    print(f"EdgeTTS Notice (Voice {current_voice}, Prompt {p_idx+1}, Attempt {attempt+1}/{max_retries}): {e}", file=sys.stderr)
+                    # Exponential backoff sleep to prevent WebSocket rate limiting
+                    await asyncio.sleep(1.5 * (attempt + 1))
             
     return False, []
 
@@ -263,19 +292,35 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
         if provider == "edge_tts" and tts_text:
             try:
                 success, boundaries = asyncio.run(generate_single_unit_tts(tts_text, unit_mp3_path, voice))
-                time.sleep(0.5) # Gentle pause between websocket connections
+                time.sleep(2.0) # 2.0s pause between units to prevent WebSocket rate limiting
             except Exception as e:
-                print(f"Unit {idx+1} TTS Error: {e}")
+                print(f"Unit {idx+1} TTS Error: {e}", file=sys.stderr)
                 success = False
 
-        if not success:
-            all_tts_passed = False
-            print(f"WARNING: TTS generation failed for Unit {idx+1} ('{unit_id}'). Generating silent fallback MP3.", file=sys.stderr)
-            create_mock_mp3(unit_mp3_path, duration_seconds=desired_dur)
+        # Strict Per-Unit Audio Verification Gate (自检确认门卡)
+        actual_dur = get_audio_duration(unit_mp3_path, fallback_duration=0.0) if os.path.exists(unit_mp3_path) else 0.0
+        f_size = os.path.getsize(unit_mp3_path) if os.path.exists(unit_mp3_path) else 0
+        
+        if not success or f_size < 5000 or actual_dur < 1.0:
+            print(f"[自检发现异常 ⚠️] Unit {idx+1} ('{unit_id}') 音频生成无效 (size={f_size}, dur={actual_dur:.2f}s)。启动 3 秒延迟强制重试...", file=sys.stderr)
+            # Self-check recovery loop: retry with SAME target voice and exponential pause to reset WebSocket rate-limiting
+            for retry_attempt in range(1, 4):
+                time.sleep(3.0 * retry_attempt)
+                print(f"[自检修复尝试 {retry_attempt}/3] 正在使用目标音色 '{voice}' 重新合成 Unit {idx+1}...", file=sys.stderr)
+                try:
+                    success, boundaries = asyncio.run(generate_single_unit_tts(tts_text, unit_mp3_path, voice=voice, max_retries=3))
+                    if success and os.path.exists(unit_mp3_path):
+                        f_size = os.path.getsize(unit_mp3_path)
+                        actual_dur = get_audio_duration(unit_mp3_path, fallback_duration=0.0)
+                        if f_size > 5000 and actual_dur > 1.0:
+                            print(f"[自检修复成功 ✅] Unit {idx+1} 音频恢复正常 (音色: {voice}, size={f_size}, dur={actual_dur:.2f}s)")
+                            break
+                except Exception as ex:
+                    print(f"Retry error with {voice}: {ex}", file=sys.stderr)
 
-        actual_dur = desired_dur
-        if success and os.path.exists(unit_mp3_path):
-            actual_dur = get_audio_duration(unit_mp3_path, fallback_duration=desired_dur)
+        if not success or f_size < 5000 or actual_dur < 1.0:
+            all_tts_passed = False
+            raise RuntimeError(f"[自检阻断 ❌] Unit {idx+1} ('{unit_id}') 无法生成有效有声 MP3！请检查网络或文本。")
 
         unit_audio_files.append(unit_mp3_path)
         

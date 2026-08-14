@@ -53,3 +53,16 @@
   - **[Sub-shot 3: 00:20-00:25] (毫秒响应/交付结果)**:
     - *Voiceover*: "...实现毫秒级响应。"
     - *画面/动作*: `#timer-card`（`[0.1ms]`）自底部弹显跳变，IP Mascot 手持盖章器在闸机旁盖上 `[PASS]` 绿色印章（`[Action Recipe: STAMP_SEAL]`）。
+
+---
+
+## 尾部 3s 点赞关注引导动作模式 (Outro Call-To-Action Pattern)
+
+在全片最后一个独立视频单元中，必须推演 3s 互动引导幕：
+
+### 模式范例：点赞关注三连引导 (Like & Subscribe Outro Pattern)
+- **口播文本**: *"如果对你有启发，记得点赞关注，我们下期见！"*
+- **画面元素全量清单**: `#badge-like` (点赞徽章), `#badge-favorite` (收藏徽章), `#badge-follow` (关注徽章), `#sparkles` (星光与爱心粒子), `#mascot-*` (IP 角色节点)。
+- **动作演进与 Recipe 绑定**:
+  - IP Mascot 向上小跃起跳，双臂举高做热情的点赞关注手势（`[Action Recipe: LIKE_AND_SUBSCRIBE]`）。
+  - 中央顺次弹显 `👍 点赞` ➔ `⭐ 收藏` ➔ `🔔 关注` 3 个交互卡片徽章，周围伴随星光爱心飘动。

@@ -106,8 +106,56 @@ def main():
 
     project_dir = os.path.abspath(args.project_dir)
     
-    # 1. Find all unit MP4 files
+    # 1. Find aspect ratio groups (e.g., unit_01_9x16.mp4, unit_01_16x9.mp4)
+    aspect_files_map = {}
+    all_aspect_files = glob.glob(os.path.join(project_dir, 'unit_*', 'unit_*_*x*.mp4'))
+    for f in all_aspect_files:
+        filename = os.path.basename(f)
+        match = re.search(r'unit_\d+_(\d+x\d+)\.mp4$', filename)
+        if match:
+            aspect = match.group(1)
+            aspect_files_map.setdefault(aspect, []).append(f)
+
+    for aspect in aspect_files_map:
+        aspect_files_map[aspect] = sorted(aspect_files_map[aspect])
+
+    if aspect_files_map:
+        print(f"[Video Renderer] Multi-Aspect Mode: Found {len(aspect_files_map)} aspect ratio groups: {list(aspect_files_map.keys())}")
+        for aspect, a_files in aspect_files_map.items():
+            print(f"[Video Renderer] Processing aspect group '{aspect}' ({len(a_files)} files)...")
+            concat_txt = os.path.join(project_dir, f'concat_{aspect}.txt')
+            concat_v = os.path.join(project_dir, f'concatenated_{aspect}.mp4')
+            out_v = os.path.join(project_dir, f'final_video_{aspect}.mp4')
+            with open(concat_txt, 'w', encoding='utf-8') as f:
+                for uf in a_files:
+                    f.write(f"file '{os.path.abspath(uf)}'\n")
+            
+            bgm_path = find_first_existing(project_dir, ['bgm.mp3', 'audio/bgm.mp3', 'bgm.wav', 'audio/bgm.wav'])
+            if bgm_path:
+                filter_complex = "[0:a]volume=1.0[v_a];[1:a]volume=0.3[bgm_low];[v_a][bgm_low]amix=inputs=2:duration=first[aout]"
+                concat_cmd = ['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_txt, '-c', 'copy', concat_v]
+                subprocess.run(concat_cmd, cwd=project_dir, check=True)
+                mux_cmd = ['ffmpeg', '-y', '-i', concat_v, '-i', bgm_path, '-filter_complex', filter_complex, '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2', '-shortest', out_v]
+                subprocess.run(mux_cmd, cwd=project_dir, check=True)
+                if os.path.exists(concat_v): os.remove(concat_v)
+            else:
+                concat_cmd = ['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_txt, '-c', 'copy', out_v]
+                subprocess.run(concat_cmd, cwd=project_dir, check=True)
+            
+            if os.path.exists(concat_txt): os.remove(concat_txt)
+            print(f"[Success] Generated multi-aspect final video: {out_v}")
+            if 'assets/video' in project_dir:
+                root_v = os.path.abspath(os.path.join(project_dir, f'../../video_{aspect}.mp4'))
+                try:
+                    import shutil
+                    shutil.copyfile(out_v, root_v)
+                    print(f"[Success] Copied multi-aspect video to root: {root_v}")
+                except Exception as e:
+                    print(f"[Notice] Copy multi-aspect video error: {e}")
+
+    # Standard primary unit files search
     unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*', 'unit_*.mp4')))
+    unit_files = [uf for uf in unit_files if not re.search(r'unit_\d+_(\d+x\d+)\.mp4$', os.path.basename(uf))]
     if not unit_files:
         unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*.mp4')))
     if not unit_files:
@@ -118,17 +166,22 @@ def main():
         unit_files = sorted(glob.glob(os.path.join(project_dir, 'compositions', 'frames', '*.mp4')))
 
     if not unit_files:
+        if aspect_files_map:
+            print(f"[Video Renderer] Multi-Aspect Batch Concat completed successfully.")
+            return
         print(f"[Error] No unit MP4 files found in {project_dir}")
         sys.exit(1)
 
-    print(f"[Video Renderer] Found {len(unit_files)} unit MP4 files.")
+    print(f"[Video Renderer] Found {len(unit_files)} primary unit MP4 files.")
     
     # Detect if units already contain embedded audio tracks
     units_have_audio = all(has_audio_track(uf) for uf in unit_files)
-    fast_concat_mode = args.fast_concat or (units_have_audio and not args.force_remux)
+    fast_concat_mode = (args.fast_concat or units_have_audio) and units_have_audio and not args.force_remux
 
     if fast_concat_mode:
         print(f"[Video Renderer] Fast Concat Mode enabled (Units already contain audio/subtitles). Preserving embedded audio and HTML subtitles without re-encoding.")
+    elif not units_have_audio:
+        print(f"[Video Renderer] Notice: Unit MP4 files do NOT contain embedded audio streams. Falling back to Voiceover multiplexing mode.")
 
     
     # 2. Perform Per-Unit Audio & Video Sync Alignment

@@ -2,6 +2,12 @@
 
 本指南为下游 HyperFrames SubAgent 提供规范化的 GSAP 物理动作代码范例，解决 IP 形象“单纯摇头晃脑”无真实动作的问题。HyperFrames 在编写 GSAP HTML 动画代码时，必须根据 `BRIEF.md` 指定的 Recipe 引入以下组合代码范例。
 
+## 0. 空间同框与接触点锚定法则 (Spatial Coupling & Contact Anchoring)
+
+在编写任何 IP 物理动作代码前，**必须满足空间同框与物理接触点绑定规程**：
+1. **同框 SVG 容器 (Unified SVG Container)**：凡是涉及 IP 与场景道具（阀门、按键、杠杆、拉绳、冰块）互动的分镜，`<g id="mascot">` **必须与道具同置于同一个主 `<svg viewBox="0 0 W H">` 视口中**。**严禁** 将道具置于舞台中央 SVG，而将 IP 放置在 `top: 940px` 的独立底部 HTML 浮层中导致空间脱节。
+2. **接触点坐标对齐 (Contact Point Alignment)**：在第 0 帧，使用 `gsap.set("#mascot", { x: propX, y: propY })` 或 SVG 节点平移，将 IP 移动至目标道具旁边，确保 IP 手臂/脚掌末端锚点与目标道具的交互中心在视觉坐标上 100% 重合。
+
 ---
 
 ## 1. 关节原点初始化 (GSAP Set Baseline)
@@ -110,6 +116,29 @@ liftTl.to("#mascot-arm-left", { rotation: -135, duration: 0.7 })
 
 ---
 
+### 模式 F: 点赞关注引导 (LIKE & SUBSCRIBE / OUTRO CTA)
+* **物理隐喻场景**：视频结尾 3s 引导观众点赞、收藏与关注。
+* **动作要领**：IP Mascot 欢快向上跳跃 (`y: -20px`)，双手向上举高开怀招手 (`rotation: -140deg`, `140deg`)；头部轻微点头，上方顺次弹性弹显 `👍 点赞`、`⭐ 收藏`、`🔔 关注` 3 个带有 `ease: "back.out(2)"` 的互动徽章卡片。
+
+```javascript
+const ctaTl = gsap.timeline({ defaults: { ease: "back.out(2.0)" } });
+
+// 1. IP Mascot 欢快起跳举手
+ctaTl.to("#mascot-body", { y: -20, duration: 0.4, repeat: 1, yoyo: true })
+     .to("#mascot-arm-left", { rotation: -140, duration: 0.4 }, "<")
+     .to("#mascot-arm-right", { rotation: 140, duration: 0.4 }, "<")
+     .to("#mascot-head", { rotation: -6, duration: 0.4 }, "<")
+// 2. 三连徽章依次弹性弹出
+     .to("#badge-like", { scale: 1, opacity: 1, duration: 0.35 }, "-=0.2")
+     .to("#badge-favorite", { scale: 1, opacity: 1, duration: 0.35 }, "-=0.2")
+     .to("#badge-follow", { scale: 1, opacity: 1, duration: 0.35 }, "-=0.2")
+// 3. 头部持续开心点头互动
+     .to("#mascot-head", { rotation: 6, duration: 0.3, repeat: 3, yoyo: true, ease: "sine.inOut" });
+```
+
+---
+
 ## 3. 规范约束
 
 HyperFrames 在为视频单元编写 GSAP HTML 动画时，必须在代码中注入对应的 Recipe，**严禁生成仅对 `#mascot-head` 施加微弱旋转的偷懒代码**！
+
