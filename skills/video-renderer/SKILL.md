@@ -10,12 +10,11 @@ description: FFmpeg 视频拼接与音频 Ducking 混流技能。当需要将各
 ## Agent 执行协议 (Protocol)
 
 1. **环境准备确认**：
-   Agent 确认目标项目资产目录（如 `./<article-slug>/assets/video/`）下存在 `unit_01/unit_01.mp4`, `unit_02/unit_02.mp4` 等单元视频片段。如果有音频资产，确认存在 `audio/voiceover.mp3` 或 `audio/full_voiceover.mp3`。
-
+   Agent 确认目标项目资产目录（如 `./<article-slug>/assets/video/`）下存在 `unit_01/unit_01.mp4`, `unit_02/unit_02.mp4` 等单元视频片段。
 2. **执行拼接合并**：
-   调用本技能下的 Python 脚本，传入目标项目目录。脚本会自动扫描并调用系统 `ffmpeg` 完成 `-f concat` 与音频过滤合并。
+   调用本技能下的 Python 脚本，传入目标项目目录。脚本会自动智能检测：当单元视频已自带音频/字幕时，自动开启 `--fast-concat` 极速拼接模式（纯 `-c copy` 无损拼合，保留 HTML 卡片字幕并避免二次压字幕与重合音轨）；若存在背景音乐 `bgm.mp3`，则自动混入背景音乐。
    ```bash
-   python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video/
+   python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video/ --fast-concat
    ```
 
 ## 交付产物
@@ -24,4 +23,5 @@ description: FFmpeg 视频拼接与音频 Ducking 混流技能。当需要将各
 - `final_video.mp4` / `video.mp4`
 
 ## 核心实现说明
-本技能利用 `ffmpeg` 的 `sidechaincompress` 滤镜或者 `volume` ducking 算法（基于配音时间轴），实现在有人声说话时自动压低背景音乐的工业级效果，且全流程无损 (`-c:v copy`) 拼接视频轨道。
+- **极速拼接模式 (`--fast-concat`)**：当 HyperFrames 各单元在渲染 MP4 时已包含口播音频轨与 HTML 字幕节点，本技能直接进行极速 `-c:v copy -c:a copy` 拼合，毫秒级导出最终视频，避免字幕重叠与二次重编码损失。
+- **降噪混流模式 (`--force-remux`)**：若单元视频无音频轨，利用 `ffmpeg` 的 `sidechaincompress` 滤镜或者 `volume` ducking 算法实现有人声说话时自动压低背景音乐，并二次压制 ASS 字幕。

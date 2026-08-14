@@ -53,11 +53,12 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 ### 步骤三：创建独立视频单元工作区、初始化 HyperFrames 项目并落盘 BRIEF.md
 针对每个视频单元 `XX`（如 `01`, `02` ...）：
 1. 创建目录 `./<article-slug>/assets/video/unit_XX/`。
-2. **初始化 HyperFrames 项目（必须在写入 BRIEF.md 之前执行）**：在 `unit_XX/` 目录下执行以下命令，生成 `hyperframes.json` 与 `package.json`，使其成为合法的 HyperFrames 项目：
-   ```bash
-   npx hyperframes init "./<article-slug>/assets/video/unit_XX" --non-interactive --example=blank
-   ```
-   > ⚠️ `init` 要求目标目录为空或不存在，因此必须在拷贝 `public/mascot.svg` 和写入 `BRIEF.md` **之前**执行。
+2. **初始化 HyperFrames 项目（必须在写入 BRIEF.md 之前执行）**：
+   - 执行以下命令初始化 HyperFrames 独立项目。**必须显式加上 `HYPERFRAMES_SKIP_SKILLS=1` 环境变量**，跳过远程 GitHub 技能包克隆（实现毫秒级纯本地脚手架生成），确保各单元精确生成包含对应 `unit_XX` 标识的 `package.json` 和 `meta.json`：
+     ```bash
+     HYPERFRAMES_SKIP_SKILLS=1 npx hyperframes init "./<article-slug>/assets/video/unit_XX" --non-interactive --example=blank
+     ```
+   > ⚠️ `init` 要求目标目录为空或不存在，因此必须在拷贝 `public/mascot.svg` 和写入 `BRIEF.md` **之前**执行。**严禁从其他单元直接复制脚手架文件**，避免破坏 `package.json` / `meta.json` 中属于各个 `unit_XX` 的独立项目名称与元数据。
 3. 创建 `public/` 子目录并复制/生成矢量 IP 资产到 `./<article-slug>/assets/video/unit_XX/public/mascot.svg`。
 4. **⚠️ 强制前置读取规范（写入 BRIEF.md 之前必须完成）**：使用 `view_file` 依次读取项目根目录下 HyperFrames 官方的以下两份规范文件，理解 BRIEF.md 的完整结构与字段语义后，方可开始编写：
    - 格式规范：`.agents/skills/hyperframes-core/references/brief-format.md`（定义 BRIEF.md 的 YAML Frontmatter 字段清单、Body 四板块结构 `## Intent` / `## Assets` / `## Customizations` / `## Notes`、生命周期规则）

@@ -22,13 +22,30 @@ def get_audio_duration(audio_path, fallback_duration=1.0):
         cmd = [
             'ffprobe', '-v', 'error',
             '-show_entries', 'format=duration',
+            '-of', 'json',
+            audio_path
+        ]
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        data = json.loads(res.stdout)
+        if 'format' in data and 'duration' in data['format']:
+            dur = float(data['format']['duration'])
+            if dur > 0:
+                return dur
+    except Exception:
+        pass
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-show_entries', 'format=duration',
             '-of', 'default=noprint_wrappers=1:nokey=1',
             audio_path
         ]
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-        dur = float(res.stdout.strip())
-        if dur > 0:
-            return dur
+        match = re.search(r'([\d\.]+)', res.stdout)
+        if match:
+            dur = float(match.group(1))
+            if dur > 0:
+                return dur
     except Exception:
         pass
     return fallback_duration
@@ -138,7 +155,7 @@ def split_long_sentence(text, start_s, end_s, max_len=15):
         curr_t = c_end
     return res
 
-async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=2):
+async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeural", max_retries=4):
     """Generates audio for a single video unit with retry logic and captures sentence boundaries"""
     try:
         import edge_tts
@@ -146,8 +163,8 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
         print("ERROR: 'edge-tts' module is not installed! Please install it with 'pip install edge-tts'.", file=sys.stderr)
         return False, []
 
-    async def _do_tts():
-        communicate = edge_tts.Communicate(text, voice)
+    async def _do_tts(tts_prompt):
+        communicate = edge_tts.Communicate(tts_prompt, voice)
         boundaries = []
         with open(output_mp3_path, 'wb') as f:
             async for chunk in communicate.stream():
@@ -159,14 +176,20 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
                     boundaries.append((off_s, off_s + dur_s, chunk["text"].strip()))
         return boundaries
 
-    for attempt in range(max_retries):
-        try:
-            boundaries = await asyncio.wait_for(_do_tts(), timeout=15.0)
-            if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 1000:
-                return True, boundaries
-        except Exception as e:
-            print(f"EdgeTTS Notice (Attempt {attempt+1}/{max_retries}): {e}")
-            await asyncio.sleep(0.2)
+    prompts = [text]
+    cleaned = strip_ssml(text).replace('‘', '').replace('’', '')
+    if cleaned != text:
+        prompts.append(cleaned)
+
+    for p_idx, prompt in enumerate(prompts):
+        for attempt in range(max_retries):
+            try:
+                boundaries = await asyncio.wait_for(_do_tts(prompt), timeout=30.0)
+                if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 1000:
+                    return True, boundaries
+            except Exception as e:
+                print(f"EdgeTTS Notice (Prompt {p_idx+1}, Attempt {attempt+1}/{max_retries}): {e}")
+                await asyncio.sleep(0.5 * (attempt + 1))
             
     return False, []
 
@@ -178,12 +201,34 @@ def create_mock_mp3(output_mp3_path, duration_seconds=1.0):
         f.write(silent_mp3_frame * frames)
 
 def concat_mp3_files(unit_files, full_mp3_path):
-    """Concatenates individual unit MP3 files into a single full voiceover MP3"""
-    with open(full_mp3_path, 'wb') as outfile:
-        for fname in unit_files:
-            if os.path.exists(fname):
+    """Concatenates individual unit MP3 files into a single full voiceover MP3 using FFmpeg re-encoding."""
+    existing = [f for f in unit_files if os.path.exists(f)]
+    if not existing:
+        return
+    list_txt = full_mp3_path + ".concat.txt"
+    try:
+        with open(list_txt, 'w', encoding='utf-8') as f:
+            for fname in existing:
+                f.write(f"file '{os.path.abspath(fname)}'\n")
+        cmd = [
+            'ffmpeg', '-y', '-f', 'concat', '-safe', '0',
+            '-i', list_txt,
+            '-c:a', 'libmp3lame', '-b:a', '192k', '-ar', '44100',
+            full_mp3_path
+        ]
+        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    except Exception as e:
+        print(f"FFmpeg MP3 concat notice: {e}, falling back to binary copy", file=sys.stderr)
+        with open(full_mp3_path, 'wb') as outfile:
+            for fname in existing:
                 with open(fname, 'rb') as infile:
                     outfile.write(infile.read())
+    finally:
+        if os.path.exists(list_txt):
+            try:
+                os.remove(list_txt)
+            except Exception:
+                pass
 
 def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provider="edge_tts"):
     os.makedirs(output_dir, exist_ok=True)

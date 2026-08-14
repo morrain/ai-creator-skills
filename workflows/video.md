@@ -87,12 +87,16 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 ---
 
-### 阶段四：FFmpeg 硬件加速拼接、流规范化与 Sidechain Audio Ducking
+### 阶段四：FFmpeg 硬件加速极速拼接与音视频导出
 
 1. **遍历单元目录获取 HyperFrames 生成视频**：
-   - 所有视频单元制作完成（或审核通过）后，遍历各个 `./<article-slug>/assets/video/unit_XX/` 单元目录，获取 HyperFrames 生成的视频文件。
-2. **调度原子技能 `video-renderer` 执行 FFmpeg 硬件加速合并与音频 Ducking**：
-   - 运行 `video-renderer`（自动启用 macOS `h264_videotoolbox` 硬件加速编码，重采样规范化音视频流），混入全局配音与背景音乐（ Sidechain Audio Ducking），压制 `\an8\pos(960,960)` 顶基线硬锁定字幕。
+   - 所有视频单元制作完成（或审核通过）后，遍历各个 `./<article-slug>/assets/video/unit_XX/` 单元目录，获取 HyperFrames 生成的视频片段。
+2. **调度原子技能 `video-renderer` 执行极速直接拼接**：
+   - 运行 `video-renderer`：
+     ```bash
+     python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --fast-concat
+     ```
+   - 脚本会自动检测：单元视频若已自带音频与 HTML 卡片字幕，将进行极速 `-c copy` 拼合（保留 HTML 美化字幕并避免二次压字幕与重合音轨）；若项目存在 `bgm.mp3`，自动混入背景音乐。
 3. **落盘 MP4 最终交付与自进化提示**：
    - 导出最终视频 `./<article-slug>/video.mp4`，呈报视频完成信息及本地播放链接（[`./<article-slug>/video.mp4`](./<article-slug>/video.mp4)）。
    - **视觉规程自进化提示**：如对某些单元的视觉呈现进行了人工修正，回复 **`/workflow-learn video_storyboard`** 沉淀动画视觉规程！

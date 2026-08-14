@@ -6,6 +6,36 @@ import argparse
 import json
 import re
 
+def concat_mp3_files(unit_files, full_mp3_path):
+    """Concatenates individual unit MP3 files into a single full voiceover MP3 using FFmpeg re-encoding."""
+    existing = [f for f in unit_files if os.path.exists(f)]
+    if not existing:
+        return
+    list_txt = full_mp3_path + ".concat.txt"
+    try:
+        with open(list_txt, 'w', encoding='utf-8') as f:
+            for fname in existing:
+                f.write(f"file '{os.path.abspath(fname)}'\n")
+        cmd = [
+            'ffmpeg', '-y', '-f', 'concat', '-safe', '0',
+            '-i', list_txt,
+            '-c:a', 'libmp3lame', '-b:a', '192k', '-ar', '44100',
+            full_mp3_path
+        ]
+        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    except Exception as e:
+        print(f"[Notice] FFmpeg MP3 concat: {e}, falling back to binary copy", file=sys.stderr)
+        with open(full_mp3_path, 'wb') as outfile:
+            for fname in existing:
+                with open(fname, 'rb') as infile:
+                    outfile.write(infile.read())
+    finally:
+        if os.path.exists(list_txt):
+            try:
+                os.remove(list_txt)
+            except Exception:
+                pass
+
 def get_media_duration(file_path, fallback=1.0):
     """Uses ffprobe to get exact media duration in seconds"""
     if not os.path.exists(file_path):
@@ -41,6 +71,18 @@ def find_first_existing(project_dir, candidates):
             return full
     return None
 
+def has_audio_track(file_path):
+    """Uses ffprobe to check if media file contains an audio stream."""
+    if not os.path.exists(file_path):
+        return False
+    try:
+        cmd = ['ffprobe', '-v', 'error', '-select_streams', 'a', '-show_entries', 'stream=codec_type', '-of', 'json', file_path]
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        streams = json.loads(res.stdout).get('streams', [])
+        return len(streams) > 0
+    except Exception:
+        return False
+
 def get_best_h264_encoder():
     """Detects if macOS h264_videotoolbox hardware encoder is available, falls back to libx264."""
     try:
@@ -56,6 +98,10 @@ def get_best_h264_encoder():
 def main():
     parser = argparse.ArgumentParser(description="Concat scenes and mux audio via FFmpeg")
     parser.add_argument('--project-dir', required=True, help="Path to the project assets/video directory")
+    parser.add_argument('--fast-concat', action='store_true', help="Fast direct concat (preserve unit embedded audio & HTML subtitles without re-encoding)")
+    parser.add_argument('--skip-subtitles', action='store_true', help="Skip burning ASS subtitles")
+    parser.add_argument('--skip-audio-remux', action='store_true', help="Skip re-multiplexing external voiceover MP3")
+    parser.add_argument('--force-remux', action='store_true', help="Force re-multiplexing voiceover and burning ASS subtitles even if units have embedded audio")
     args = parser.parse_args()
 
     project_dir = os.path.abspath(args.project_dir)
@@ -76,6 +122,14 @@ def main():
         sys.exit(1)
 
     print(f"[Video Renderer] Found {len(unit_files)} unit MP4 files.")
+    
+    # Detect if units already contain embedded audio tracks
+    units_have_audio = all(has_audio_track(uf) for uf in unit_files)
+    fast_concat_mode = args.fast_concat or (units_have_audio and not args.force_remux)
+
+    if fast_concat_mode:
+        print(f"[Video Renderer] Fast Concat Mode enabled (Units already contain audio/subtitles). Preserving embedded audio and HTML subtitles without re-encoding.")
+
     
     # 2. Perform Per-Unit Audio & Video Sync Alignment
     audio_dir = os.path.join(project_dir, 'audio')
@@ -142,11 +196,8 @@ def main():
         unit_v_durs = eff_v_durs
 
         aligned_vo_path = os.path.join(audio_dir, 'aligned_voiceover.mp3')
-        # Concat fitted audio files
-        with open(aligned_vo_path, 'wb') as outfile:
-            for fmp3 in fitted_mp3_paths:
-                with open(fmp3, 'rb') as infile:
-                    outfile.write(infile.read())
+        # Concat fitted audio files using FFmpeg re-encoding
+        concat_mp3_files(fitted_mp3_paths, aligned_vo_path)
         
         # Clean temp fitted files
         for fmp3 in fitted_mp3_paths:
@@ -229,87 +280,124 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         except Exception as e:
             print(f"[Notice] Failed to generate aligned ASS: {e}")
 
-    # Fallbacks
-    vo_path = aligned_vo_path or find_first_existing(project_dir, [
-        'full_voiceover.mp3', 'audio/voiceover.mp3', 'voiceover.mp3',
-        'voiceover.wav', 'audio/voiceover.wav'
-    ])
+    # Fallbacks & Flags
+    vo_path = None
+    sub_path = None
+
+    if not fast_concat_mode and not args.skip_audio_remux:
+        vo_path = aligned_vo_path or find_first_existing(project_dir, [
+            'full_voiceover.mp3', 'audio/voiceover.mp3', 'voiceover.mp3',
+            'voiceover.wav', 'audio/voiceover.wav'
+        ])
+
+    if not fast_concat_mode and not args.skip_subtitles:
+        sub_path = aligned_ass_path or find_first_existing(project_dir, [
+            'subtitles.ass', 'audio/subtitles.ass', 'subtitles.srt', 'audio/subtitles.srt'
+        ])
+
     bgm_path = find_first_existing(project_dir, [
         'bgm.mp3', 'audio/bgm.mp3', 'bgm.wav', 'audio/bgm.wav'
-    ])
-    sub_path = aligned_ass_path or find_first_existing(project_dir, [
-        'subtitles.ass', 'audio/subtitles.ass', 'subtitles.srt', 'audio/subtitles.srt'
     ])
     
     final_output = os.path.join(project_dir, 'final_video.mp4')
 
-    # Build video encoding flags & filters
-    vcodec_args = []
-    vf_args = []
-    if sub_path:
-        sub_rel = os.path.relpath(sub_path, project_dir)
-        if sub_rel.endswith('.ass'):
-            sub_filter = f"ass={sub_rel}"
-        else:
-            sub_filter = f"subtitles=filename={sub_rel}:force_style='PlayResX=1920,PlayResY=1080,FontSize=36,FontName=PingFang SC,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,MarginV=54,MarginL=120,MarginR=120,WrapStyle=0'"
-        print(f"[Video Renderer] Burning subtitles from {sub_rel}...")
-        vcodec_args = get_best_h264_encoder()
-        vf_args = ['-vf', sub_filter]
-    else:
-        vcodec_args = ['-c:v', 'copy']
-
-    if vo_path and bgm_path:
-        print(f"[Video Renderer] Multiplexing Voiceover ({os.path.basename(vo_path)}) & BGM ({os.path.basename(bgm_path)}) via Sidechain Ducking...")
-        filter_complex = (
-            "[1:a]volume=0.3[bgm_low];"
-            "[2:a]asplit[vo_out][vo_side];"
-            "[bgm_low][vo_side]sidechaincompress=threshold=0.08:ratio=4:attack=50:release=300[bgm_ducked];"
-            "[vo_out][bgm_ducked]amix=inputs=2:duration=first[aout]"
-        )
-        mux_cmd = [
-            'ffmpeg', '-y',
-            '-i', concat_video_path,
-            '-i', bgm_path,
-            '-i', vo_path,
-        ] + vf_args + [
-            '-filter_complex', filter_complex,
-            '-map', '0:v',
-            '-map', '[aout]',
-        ] + vcodec_args + [
-            '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
-            '-shortest',
-            final_output
-        ]
-        subprocess.run(mux_cmd, cwd=project_dir, check=True)
-    elif vo_path:
-        print(f"[Video Renderer] Multiplexing Voiceover ({os.path.basename(vo_path)}) only...")
-        mux_cmd = [
-            'ffmpeg', '-y',
-            '-i', concat_video_path,
-            '-i', vo_path,
-        ] + vf_args + [
-            '-map', '0:v',
-            '-map', '1:a',
-        ] + vcodec_args + [
-            '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
-            '-shortest',
-            final_output
-        ]
-        subprocess.run(mux_cmd, cwd=project_dir, check=True)
-    else:
-        print(f"[Video Renderer] No external audio tracks found.")
-        if sub_path:
+    # Fast Concat path (No external voiceover remux & no ASS subtitle burning)
+    if fast_concat_mode:
+        if bgm_path:
+            print(f"[Video Renderer] Fast Concat: Losslessly copying video & mixing BGM ({os.path.basename(bgm_path)})...")
+            filter_complex = (
+                "[0:a]volume=1.0[v_a];"
+                "[1:a]volume=0.3[bgm_low];"
+                "[v_a][bgm_low]amix=inputs=2:duration=first[aout]"
+            )
             mux_cmd = [
                 'ffmpeg', '-y',
                 '-i', concat_video_path,
-            ] + vf_args + vcodec_args + [
+                '-i', bgm_path,
+                '-filter_complex', filter_complex,
+                '-map', '0:v',
+                '-map', '[aout]',
+                '-c:v', 'copy',
+                '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
+                '-shortest',
                 final_output
             ]
             subprocess.run(mux_cmd, cwd=project_dir, check=True)
         else:
+            print(f"[Video Renderer] Fast Concat: Pure lossless concatenation to final video.")
             if os.path.exists(final_output):
                 os.remove(final_output)
-            os.rename(concat_video_path, final_output)
+            import shutil
+            shutil.copyfile(concat_video_path, final_output)
+    else:
+        # Standard multiplexing path (Legacy / Force remux)
+        vcodec_args = []
+        vf_args = []
+        if sub_path:
+            sub_rel = os.path.relpath(sub_path, project_dir)
+            if sub_rel.endswith('.ass'):
+                sub_filter = f"ass={sub_rel}"
+            else:
+                sub_filter = f"subtitles=filename={sub_rel}:force_style='PlayResX=1920,PlayResY=1080,FontSize=36,FontName=PingFang SC,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,MarginV=54,MarginL=120,MarginR=120,WrapStyle=0'"
+            print(f"[Video Renderer] Burning subtitles from {sub_rel}...")
+            vcodec_args = get_best_h264_encoder()
+            vf_args = ['-vf', sub_filter]
+        else:
+            vcodec_args = ['-c:v', 'copy']
+
+        if vo_path and bgm_path:
+            print(f"[Video Renderer] Multiplexing Voiceover ({os.path.basename(vo_path)}) & BGM ({os.path.basename(bgm_path)}) via Sidechain Ducking...")
+            filter_complex = (
+                "[1:a]volume=0.3[bgm_low];"
+                "[2:a]asplit[vo_out][vo_side];"
+                "[bgm_low][vo_side]sidechaincompress=threshold=0.08:ratio=4:attack=50:release=300[bgm_ducked];"
+                "[vo_out][bgm_ducked]amix=inputs=2:duration=first[aout]"
+            )
+            mux_cmd = [
+                'ffmpeg', '-y',
+                '-i', concat_video_path,
+                '-i', bgm_path,
+                '-i', vo_path,
+            ] + vf_args + [
+                '-filter_complex', filter_complex,
+                '-map', '0:v',
+                '-map', '[aout]',
+            ] + vcodec_args + [
+                '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
+                '-shortest',
+                final_output
+            ]
+            subprocess.run(mux_cmd, cwd=project_dir, check=True)
+        elif vo_path:
+            print(f"[Video Renderer] Multiplexing Voiceover ({os.path.basename(vo_path)}) only...")
+            mux_cmd = [
+                'ffmpeg', '-y',
+                '-i', concat_video_path,
+                '-i', vo_path,
+            ] + vf_args + [
+                '-map', '0:v',
+                '-map', '1:a',
+            ] + vcodec_args + [
+                '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2',
+                '-shortest',
+                final_output
+            ]
+            subprocess.run(mux_cmd, cwd=project_dir, check=True)
+        else:
+            print(f"[Video Renderer] No external audio tracks found.")
+            if sub_path:
+                mux_cmd = [
+                    'ffmpeg', '-y',
+                    '-i', concat_video_path,
+                ] + vf_args + vcodec_args + [
+                    final_output
+                ]
+                subprocess.run(mux_cmd, cwd=project_dir, check=True)
+            else:
+                if os.path.exists(final_output):
+                    os.remove(final_output)
+                import shutil
+                shutil.copyfile(concat_video_path, final_output)
 
     # Cleanup temp files
     if os.path.exists(concat_txt_path):
