@@ -18,7 +18,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 1. **双模式自适应输入 (Dual-Mode Input Handling)**：
    - 支持文章转视频 (`article_derived`) 与独立知识主题创作 (`standalone_topic`) 双模式自适应流。
 2. **默认免人工审核原则 (Default Non-Interactive Execution)**：
-   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 依次生成各单元 16:9 与 9:16 视频** ➔ **Step 5: 合成两种比例视频**。
+   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 16:9 与 9:16 双比例切片** ➔ **Step 5: 合成双比例成品视频**。
    - **默认无需人工审核**：管道默认在各步骤间自主衔接运行。在 Step 4 中，主 Agent 在后台逐个单元唤起 HyperFrames SubAgent 进行 HTML 制作与视频渲染，子 Agent 交付后自主切入下一个单元，全程无需人类用户手动 Confirm。
    - 仅当用户命令行指令中显式包含 `--interactive` 选项时，才会在 Step 1 与 Step 3 停顿等待人工 Confirmation。
 3. **音画字幕单元内固化与纯视频缝合 (Unit Self-Contained Audio & Subtitles)**：
@@ -33,10 +33,10 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 ### Step 1: 生成脚本 (Generate Script & Review)
 
 1. **输入解析与短路模式识别**：
-   - 解析命令行参数 `/讲解视频 [文章路径或主题] [--style <preset>]`。
+   - 解析命令行参数 `/讲解视频 [文章路径或主题]`。
    - 若传入已有主题目录或文章路径（如 `./<article-slug>/<article-slug>.md`），进入**模式 1 (文章转视频)**。
    - 若传入纯主题字符串（如 `Vue 3.5 响应式原理`），进入**模式 2 (独立主题创作)**。
-   - **显式风格选项支持**：若参数中指定了 `--style <preset>`（如 `--style blue-professional` 或 `--style code-editorial`），透传至 Step 3 锁定全局风格；若未指定，Step 3 自动根据主题领域自适应选型。
+   - **低密度视觉排版规程**：在 `BRIEF.md` 中不填写 `style_preset` 字段。视频排版严格遵循低密度呼吸感规程（70%+ 留白空间，一屏仅表达 1 个核心结论，单切片活跃元素 $\le 5$）。
 2. **调度原子技能 `video-script-writer` 提炼 4 轨剧本**：
    - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。
 3. **SubAgent 剧本盲审闭环**：
@@ -75,63 +75,72 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      - `public/mascot.svg`（矢量 IP 角色资产）
      - `public/audio.mp3`（复制自 `../audio/unit_XX.mp3` 本单元配音切片）
      - `public/timestamps.json`（复制自 `../audio/timestamps.json` 本单元字幕时间戳契约）
-   - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`、风格预设 `style_preset`（优先使用显式指定的 `--style <preset>`，未指定则根据领域自适应选型）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
+   - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`（不填写 `style_preset` 字段）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
 4. **⚠️ Step 3 绝对禁令 (Strict Prohibition Rules)**：
    - **严禁编写初始化或 HTML 脚本**：Step 3 仅负责契约与脚手架逐单元初始化，**绝对禁止 Agent 编写任何批量初始化脚本（如 `setup_units.py`）或拼接 HTML/CSS/GSAP 代码的脚本（如 `build_unit_htmls.py`）**！
    - （仅当带有 `--interactive` 显式卡点选项时，暂停并等待回复 `[继续]` 后继续；默认无需人工审核，直接进入 Step 4）。
 
 ---
 
-### Step 4: 逐单元唤起 SubAgent 生成 16:9 与 9:16 两种视频 (Render Unit Videos via HyperFrames SubAgents)
+### Step 4: 逐单元渲染 16:9 与 9:16 双比例视频片段 (Render 16:9 & 9:16 Aspect Ratios Per Unit)
 
 1. **⚠️ Step 4 核心调度原则 (SubAgent Invocation Mandate)**：
+   - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！** 针对每一个 `unit_XX`，必须先串行唤起 SubAgent 完成 16:9 版本的制作与渲染归档，收到 `[SUCCESS]` 响应后再唤起 SubAgent 完成 9:16 版本的制作与渲染归档。当前单元双比例均完成后，主 Agent 方可切入下一个单元 `unit_YY`。
+   - **强制 SubAgent 写入权限 (SubAgent TypeName Mandate)**：主 Agent 在通过 `invoke_subagent` 唤起 SubAgent 时，**必须显式将其 `TypeName` 参数设置为具有文件写入与代码编辑权限的全功能型代理 `self`**，**绝对禁止错误地设置为只读的 `research`（研究型子代理）**！否则 SubAgent 将因缺乏写入权限而无法写入 `index.html` 或导出 MP4 视频。
    - **严禁编写渲染脚本**：**绝对禁止 Agent 编写任何替代渲染的 Python 脚本（如 `render_all_units.py`）或在主进程中直接批量 Shell 渲染**！
-   - **必须逐单元唤起 SubAgent**：主 Agent 必须通过 `invoke_subagent` **针对每一个 `unit_XX` 依次唤起独立的 HyperFrames 官方 SubAgent** 进驻 `./assets/video/unit_XX/` 目录，严格加载 HyperFrames 官方 Skill 执行 HTML 网页代码编写与 MP4 导出。
-2. **按单元遍历并双比例连续渲染**：
+   - **必须逐单元依次串行唤起 SubAgent**：主 Agent 必须通过 `invoke_subagent` 依次逐个进驻 `./assets/video/unit_XX/` 目录，严格加载 HyperFrames 官方 Skill 执行 HTML 网页代码编写与 MP4 导出。
+2. **逐单元双比例渲染流程**：
    - 依次遍历 `./<article-slug>/assets/video/unit_01/` 到 `unit_N/`：
-     - **第一阶段：渲染 16:9 宽屏版**：
+     - **【阶段 A：渲染 16:9 宽屏版】**：
        - 主 Agent 确保该单元的 `BRIEF.md` YAML Frontmatter 中 `aspect: 1920x1080`。
-       - 显式调用 `invoke_subagent` 启动独立的 SubAgent，必须 100% 格式化传入以下固化的标准提示词模板：
+       - 显式调用 `invoke_subagent` 启动独立的 SubAgent（**必须设置 `TypeName: "self"`**），必须 100% 格式化传入以下精简的标准提示词模板：
          ```text
          1. 优先读取 HyperFrames 主控技能文件（`.agents/skills/hyperframes/SKILL.md`），严格按照其规程完成 HTML 组帧与渲染。
          2. 画幅与时长：卡点匹配 `BRIEF.md` 声明的 `aspect` 与 `length`。
-         3. 矢量关节动画硬性规则 (GSAP svgOrigin Rule)：
-            - 使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。
+         3. 矢量精细化与 3 层结构规程（物理实体硬性铁律）：
+            - **强制 3 层 DOM 结构**：所有物理实体（如农田、水库大坝、水闸阀门、渠道水流、芯片、数据库等）必须封装在 `<g id="...">` 组内，且必须完整包含 3 层 DOM 元素：
+              1) Layer 1 实体基底：带有 fill 充盈色与 stroke 轮廓的底座/基础图形；
+              2) Layer 2 具象特征纹理：必须包含至少 2 条以上表达物理特征的 `<path>` 路径（如农田田垄与幼苗 `<path>`、水库/大坝刻度与波纹 `<path>`、芯片电路/引脚 `<path>`、阀门轮辐/螺纹 `<path>`）；
+              3) Layer 3 标示：居中/高对比度的中文 `<text>` 标注或数据值。
+            - **🚫 反例硬禁令**：针对物理实体，**绝对禁止在 index.html 中仅用单个 `<rect>`、`<circle>` 或 `<polygon>` 标签占位充当实体**！若检测到仅用单个无纹理裸框/几何块作为物理实体，渲染质检将直接判定失败打回。同时保留全部指定的 `id` 供 GSAP 驱动。
+         4. IP Mascot 矢量源码嵌入与关节动画硬性规则：
+            - **DOM 节点强制内联**：必须直接将 `public/mascot.svg` 内部包含 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-body` 的完整 `<g>` 矢量 DOM 节点原样复制内嵌写入 `index.html` 的 `<g id="mascot">` 内部。**严禁使用 `<use href="./public/mascot.svg#...">`**，**绝对禁止手写或脑补生成 `<rect fill="#fbbf24">` 等彩色块/粗线条占位图形**！
+            - **GSAP svgOrigin 关节锁死**：使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。
             - **⚠️ 严禁使用 CSS `transformOrigin: "px px"`**，防止关节脱臼断裂。
-         4. 物理隐喻动作绑定 (Action Recipe Execution)：
+         5. 物理隐喻动作绑定 (Action Recipe Execution)：
             - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]` 拖拽发力、`[Action Recipe: PUSH_PRESS]` 蓄力下压、`[Action Recipe: KICK_STEP]` 单腿踢飞、`[Action Recipe: OPERATE_LEVER]` 摇手柄/转阀门、`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导）。
-         5. 音轨与字幕原生地固化：
+         6. 音轨与字幕原生地固化：
             - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在网页 DOM 中原生动态展示高对比度 HTML 唱词字幕。
-         6. 首帧曝光与防白规程：
+         7. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
-         7. 执行渲染导出：
+         8. 执行渲染导出：
             - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
 
          【产物交付】
          完成渲染后，请仅回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4`。
          ```
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
-     - **第二阶段：渲染 9:16 竖屏版**：
-       - 主 Agent 将 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1080x1920`（同时写入非 16:9 防裁剪与竖屏流式布局规则）。
-       - 再次唤起 HyperFrames 官方 SubAgent（传入提示词模板），执行 9:16 版本的代码调整与 MP4 导出。
+     - **【阶段 B：渲染 9:16 竖屏版】**：
+       - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1080x1920`（同时在 `## Notes` 中写入非 16:9 防裁剪与竖屏流式布局规则）。
+       - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 9:16 竖屏版本的代码调整与 MP4 导出。
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_9x16.mp4`，并将源码备份存盘为 `BRIEF_9x16.md` 和 `index_9x16.html`。
+     - 该单元 16:9 与 9:16 两种比例均渲染归档完成后，主 Agent 自主切入下一个单元 `unit_YY`。
 
 ---
 
-### Step 5: 合成两种比例视频 (Pure Video Stitching & Multi-Aspect Output)
+### Step 5: 合成双比例成品视频 (Stitch Both Aspect Ratios Final Videos)
 
-1. **扫描多比例视频片段**：
-   - 遍历扫描各个 `unit_XX` 目录下的 `unit_XX_16x9.mp4` 与 `unit_XX_9x16.mp4` 片段。
-2. **调度原子技能 `video-renderer` 执行极速纯视频拼接**：
-   - 运行 `video-renderer` 拼接脚本：
+1. **前置门控 (Strict Execution Gate)**：
+   - **全量单元渲染完成触发**：必须在所有单元（`unit_01` 至 `unit_N`）的 16:9 与 9:16 两种比例切片片段（`unit_XX_16x9.mp4` 与 `unit_XX_9x16.mp4`）全部渲染成功且归档完毕后，方可触发 Step 5 缝合！
+2. **极速缝合导出双比例成品视频**：
+   - 调度原子技能 `video-renderer` 运行纯视频拼接脚本：
      ```bash
      python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --fast-concat
      ```
-   - **纯视频 Stitching 逻辑**：因为声音和字幕已经在 Step 3 & Step 4 中由 HyperFrames 网页画布原生集成并写入各个 `unit_XX` 视频片段，本步骤使用 `ffmpeg -f concat -c copy` 缝合，不重新压制字幕、不重新打字幕花字、不重算声音时间轴。若主题工作区存在 `bgm.mp3`，则追加音频背景音乐混音；若不存在，纯画面与语音音轨 100% 直通。
-3. **交付最终成品 MP4**：
-   - 输出两种比例的最终成品视频：
+   - 脚本会自动扫描各个 `unit_XX` 目录下的 `unit_XX_16x9.mp4` 与 `unit_XX_9x16.mp4` 切片，通过 `ffmpeg -c copy` 极速缝合导出双比例成品视频。
+3. **交付双比例成品与自进化闭环**：
+   - 校验并在对话框呈报两种比例最终成品视频文件路径：
      - 横屏版：`./<article-slug>/video_16x9.mp4`（或软链 `./<article-slug>/video.mp4`）
      - 竖屏版：`./<article-slug>/video_9x16.mp4`
-   - 在对话框呈报拼接完成信息与文件路径。
    - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。

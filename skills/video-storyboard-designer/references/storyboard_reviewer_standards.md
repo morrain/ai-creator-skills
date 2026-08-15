@@ -15,18 +15,25 @@
 
 ## 2. 视觉 DNA 与生图 Prompt 规范 (Visual DNA & Prompt Gates)
 
-- **构图与背景**: 强制 16:9 横版构图，纯白背景 (`#FFFFFF`)，黑色手绘线条质感 (Black minimalist hand-drawn line art)。
+- **构图与背景**: 强制 16:9 横版构图，通透干净背景（低密度呼吸感空间）。
 - **原生中文批注**: 英文 Prompt 中的文本批注须强制保留在引号内部的原生中文（如 `'数据流'`、`'56% OFF'`）。
 - **图片与视频参数**: 英文 Prompt 末尾须附加 `--ar 16:9 --v 6.0` 或 i2v 生成控制参数。
 
 ---
 
-## 3. 极简流派与低密度限制规程 (Minimalist & Low-Density Gates)
+## 3. 低密度限制与视觉规范质检 (Low-Density & Visual Standards Gates)
 
-- **Style Preset 选型与全片一致性**: `BRIEF.md` 的 YAML Frontmatter 中必须包含从 [`references/style_presets.md`](style_presets.md) 自适应选定的有效 `style_preset`（如 `blue-professional`, `code-editorial`, `minimal`, `broadside`, `clean-editorial`, `swiss-graphic` 等），且全片所有视频单元（`unit_01` ~ `unit_N`）的 `style_preset` 必须绝对统一，严禁同一视频的不同单元风格游离！
-- **One Statement Per Frame**: `## Customizations` 与 `## Notes` 中必须明确要求单屏仅表达 1 个核心结论，禁止堆砌多张卡片。
-- **Cap Elements $\le 3$**: 单场景独立 UI 元素/卡片总量严格约束在 3 个以内。
-- **Suppress Chrome**: 显式禁用背景网格点、装饰性线条、光晕/粒子等“视觉噪声”。
+质检通过判定依据（任一条不满足即打回）：
+
+- [ ] **无 style_preset**：YAML Frontmatter 中不含 `style_preset` 字段。
+- [ ] **`## Customizations` 存在**：板块中含低密度规程声明（One Statement Per Frame、Cap Elements ≤ 5、Suppress Chrome、No Side Panels）。
+- [ ] **`## Intent` 按切片分组**：每个切片的活跃构件列表（含 `#mascot`）**≤ 5 个**；超出直接打回。
+- [ ] **分时显隐矩阵**：`## Intent` 明确标注各切片的 `opacity:0` 淡出与 `opacity:1` 淡入卡点；无退场动画说明的直接打回。
+- [ ] **无侧边栏/多框堆叠**：画面内无 `side-info-card` 或多重框中框；存在即打回。
+- [ ] **字号下限**：`## Notes` 含字号下限声明（唱词字幕 ≥ 44px、主标题 ≥ 64px、正文/标签 ≥ 32px、数据大字 ≥ 56px）；缺失即打回。
+- [ ] **SVG 3层物理骨架代码硬卡质检**：`## Intent` 中必须直接包含 Raw `<svg>` 3 层 XML 代码片段（Layer 1 基底 + Layer 2 具象特征纹理 `<path>` 如田垄/刻度/电路 + Layer 3 标示）；若仅包含高层自然语言描述（如“带有田垄纹理 <path>”），或仅用死板裸方块 `<rect>` + `<text>` / `<div class="card">` 充当物理实体的，直接判定 `[REJECT]` 打回。
+- [ ] **IP 关节 svgOrigin 防脱臼质检**：`## Notes` 显式声明 IP Mascot 关节旋转/位移使用 GSAP 绝对坐标 `svgOrigin: "X Y"` 锁定 300x400 viewBox 关节点（左肩 `"90 205"`、右肩 `"210 205"`、左髋 `"120 300"`、右髋 `"180 300"`、颈部 `"150 160"`），绝对禁止 CSS `transformOrigin: "px px"`（防止关节脱臼断裂）。
+- [ ] **SVG 文本字体与顶部防裁切质检**：`## Notes` 显式包含 SVG 文本 `font-family` 继承声明与顶部安全距声明（16:9 标题组 `translate.y ≥ 160px`、9:16 标题组 `translate.y ≥ 240px`，第一行 `<text>` 显式指定 `y ≥ 50` 或 `dominant-baseline="hanging"`，禁止向上 `y: -25` 推顶动画），防止字顶向上溢出顶端边缘被截断。
 
 ---
 

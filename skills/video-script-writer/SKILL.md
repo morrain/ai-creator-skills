@@ -65,7 +65,7 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
       "unit_id": "Unit 01",
       "duration_seconds": 8,
       "voiceover": "逐字口播文案...",
-      "visual_prompt": "16:9 纯白背景，黑色手绘线条风格...",
+      "visual_prompt": "16:9 干净留白背景，低密度视觉构图...",
       "ip_action": "IP Mascot 角色手持数据线缆...",
       "on_screen_elements": {
         "title_card": "单元标题",
