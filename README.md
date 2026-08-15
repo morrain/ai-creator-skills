@@ -37,19 +37,18 @@
 
 6 张纯白背景、线稿手绘风格的认知隐喻图，原生中文标注，由 `illustration-designer` 技能全自动设计并批量生成：
 
-````carousel
-![智能水闸门 · 调控流动性（水库大坝隐喻）](showcase/illustration_1.png)
-<!-- slide -->
-![债券持有人出借债券换取资金（手递文件隐喻）](showcase/illustration_2.png)
-<!-- slide -->
-![买断式 vs 质押式：两种逆回购对比（天平隐喻）](showcase/illustration_3.png)
-<!-- slide -->
-![利率走廊机制（水位刻度隐喻）](showcase/illustration_4.png)
-<!-- slide -->
-![流动性传导路径（农田灌渠隐喻）](showcase/illustration_5.png)
-<!-- slide -->
-![央妈精准滴灌 vs 大水漫灌（智能喷头隐喻）](showcase/illustration_6.png)
-````
+<table>
+  <tr>
+    <td align="center"><img src="showcase/illustration_1.png" width="280"><br><sub>智能水闸门 · 调控流动性</sub></td>
+    <td align="center"><img src="showcase/illustration_2.png" width="280"><br><sub>出借债券换取资金</sub></td>
+    <td align="center"><img src="showcase/illustration_3.png" width="280"><br><sub>买断式 vs 质押式对比</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="showcase/illustration_4.png" width="280"><br><sub>利率走廊机制</sub></td>
+    <td align="center"><img src="showcase/illustration_5.png" width="280"><br><sub>流动性传导路径</sub></td>
+    <td align="center"><img src="showcase/illustration_6.png" width="280"><br><sub>精准滴灌 vs 大水漫灌</sub></td>
+  </tr>
+</table>
 
 ---
 
@@ -57,15 +56,14 @@
 
 4 张 3:4 竖版莫兰迪配色手绘海报，匹配经典版式，由 `poster-designer` 技能全自动配置，按需生图：
 
-````carousel
-![海报 1 · 主题封面海报（横幅版式）](showcase/poster_1.png)
-<!-- slide -->
-![海报 2 · 核心概念对比（左右分栏版式）](showcase/poster_2.png)
-<!-- slide -->
-![海报 3 · 流程拆解（三步骤版式）](showcase/poster_3.png)
-<!-- slide -->
-![海报 4 · 收官总结（大字留白版式）](showcase/poster_4.png)
-````
+<table>
+  <tr>
+    <td align="center"><img src="showcase/poster_1.png" width="200"><br><sub>封面海报 · 横幅版式</sub></td>
+    <td align="center"><img src="showcase/poster_2.png" width="200"><br><sub>核心概念 · 左右分栏</sub></td>
+    <td align="center"><img src="showcase/poster_3.png" width="200"><br><sub>流程拆解 · 三步骤</sub></td>
+    <td align="center"><img src="showcase/poster_4.png" width="200"><br><sub>收官总结 · 大字留白</sub></td>
+  </tr>
+</table>
 
 ---
 
@@ -73,10 +71,26 @@
 
 由 7 个独立 HyperFrames 动画单元渲染、FFmpeg 极速拼接，同步交付横竖屏双比例成品，成品时长约 **1 分 20 秒**：
 
-| 比例 | 分辨率 | 适用平台 | 文件 |
-| :--- | :--- | :--- | :--- |
-| 16:9 横屏 | 1920 × 1080 | B 站 / YouTube / PC | [▶ 观看视频](https://mp.weixin.qq.com/s/R_0799YjXnVRabRGunO_8g) |
-| 9:16 竖屏 | 1080 × 1920 | 抖音 / 视频号 / Shorts / 小红书 | [▶ 观看视频](https://www.xiaohongshu.com/explore/6a80732a0000000028001f53?xsec_token=AB8amE5gqLpjDuJAVS9VbpXZGGJ-bSLeks2MWh-8eqoz8=&xsec_source=pc_user) |
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://mp.weixin.qq.com/s/R_0799YjXnVRabRGunO_8g" target="_blank" rel="noopener noreferrer">
+        <img src="showcase/video_16x9_thumb.jpg" width="380"><br>
+        <sub>▶ 16:9 横屏版（1920×1080）· 点击观看</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://www.xiaohongshu.com/explore/6a80732a0000000028001f53?xsec_token=AB8amE5gqLpjDuJAVS9VbpXZGGJ-bSLeks2MWh-8eqoz8=&xsec_source=pc_user" target="_blank" rel="noopener noreferrer">
+        <img src="showcase/video_9x16_thumb.jpg" width="215"><br>
+        <sub>▶ 9:16 竖屏版（1080×1920）· 点击观看</sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><sub>适用平台：B 站 / YouTube / 微信视频号 / PC</sub></td>
+    <td align="center"><sub>适用平台：抖音 / 小红书 / Shorts / 竖屏移动端</sub></td>
+  </tr>
+</table>
 
 ---
 
