@@ -58,10 +58,10 @@
 
 <table>
   <tr>
-    <td align="center"><img src="showcase/poster_1.png" width="200"><br><sub>封面海报 · 横幅版式</sub></td>
-    <td align="center"><img src="showcase/poster_2.png" width="200"><br><sub>核心概念 · 左右分栏</sub></td>
-    <td align="center"><img src="showcase/poster_3.png" width="200"><br><sub>流程拆解 · 三步骤</sub></td>
-    <td align="center"><img src="showcase/poster_4.png" width="200"><br><sub>收官总结 · 大字留白</sub></td>
+    <td align="center"><img src="showcase/poster_1.jpg" width="200"><br><sub>封面海报 · 横幅版式</sub></td>
+    <td align="center"><img src="showcase/poster_2.jpg" width="200"><br><sub>核心概念 · 左右分栏</sub></td>
+    <td align="center"><img src="showcase/poster_3.jpg" width="200"><br><sub>流程拆解 · 三步骤</sub></td>
+    <td align="center"><img src="showcase/poster_4.jpg" width="200"><br><sub>收官总结 · 大字留白</sub></td>
   </tr>
 </table>
 
