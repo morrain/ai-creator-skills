@@ -35,6 +35,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 1. 读取 `video_script.json` 的 `units` 数组，提取每个单元的 `duration_seconds`、`voiceover`、`visual_prompt`、`ip_action`。
 2. 读取 [references/physical_metaphor_schema.md](references/physical_metaphor_schema.md)，按其 3 步推演法为每个单元的主题动态生成 SVG 物理骨架结构与节点 ID。
 3. 结合口播台词与 `visual_prompt`/`ip_action`，对每个单元执行**二次分镜拆解**：梳理全量画面元素清单，划分为带时间戳的关键帧切片（如 `[Sub-shot 1]`、`[Sub-shot 2]`），显式绑定 **Physical Action Recipe**（如 `[Action Recipe: PULL_DRAG]`）。
+4. 读取 `video_script.json` 中 `metadata.visual_theme` 提取全集统一视觉主题与 Palette Tokens，继承准备注入各单元 `BRIEF.md` 契约。
 
 ### 步骤三：创建单元工作区、初始化 HyperFrames 项目并落盘 BRIEF.md
 针对每个视频单元 `XX`（如 `01`, `02` ...）：
@@ -63,7 +64,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
 
 5. 存盘写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，各板块要求如下：
 
-   **YAML Frontmatter**（必填字段，不填 `style_preset`）：
+   **YAML Frontmatter**（必填字段，继承 `video_script.json` 中的 `visual_theme`）：
    ```yaml
    workflow: faceless-explainer
    flow: automation
@@ -71,6 +72,12 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    aspect: 1920x1080
    message: <单元核心结论>
    length: <duration_seconds>
+   theme:
+     canvas_bg: "linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 50%, #eff6ff 100%)"
+     primary_accent: "#2563eb"
+     secondary_accent: "#38bdf8"
+     warning_accent: "#ef4444"
+     success_accent: "#10b981"
    ```
 
    **`## Intent` 板块**须包含：
@@ -89,7 +96,8 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    > `- 低密度与通透留白规程：一屏仅表达 1 个核心结论 (One Statement Per Frame)，任意时刻 t DOM 活跃构件总数绝对 <= 5 个 (Cap Elements <= 5)，切片交接时执行 opacity:0 淡出退场 (Visibility Timeline Matrix)，屏蔽背景网格点、装饰线条或粒子等视觉噪声 (Suppress Chrome)，保持 70%+ 通透留白，严禁侧边解说卡片 (No Side Panels)。`
 
    **`## Notes` 板块**（强制写入以下全部规程）：
-   > `- SVG Mascot Joint Animation: When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. svgOrigin: "90 205"), NEVER use CSS transformOrigin: "px px", to prevent arm dislocation.`
+   > `- 全局视觉风格与主题 Token 继承铁律：编写 index.html 时必须 100% 遵守 Frontmatter 中 theme 声明的代币（背景 Canvas BG、主色 Primary Accent 等），全集统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。`
+   > `- SVG Mascot Joint Animation (Few-Shot Anti-Dislocation Rule): When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. ✅ gsap.set("#mascot-arm-left", { svgOrigin: "90 205" })), NEVER use CSS transformOrigin: "px px" (e.g. ❌ gsap.set("#mascot-arm-left", { transformOrigin: "90px 210px" })), to prevent arm dislocation.`
    > `- IP 与道具空间耦合规程：IP 角色与物理道具交互时，必须将 <g id="mascot"> 直接嵌入主场景 SVG 容器，或通过 gsap.set("#mascot", { x, y }) 对齐绝对坐标，确保手掌/手臂接触点 100% 触碰道具锚点。严禁 IP 在独立底部 div 而道具在顶部 SVG 中。`
    > `- IP 角色常驻微呼吸与 5s 习惯性微动作规程：在 index.html 中必须建立常驻微动作引擎，挂载 Y 轴 2.2s 浮动呼吸 + 3.5s 眨眼循环，并每 4~5s 周期性触发习惯性微动作（点头微摇手、侧身摇头、手势点按脉冲），消除场景静止僵硬感，无需复杂的画面静止检测！`
    > `- IP 角色空间智能避让与留白停留规程：在场景主体进行核心演示/放大的停留状态时，IP Mascot 必须通过 GSAP 自动平移避让至画布两侧的通透留白槽 (Negative Space, 对角互补法则：主体居右则 IP 避让至左侧 X:250，主体居左则 IP 避让至右侧 X:1650)，并微调头尖/眼珠朝向主体，绝对禁止在静止停留状态时停留在中央遮挡主体内容！`
@@ -98,7 +106,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    > `- 字幕同步规程：必须读取 public/timestamps.json 建立 GSAP 字幕时间轴，在 DOM 中动态展示高对比度唱词字幕。`
    > `- 非 16:9 物理实体纵向流与防缩小规程：针对 9:16 竖屏画幅，必须将 3 层物理骨架中解耦的独立 <g id="..."> 构件由横向排列重构成纵向 Top-to-Bottom 瀑布流 (上:源头实体 ➔ 中:控制阀门 ➔ 下:受水目标)，同时将构件尺寸放大 1.3x~1.5x (充盈 1080px 宽度)，管道 path 改为纵向 V 形式，绝对禁止将全场景打包在单一死板组中导致竖屏整体缩成一小条！`
    > `- 9:16 视频平台 (小红书/抖音/视频号) 底部 UI 避让留白规程：针对 9:16 竖屏，底部 Y: 1600px - 1920px (至少 320px+) 必须保留为纯净背景避让留白区，唱词字幕盒子必须向上提升放置在 bottom: 320px (Y: 1460px - 1580px) 处，绝对禁止在底部 320px 内放置任何实体构件或字幕，防止发布后被小红书/抖音的头像、作者文案与互动按钮覆盖遮挡！`
-   > `- IP Mascot 全局最高 Z-Index 最顶层置顶规程：在 index.html 中，必须将 public/mascot.svg 的完整 <g> 矢量节点直接内嵌写入 <g id="mascot">，并将其放置在全局最高层级 (z-index: 100，高于 Title Card z-index: 50 与场景 z-index: 10)。无论 IP Mascot 巡视位移至画面任何区域（包含靠近顶部标题栏），均 100% 保持为绝对最顶层，彻底杜绝任何图层压头遮挡！严禁使用跨文件 <use> 标签或手写彩色方块占位。`
+   > `- IP Mascot 全局最高 Z-Index 最顶层置顶规程：在 index.html 中，包含 <g id="mascot"> 的主 SVG 容器 (#main-stage) 在 HTML CSS 堆叠上下文中必须赋予全局最高堆叠层级 (z-index: 100; pointer-events: none;)，且浮动数据卡片 (.metric-badge) 与场景饰条的 CSS z-index 必须低于 #main-stage (如 z-index: 20)。在 SVG 画布内部，<g id="mascot"> 必须作为最下排末尾节点呈现 (Painter's Model)，确保无论 IP Mascot 巡视位移至画面任何区域（包含靠近卡片/标题栏），均 100% 保持为绝对最顶层，彻底杜绝任何图层压头遮挡！严禁在 SVG <g> 节点上误写 style="z-index: 100" 假置顶。`
    > `- 首帧防空白封面规程：t=0.0s 时首帧绝对不能是纯白画布！必须通过 gsap.set() 在 t=0 渲染主要标题、背景卡片与 IP 姿态 (opacity: 1)，确保小红书/微信视频号自动抽取的封面丰富可读。`
    > `- 字号下限规程：主标题 ≥ 64px、副标题/卡片标题 ≥ 38px、正文/标签 ≥ 32px（绝对禁止 font-size < 30px）、数据大字 ≥ 56px、唱词字幕 ≥ 44px、SVG 图表文字 ≥ 30px。`
    > `- SVG 文本字体与顶部防裁切规程：SVG 内部所有 <text> 节点必须显式指定 font-family（或在全局 CSS 中设置 svg text { font-family: "Noto Sans SC", sans-serif; }）；主标题组 transform 必须留足顶部安全距（16:9 顶部 translate.y ≥ 160px，9:16 顶部 translate.y ≥ 240px），第一行 <text> 必须显式设置 y 坐标（如 y="50" 或 dominant-baseline="hanging"），且标题进场动画禁止使用向上推顶的 y 位移（如 y: -25），绝对防止字顶向上溢出顶端边缘裁切。`

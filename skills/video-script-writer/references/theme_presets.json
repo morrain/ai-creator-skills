@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Standard Curated Visual Theme Presets for Explainer Videos",
+  "presets": {
+    "light_water_metaphor": {
+      "name": "水利自然/流动性金融科普",
+      "applicable_topics": ["央行货币政策", "金融概念水利隐喻", "水利工程", "生态科普", "社会基础设施"],
+      "tokens": {
+        "canvas_bg": "linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 50%, #eff6ff 100%)",
+        "card_bg": "rgba(255, 255, 255, 0.94)",
+        "card_border": "2px solid #cbd5e1",
+        "primary_accent": "#2563eb",
+        "secondary_accent": "#38bdf8",
+        "warning_accent": "#ef4444",
+        "success_accent": "#10b981",
+        "text_primary": "#0f172a",
+        "subtitle_box_bg": "rgba(15, 23, 42, 0.92)",
+        "subtitle_box_border": "2.5px solid rgba(59, 130, 246, 0.6)"
+      }
+    },
+    "dark_cyber_tech": {
+      "name": "硬核科技/赛博芯片",
+      "applicable_topics": ["AI芯片", "编程开发", "数据库", "云计算", "黑客网络"],
+      "tokens": {
+        "canvas_bg": "radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #0b0f19 100%)",
+        "card_bg": "rgba(30, 41, 59, 0.88)",
+        "card_border": "2.5px solid #334155",
+        "primary_accent": "#38bdf8",
+        "secondary_accent": "#818cf8",
+        "warning_accent": "#f59e0b",
+        "success_accent": "#22c55e",
+        "text_primary": "#f8fafc",
+        "subtitle_box_bg": "rgba(15, 23, 42, 0.94)",
+        "subtitle_box_border": "2.5px solid #0284c7"
+      }
+    },
+    "warm_flat_academic": {
+      "name": "人文历史/商业故事",
+      "applicable_topics": ["历史商业", "人物传记", "社会学", "哲学思考", "品牌故事"],
+      "tokens": {
+        "canvas_bg": "linear-gradient(180deg, #fafaf9 0%, #f5f5f4 100%)",
+        "card_bg": "rgba(255, 255, 255, 0.96)",
+        "card_border": "2px solid #e7e5e4",
+        "primary_accent": "#ea580c",
+        "secondary_accent": "#d97706",
+        "warning_accent": "#dc2626",
+        "success_accent": "#16a34a",
+        "text_primary": "#1c1917",
+        "subtitle_box_bg": "rgba(28, 25, 23, 0.92)",
+        "subtitle_box_border": "2.5px solid rgba(234, 88, 12, 0.6)"
+      }
+    },
+    "minimal_emerald_finance": {
+      "name": "金融理财/投资分析",
+      "applicable_topics": ["金融概念解说", "股票基金", "个人理财", "宏观经济", "财报分析"],
+      "tokens": {
+        "canvas_bg": "linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%)",
+        "card_bg": "rgba(255, 255, 255, 0.95)",
+        "card_border": "2px solid #a7f3d0",
+        "primary_accent": "#059669",
+        "secondary_accent": "#0284c7",
+        "warning_accent": "#eab308",
+        "success_accent": "#10b981",
+        "text_primary": "#064e3b",
+        "subtitle_box_bg": "rgba(6, 78, 59, 0.92)",
+        "subtitle_box_border": "2.5px solid rgba(16, 185, 129, 0.6)"
+      }
+    }
+  }
+}

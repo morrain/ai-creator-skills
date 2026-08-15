@@ -41,6 +41,30 @@
         "source_article_path": {
           "type": "string",
           "description": "Path to source article if mode is article_derived"
+        },
+        "visual_theme": {
+          "type": "object",
+          "description": "Global visual theme and color palette tokens for consistency",
+          "required": ["preset", "tokens"],
+          "properties": {
+            "preset": { "type": "string" },
+            "style_description": { "type": "string" },
+            "tokens": {
+              "type": "object",
+              "properties": {
+                "canvas_bg": { "type": "string" },
+                "card_bg": { "type": "string" },
+                "card_border": { "type": "string" },
+                "primary_accent": { "type": "string" },
+                "secondary_accent": { "type": "string" },
+                "warning_accent": { "type": "string" },
+                "success_accent": { "type": "string" },
+                "text_primary": { "type": "string" },
+                "subtitle_box_bg": { "type": "string" },
+                "subtitle_box_border": { "type": "string" }
+              }
+            }
+          }
         }
       }
     },

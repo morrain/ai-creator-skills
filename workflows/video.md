@@ -38,10 +38,10 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 若传入纯主题字符串（如 `Vue 3.5 响应式原理`），进入**模式 2 (独立主题创作)**。
    - **低密度视觉排版规程**：在 `BRIEF.md` 中不填写 `style_preset` 字段。视频排版严格遵循低密度呼吸感规程（70%+ 留白空间，一屏仅表达 1 个核心结论，单切片活跃元素 $\le 5$）。
 2. **调度原子技能 `video-script-writer` 提炼 4 轨剧本**：
-   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。
+   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。
 3. **SubAgent 剧本盲审闭环**：
    - 检查项目根目录是否存在自进化规则 `./learnings/video_script.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/video-script-writer/references/script_reviewer_standards.md` 与 `learnings_file: ./learnings/video_script.md`）；若不存在，启动 `blind-reviewer`（仅传入 `default_standards`）。
-   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
+   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
 4. **落盘剧本与 3s 独立 Outro 单元约束**：
    - 存盘至 `./<article-slug>/assets/video/video_script.json`。
    - **⚠️ 尾部 3s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 3s`），专门用于互动引导（如 "如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
@@ -54,7 +54,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 1. **读取剧本定稿**：
    - 读取 `./<article-slug>/assets/video/video_script.json`。
 2. **调度原子技能 `voiceover-generator` 生成 TTS 音频与精确时间轴**：
-   - 提取 `voiceover` 文案，调用 Edge-TTS (音色 `zh-CN-YunxiNeural`) 导出完整配音音频 `./<article-slug>/assets/video/audio/voiceover.mp3` 与字幕时间轴 `./<article-slug>/assets/video/audio/timestamps.json`。
+   - 提取 `voiceover` 文案，调用 Edge-TTS (音色 `zh-CN-YunxiNeural`) 导出完整配音音频 `./<article-slug>/assets/video/audio/voiceover.mp3` 与字幕时间轴 `./<article-slug>/assets/video/audio/timestamps.json`（同时在 `metadata` 中透传 `visual_theme` 声明）。
    - 自动切分各个视频单元的音频文件 `./<article-slug>/assets/video/audio/unit_XX.mp3`。
    - 精确计算出各视频单元的**实际口播时长 $A_i$**，为 Step 3 注入 `BRIEF.md` 时长契约做前置准备。
 
@@ -64,6 +64,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 1. **调度原子技能 `video-storyboard-designer` 提炼单元契约**：
    - 扫描正文插图描述（若存在），提取静态物理隐喻。
+   - 读取 `video_script.json` 中的 `metadata.visual_theme` 提取全集统一视觉配色代币。
    - 将 `video_script.json` 拆解为 $N$ 个独立视频单元（`unit_01`, `unit_02`, ...），在 `./<article-slug>/assets/video/` 下逐单元建立独立工作区。
 2. **逐单元独立运行 HyperFrames 初始化命令 (Per-Unit Sequential Init)**：
    - **主 Agent 必须对每一个 `unit_XX` 依次串行执行**初始化命令（**绝对禁止编写 `setup_units.py` 等 Python 脚本进行批量处理**）：
@@ -75,7 +76,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      - `public/mascot.svg`（矢量 IP 角色资产）
      - `public/audio.mp3`（复制自 `../audio/unit_XX.mp3` 本单元配音切片）
      - `public/timestamps.json`（复制自 `../audio/timestamps.json` 本单元字幕时间戳契约）
-   - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`（不填写 `style_preset` 字段）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
+   - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`（在 Frontmatter 注入 `theme` 代币）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**全局视觉主题 Token 继承铁律**、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
 4. **⚠️ Step 3 绝对禁令 (Strict Prohibition Rules)**：
    - **严禁编写初始化或 HTML 脚本**：Step 3 仅负责契约与脚手架逐单元初始化，**绝对禁止 Agent 编写任何批量初始化脚本（如 `setup_units.py`）或拼接 HTML/CSS/GSAP 代码的脚本（如 `build_unit_htmls.py`）**！
    - （仅当带有 `--interactive` 显式卡点选项时，暂停并等待回复 `[继续]` 后继续；默认无需人工审核，直接进入 Step 4）。
@@ -96,7 +97,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
        - 显式调用 `invoke_subagent` 启动独立的 SubAgent（**必须设置 `TypeName: "self"`**），必须 100% 格式化传入以下精简的标准提示词模板：
          ```text
          1. 优先读取 HyperFrames 主控技能文件（`.agents/skills/hyperframes/SKILL.md`），严格按照其规程完成 HTML 组帧与渲染。
-         2. 画幅与时长：卡点匹配 `BRIEF.md` 声明的 `aspect` 与 `length`。
+         2. 画幅、时长与全局视觉主题：卡点匹配 `BRIEF.md` 声明的 `aspect` 与 `length`，且必须 100% 继承 BRIEF.md Frontmatter 中声明的 `theme` 配色代币（背景 Canvas BG、主色 Primary Accent 等），全局统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。
          3. 矢量精细化与 3 层结构规程（物理实体硬性铁律）：
             - **强制 3 层 DOM 结构**：所有物理实体（如农田、水库大坝、水闸阀门、渠道水流、芯片、数据库等）必须封装在 `<g id="...">` 组内，且必须完整包含 3 层 DOM 元素：
               1) Layer 1 实体基底：带有 fill 充盈色与 stroke 轮廓的底座/基础图形；
@@ -106,8 +107,17 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
          4. IP Mascot 矢量源码嵌入与关节动画硬性规则：
              - **DOM 节点强制内联与最顶层渲染**：必须直接将 `public/mascot.svg` 内部包含 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-body` 的完整 `<g>` 矢量 DOM 节点原样复制内嵌写入 `index.html` 的 `<g id="mascot">` 内部。在 `<svg>` 主画布中，**`<g id="mascot">` 必须放在所有物理场景构件（水坝、管道、芯片、水流等）的最后方（末位 DOM 节点）**。基于 SVG Painter's Model 绘制规则，后置节点必定置顶，100% 保证 IP 形象在最上一层不被场景遮挡！**严禁使用 `<use href="./public/mascot.svg#...">`**，**绝对禁止手写或脑补生成 `<rect fill="#fbbf24">` 等彩色块/粗线条占位图形**！
              - **GSAP svgOrigin 关节锁死与常驻 5s 微动作引擎**：使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。同时**必须建立常驻双层微动作引擎**（2.2s 浮动呼吸 + 3.5s 眨眼 + 每 4~5s 习惯性微动作循环如点头晃手臂），彻底杜绝镜头长达 5~6s 的静止死板。
-             - **⚠️ 严禁使用 CSS `transformOrigin: "px px"`**，防止关节脱臼断裂。
-          5. 画布三区安全隔离与平台 UI 底部留白规程：
+             - **⚠️ IP Mascot 关节旋转防脱臼正反示例**：
+                - ❌ **错误写法（绝对禁止！使用 CSS transformOrigin 会以包围盒左上角二次偏移，导致关节脱臼断裂）**：
+                  `gsap.set("#mascot-arm-left", { transformOrigin: "90px 210px" });`
+                - ✅ **正确写法（必须严格遵循！锁定 SVG viewBox 全局画布坐标）**：
+                  `gsap.set("#mascot-arm-left", { svgOrigin: "90 205" });`
+                  `gsap.set("#mascot-arm-right", { svgOrigin: "210 205" });`
+                  `gsap.set("#mascot-leg-left", { svgOrigin: "120 300" });`
+                  `gsap.set("#mascot-leg-right", { svgOrigin: "180 300" });`
+                  `gsap.set("#mascot-head", { svgOrigin: "150 160" });`
+              - **⚠️ 物理构件自转防甩飞规则（阀门/手轮/齿轮）**：手轮圆盘与内部轮辐线条必须统一封装在同一个 `<g id="xxx-wheel">` 矢量组内。使用 GSAP 驱动其旋转时，**必须强制使用 `svgOrigin: "X Y"` 传入其 viewBox 中心坐标**，绝对禁止误用 CSS `transformOrigin: "px px"`（因为 CSS transformOrigin 会以元素包围盒左上角二次偏移计算，导致手轮偏离原点做巨型圆周公转并甩飞出画面）。
+         5. 画布三区安全隔离与平台 UI 底部留白规程：
              - **画布三区隔离**：画面划分为 **顶部标题区**（Y: 60-200px）、**中间主舞台视觉区**（16:9 Y: 200-880px / 9:16 Y: 240-1550px）、**唱词字幕区**（16:9 bottom: 50px / 9:16 bottom: 320px，即 Y: 1460-1580px）。
              - **9:16 视频平台 (小红书/抖音) 底部 UI 避让留白**：9:16 竖屏底部 **Y: 1600px - 1920px (至少 320px+)** 必须保留为纯净背景避让留白区（Zero Elements），唱词字幕盒子向上提升至 `bottom: 320px` 处，绝对禁止在底部 320px 放置任何实体或字幕，防止发布后被小红书/抖音的作者头像、文案与互动按钮遮挡！
             - **SVG 文本防覆盖**：所有 `<text>` 标签必须放置在实体边框、管道水流或阀门外侧（保留 15px+ 间距）或显式使用 `dominant-baseline="hanging"`/`middle`，绝对禁止文本基线与实体线条重合叠加。
