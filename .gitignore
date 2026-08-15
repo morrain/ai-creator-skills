@@ -36,3 +36,7 @@ env/
 
 # Temporary Scratch Directory
 .scratch/
+
+# Showcase large video files (host separately, e.g. Bilibili / YouTube)
+showcase/*.mp4
+showcase/*.mov

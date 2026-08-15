@@ -10,7 +10,7 @@
   <b>包含端到端爆款长文写作、认知隐喻插图设计、微信公众号防擦除 HTML 排版、3:4 莫兰迪图文海报与自进化审稿系统</b>
 </p>
 
-[✨ 核心亮点](#-为什么选择-ai-creator-studio) • [🏛️ 架构设计](#-双层架构设计-dual-layer-architecture) • [🚀 快速上手](#-安装与使用指引) • [🤖 业务工作流](#-端到端业务工作流-workflows)
+[✨ 核心亮点](#-为什么选择-ai-creator-studio) • [🏛️ 架构设计](#-双层架构设计-dual-layer-architecture) • [🚀 快速上手](#-安装与使用指引) • [🖼️ 案例展示](#️-真实案例展示) • [🤖 业务工作流](#-端到端业务工作流-workflows)
 [🧠 规则自进化](#-审稿规则自进化机制-workflow-learn) • [🛠️ 原子技能库](#-底层纯粹原子技能库) • [🎨 IP 角色体系](#-配图角色-ip-自定义指引) • [📁 目录结构](#-项目目录结构)
 
 ---
@@ -29,6 +29,57 @@
 
 ---
 
+## 🖼️ 真实案例展示
+
+> 以下素材均由本套件全自动产出，主题：**《买断式逆回购？别慌！带你读懂央妈的良苦用心》**
+
+### 🎨 正文认知隐喻配图（`/正文插图`）
+
+6 张纯白背景、线稿手绘风格的认知隐喻图，原生中文标注，由 `illustration-designer` 技能全自动设计并批量生成：
+
+````carousel
+![智能水闸门 · 调控流动性（水库大坝隐喻）](showcase/illustration_1.png)
+<!-- slide -->
+![债券持有人出借债券换取资金（手递文件隐喻）](showcase/illustration_2.png)
+<!-- slide -->
+![买断式 vs 质押式：两种逆回购对比（天平隐喻）](showcase/illustration_3.png)
+<!-- slide -->
+![利率走廊机制（水位刻度隐喻）](showcase/illustration_4.png)
+<!-- slide -->
+![流动性传导路径（农田灌渠隐喻）](showcase/illustration_5.png)
+<!-- slide -->
+![央妈精准滴灌 vs 大水漫灌（智能喷头隐喻）](showcase/illustration_6.png)
+````
+
+---
+
+### 🖼️ 手绘社媒海报（`/海报`）
+
+4 张 3:4 竖版莫兰迪配色手绘海报，匹配经典版式，由 `poster-designer` 技能全自动配置，按需生图：
+
+````carousel
+![海报 1 · 主题封面海报（横幅版式）](showcase/poster_1.png)
+<!-- slide -->
+![海报 2 · 核心概念对比（左右分栏版式）](showcase/poster_2.png)
+<!-- slide -->
+![海报 3 · 流程拆解（三步骤版式）](showcase/poster_3.png)
+<!-- slide -->
+![海报 4 · 收官总结（大字留白版式）](showcase/poster_4.png)
+````
+
+---
+
+### 🎬 动画讲解视频（`/讲解视频`）
+
+由 7 个独立 HyperFrames 动画单元渲染、FFmpeg 极速拼接，同步交付横竖屏双比例成品，成品时长约 **1 分 20 秒**：
+
+| 比例 | 分辨率 | 适用平台 | 文件 |
+| :--- | :--- | :--- | :--- |
+| 16:9 横屏 | 1920 × 1080 | B 站 / YouTube / PC | [▶ 观看视频](https://mp.weixin.qq.com/s/R_0799YjXnVRabRGunO_8g) |
+| 9:16 竖屏 | 1080 × 1920 | 抖音 / 视频号 / Shorts / 小红书 | [▶ 观看视频](https://www.xiaohongshu.com/explore/6a80732a0000000028001f53?xsec_token=AB8amE5gqLpjDuJAVS9VbpXZGGJ-bSLeks2MWh-8eqoz8=&xsec_source=pc_user) |
+
+---
+
 ## 🏛️ 双层架构设计 (Dual-Layer Architecture)
 
 ```text
@@ -42,7 +93,7 @@
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                      底层纯粹原子技能 (Atomic Skills Layer)                      │
 │    skills/hot-topics  │  article-writer  │  video-script-writer  │  video-renderer  │
-│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / 4轨剧本 / TTS音频 / 视频合成   │
+│    - 零依赖单点能力，输入文本 -> 输出高品质文章 / 4轨剧本 / TTS音频 / 双比例视频  │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -94,7 +145,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
-| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 逐单元渲染，最终 FFmpeg 拼接导出。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video.mp4` |
+| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 逐单元渲染 16:9 与 9:16 双比例切片，FFmpeg 极速缝合导出双比例成品。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video_16x9.mp4`<br>`./<主题目录>/video_9x16.mp4` |
 | **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 搜集最近一轮审核意见归纳供用户选择，将所选规则沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
@@ -153,7 +204,8 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`poster_config`** | 单张海报 Prompt | `./<slug>/assets/poster_*.md` | `./learnings/poster_config.md` |
 | **`poster_post`** | 海报社媒文案 | `./<slug>/poster_post.md` | `./learnings/poster_post.md` |
 | **`video_script`** | 讲解剧本阶段 | `./<slug>/assets/video/video_script.json` | `./learnings/video_script.md` |
-| **`video_unit`** | 视频单元设计阶段 | `./<slug>/assets/video/unit_XX/BRIEF.md` | `./learnings/video_unit.md` |
+| **`video_storyboard`** | 视频单元分镜契约阶段 | `./<slug>/assets/video/unit_XX/BRIEF.md` | `./learnings/video_storyboard.md` |
+| **`video_unit`** | 视频单元渲染阶段 | `./<slug>/assets/video/unit_XX/BRIEF.md` | `./learnings/video_unit.md` |
 | **`<new_phase_id>`** | (未来扩展新环节) | (新场景产物) | `./learnings/<new_phase_id>.md` |
 
 ---
@@ -195,6 +247,7 @@ ai-creator-skills/
 ├── LICENSE                                 # MIT 开源协议许可文件
 ├── README.md                               # 本文档
 ├── character_ip.md                         # (可选) 项目级自定义 IP 规范模板 (小智 Mascot 预置)
+├── showcase/                               # 真实案例素材（认知隐喻配图 & 莫兰迪海报展示）
 ├── learnings/                              # (动态按需生成) 首次人审运行 /workflow-learn 后自动创建的分环节自进化审稿规则库
 │   ├── article_outline.md                  # 文章大纲自进化规则
 │   ├── article_content.md                  # 文章正文自进化规则
@@ -204,10 +257,13 @@ ai-creator-skills/
 │   ├── poster_config.md                    # 单张海报 Prompt 自进化规则
 │   ├── poster_post.md                      # 海报社媒文案自进化规则
 │   ├── video_script.md                     # 讲解剧本自进化规则
-│   └── video_unit.md                       # 视频单元设计自进化规则
+│   ├── video_storyboard.md                 # 视频单元分镜契约自进化规则
+│   └── video_unit.md                       # 视频单元渲染自进化规则
 ├── docs/                                   # 项目设计文档与 ADR 决策记录
 │   ├── adr/                                # 架构决策记录目录
-│   │   └── 0001-per-scene-hyperframes-ffmpeg-pipeline.md # 独立视频单元与 HyperFrames 拼接架构 ADR
+│   │   ├── 0001-per-scene-hyperframes-ffmpeg-pipeline.md # 独立视频单元与 HyperFrames 拼接架构 ADR
+│   │   └── 0002-multi-aspect-ratio-video-pipeline.md     # 双比例视频渲染管道架构 ADR
+│   ├── spec-multi-aspect-ratio-rendering.md              # 多比例渐进式视频渲染功能规格
 │   └── agents/
 ├── skills/                                 # 底层纯粹原子技能 (可单独安装)
 │   ├── hot-topics/                         # 1. 热门话题抓取
@@ -241,15 +297,24 @@ ai-creator-skills/
     │       ├── video_script.json           # 4 轨讲解剧本定稿
     │       ├── audio/                      # TTS 配音与字幕时间轴
     │       │   ├── voiceover.mp3
+    │       │   ├── unit_XX.mp3             # 各单元独立配音切片
     │       │   └── timestamps.json
     │       ├── unit_01/                    # 视频单元 01 (独立 HyperFrames 项目)
-    │       │   ├── BRIEF.md                # 分镜契约 (供 HyperFrames SubAgent 消费)
+    │       │   ├── BRIEF.md                # 当前活跃分镜契约 (供 HyperFrames SubAgent 消费)
+    │       │   ├── BRIEF_16x9.md           # 16:9 宽屏分镜契约快照
+    │       │   ├── BRIEF_9x16.md           # 9:16 竖屏分镜契约快照
+    │       │   ├── index.html              # 当前活跃动画源码
+    │       │   ├── index_16x9.html         # 16:9 宽屏动画源码快照
+    │       │   ├── index_9x16.html         # 9:16 竖屏动画源码快照
+    │       │   ├── unit_01_16x9.mp4        # 16:9 宽屏渲染归档片段
+    │       │   ├── unit_01_9x16.mp4        # 9:16 竖屏渲染归档片段
     │       │   └── public/mascot.svg       # 矢量 IP 资产
     │       └── unit_02/ ...               # 视频单元 02~N (结构同上)
     ├── images/                             # 图片渲染产物目录 (按需生成)
     │   ├── illustration_1.png ~ illustration_N.png
     │   └── poster_1.png ~ poster_N.png
-    └── video.mp4                           # 最终合成视频 (FFmpeg 拼接导出)
+    ├── video_16x9.mp4                      # 横屏宽屏成品视频 (FFmpeg 拼接导出)
+    └── video_9x16.mp4                      # 竖屏移动成品视频 (FFmpeg 拼接导出)
 ```
 
 ---
