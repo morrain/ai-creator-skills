@@ -138,6 +138,29 @@ ctaTl.to("#mascot-body", { y: -20, duration: 0.4, repeat: 1, yoyo: true })
 
 ---
 
+### 模式 G: 走动归位与空白待命注视 (EXECUTE THEN RETREAT TO BLANK SPACE)
+* **物理隐喻场景**：IP Mascot 在某个物理构件位置完成动作任务（如拉手柄、按按键、搬运箱子）后，若后续无动作，自动走动回退至场景空白区域待命（Home Anchor），并微倾头部注视当前画面主体。
+* **动作要领**：
+  1. **走动平移归位**：动作完成后，IP Mascot 平移向空白点位（`x: targetX, y: targetY`），同时左右腿交替旋转摆动（`yoyo` 摆腿 `rotation: ±25deg`），实现自然的走动退场；
+  2. **恢复待命姿态**：到达空白区后恢复双腿 `rotation: 0deg`，保持 2.2s 浮动呼吸 + 3.5s 眨眼；
+  3. **注视视线锚定**：头部与眼珠微倾（`rotation: ±8deg`），视线始终投向当前画面中正在发生变化的物理构件或数据卡片，扮演“解说/见证者”。
+
+```javascript
+// 1. IP 走动回退至空白待命点 (例如 targetX: 250, targetY: 110)
+const retreatTl = gsap.timeline({ ease: "power1.inOut" });
+
+// 腿部走动摆动动画
+retreatTl.to("#mascot-leg-left", { rotation: 25, duration: 0.2, yoyo: true, repeat: 7 }, 0)
+         .to("#mascot-leg-right", { rotation: -25, duration: 0.2, yoyo: true, repeat: 7 }, 0)
+         // Mascot 平移归位至空白待命区
+         .to("#mascot", { x: 250, y: 110, duration: 1.6 }, 0)
+         // 到达空白区后，腿部复位，头部倾斜注视主体构件 (如 rotation: -8deg)
+         .to(["#mascot-leg-left", "#mascot-leg-right"], { rotation: 0, duration: 0.2 }, 1.6)
+         .to("#mascot-head", { rotation: -8, duration: 0.4 }, 1.6);
+```
+
+---
+
 ## 3. 规范约束
 
 HyperFrames 在为视频单元编写 GSAP HTML 动画时，必须在代码中注入对应的 Recipe，**严禁生成仅对 `#mascot-head` 施加微弱旋转的偷懒代码**！

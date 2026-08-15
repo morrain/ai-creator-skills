@@ -83,7 +83,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    **`## Intent` 板块**须包含：
    - **3 层矢量物理骨架草案（必须直接输出完整 Raw SVG XML 代码块）**：遵循 `physical_metaphor_schema.md` 3 步推演与 3 层矢量精细化指南，必须在 `## Intent` 中按物理实体解耦输出独立的具名 `<g id="...">` XML 构件组（如 `<g id="dam-body">`、`<g id="water-gate">`、`<g id="farmland-target">`），**每个构件内部独立封装其自身的 Layer 1 底座 + Layer 2 纹理 + Layer 3 细节/指示灯**。自解释图形切勿强行加字！**🚫 绝对禁止按 Layer 1/2/3 建立全局大组包裹所有实体（如 `<g id="macro-system"><g id="textures">...</g></g>`）！绝对禁止仅输出高层文字描述或无纹理死板裸框！**
    - **画面元素清单**：按切片列出所有活跃构件（含 `#mascot`），每切片 ≤ 5 个。
-   - **二次分镜切片**：带时间戳（如 `[Sub-shot 1: 00:00-00:10]`），明确各元素入场/退场动画与 IP Recipe 绑定。
+   - **二次分镜切片**：带时间戳（如 `[Sub-shot 1: 00:00-00:10]`），明确各元素入场/退场动画与 IP Recipe 绑定。针对包含动作任务的切片，必须显式标注动作结束后的【空白归位坐标】与 `[Action Recipe: EXECUTE_THEN_RETREAT]` 指令（例如：`[Action Recipe: PUSH_PRESS] ➔ [Action Recipe: EXECUTE_THEN_RETREAT] (归位点: [140, 270])`），指导下游渲染代理生成精确的走动与回退动作。
 
    **`## Assets` 板块**（强制写入）：
    ```
@@ -100,7 +100,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    > `- SVG Mascot Joint Animation (Few-Shot Anti-Dislocation Rule): When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. ✅ gsap.set("#mascot-arm-left", { svgOrigin: "90 205" })), NEVER use CSS transformOrigin: "px px" (e.g. ❌ gsap.set("#mascot-arm-left", { transformOrigin: "90px 210px" })), to prevent arm dislocation.`
    > `- IP 与道具空间耦合规程：IP 角色与物理道具交互时，必须将 <g id="mascot"> 直接嵌入主场景 SVG 容器，或通过 gsap.set("#mascot", { x, y }) 对齐绝对坐标，确保手掌/手臂接触点 100% 触碰道具锚点。严禁 IP 在独立底部 div 而道具在顶部 SVG 中。`
    > `- IP 角色常驻微呼吸与 5s 习惯性微动作规程：在 index.html 中必须建立常驻微动作引擎，挂载 Y 轴 2.2s 浮动呼吸 + 3.5s 眨眼循环，并每 4~5s 周期性触发习惯性微动作（点头微摇手、侧身摇头、手势点按脉冲），消除场景静止僵硬感，无需复杂的画面静止检测！`
-   > `- IP 角色空间智能避让与留白停留规程：在场景主体进行核心演示/放大的停留状态时，IP Mascot 必须通过 GSAP 自动平移避让至画布两侧的通透留白槽 (Negative Space, 对角互补法则：主体居右则 IP 避让至左侧 X:250，主体居左则 IP 避让至右侧 X:1650)，并微调头尖/眼珠朝向主体，绝对禁止在静止停留状态时停留在中央遮挡主体内容！`
+   > `- IP 角色动作完成归位与空白待命注视规程：IP 形象除执行指定动作任务外，其余时间必须停留在画布空白区域待命。在完成任意动作任务后（如拉手柄、搬运箱子、按按键），若无后续动作，必须通过 GSAP 触发双腿交替摆动（yoyo 摆腿 rotation ±25°）走动平移回退至该切片指定的空白待命点（Home Anchor），并恢复 2.2s 浮动呼吸 + 3.5s 眨眼，同时微倾头部与眼珠（rotation: ±8°）视角始终注视当前画面核心演示构件/数据，绝对禁止动作完成后长期滞留在构件重叠区！`
    > `- IP Mascot 矢量源码嵌入与最顶层渲染规程：在 index.html 中，必须将 public/mascot.svg 内部包含 #mascot-head, #mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-body 的完整 <g> 矢量 DOM 节点直接原样内嵌写入主场景 <g id="mascot"> 内部。在 <svg> DOM XML 结构中，<g id="mascot"> 必须放置在所有场景背景与物理实体 (如 #dam, #farmland, #chip, #stream) 的最下排末尾节点。基于 SVG Painter's Model 画家法则，DOM 顺序靠后的节点必定覆盖前面的节点，由此 100% 保证 IP 形象渲染在最顶层，绝对不被场景遮挡！严禁使用跨文件 <use href="./public/mascot.svg#..."> 标签，绝对禁止手写或脑补生成 <rect fill="#fbbf24"> 等彩色块/粗线条占位图形替代 IP 形象！`
    > `- 音轨绑定规程：必须在 index.html 中挂载 <audio id="unit-audio" class="clip" src="./public/audio.mp3" data-start="0" data-duration="..." data-track-index="0"></audio>。`
    > `- 字幕同步规程：必须读取 public/timestamps.json 建立 GSAP 字幕时间轴，在 DOM 中动态展示高对比度唱词字幕。`
