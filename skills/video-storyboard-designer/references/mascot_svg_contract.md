@@ -86,4 +86,32 @@ gsap.set("#mascot-head", { svgOrigin: "150 160", rotation: 0 });
 
 1. **✅ 强制 DOM 节点直接内嵌**：必须将 `public/mascot.svg` 内部包含 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-body` 等标准 ID 节点的完整 `<g>` 矢量 DOM 结构原样复制/内嵌写入 `index.html` 主 SVG 容器的 `<g id="mascot">` 节点内部。
 2. **⚠️ 严禁使用跨文件 `<use>` 引用**：禁止在 `index.html` 中编写 `<use href="./public/mascot.svg#...">` 或 `<use href="mascot.svg#...">`，防止在无 Web Server 的 Headless / Puppeteer 渲染环境下因同源安全/CORS 限制导致外部节点引用失败。
-3. **🚫 绝对禁止脑补/手写草案图形**：绝对禁止在 `index.html` 中自行脑补或手写 `<rect fill="#fbbf24">`、`<rect fill="#f59e0b">`、`<circle fill="#fde68a">` 等替代性的粗线条/彩色块占位图形！
+3. 🚫 **绝对禁止脑补/手写草案图形**：绝对禁止在 `index.html` 中自行脑补或手写 `<rect fill="#fbbf24">`、`<rect fill="#f59e0b">`、`<circle fill="#fde68a">` 等替代性的粗线条/彩色块占位图形！
+
+---
+
+## 6. 常驻微呼吸与 5s 习惯性微动作代码标准 (Continuous Idle Micro-Gesture Standard)
+
+为彻底消除分镜切片中画面死寂僵硬感（如 >5s 无大动作的场景），在 `index.html` 的 GSAP 脚本中，必须建立 **双层常驻微动作引擎**：
+
+```javascript
+// 1. Layer A: 常驻呼吸浮动与眨眼循环 (Continuous Breathing & Blink Loop)
+gsap.to("#mascot", { y: "+=6", duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+gsap.to(["#mascot-eye-left", "#mascot-eye-right"], {
+  scaleY: 0.1, duration: 0.12, repeat: -1, repeatDelay: 3.5, transformOrigin: "center"
+});
+
+// 2. Layer B: 每 4-5 秒循环习惯性微动作 (5-Second Periodic Micro-Gestures)
+const idleTimeline = gsap.timeline({ repeat: -1, repeatDelay: 1.5 });
+idleTimeline
+  // 4s 点头与左臂微摆
+  .to("#mascot-head", { rotation: 6, svgOrigin: "150 160", duration: 0.4, ease: "power1.out" })
+  .to("#mascot-arm-left", { rotation: -12, svgOrigin: "90 205", duration: 0.4, ease: "power1.out" }, "<")
+  .to("#mascot-head", { rotation: 0, duration: 0.4, ease: "power1.inOut" }, "+=0.3")
+  .to("#mascot-arm-left", { rotation: 0, duration: 0.4, ease: "power1.inOut" }, "<")
+  // 8s 摇头与右臂微抬
+  .to("#mascot-head", { rotation: -6, svgOrigin: "150 160", duration: 0.4, ease: "power1.out" }, "+=2.0")
+  .to("#mascot-arm-right", { rotation: 10, svgOrigin: "210 205", duration: 0.4, ease: "power1.out" }, "<")
+  .to("#mascot-head", { rotation: 0, duration: 0.4, ease: "power1.inOut" }, "+=0.3")
+  .to("#mascot-arm-right", { rotation: 0, duration: 0.4, ease: "power1.inOut" }, "<");
+```

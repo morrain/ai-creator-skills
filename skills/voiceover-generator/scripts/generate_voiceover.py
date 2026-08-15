@@ -109,8 +109,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         f.write(header + "\n".join(events) + "\n")
 
 def clean_sub_text(text):
-    """Strips trailing sentence-ending punctuation."""
-    t = re.sub(r'[。！？!？；;]+$', '', text.strip())
+    """Strips trailing punctuation marks (commas, periods, exclamation, etc.) from subtitles."""
+    t = re.sub(r'[，,。！？!？；;：:、\s]+$', '', text.strip())
     return t
 
 def split_long_sentence(text, start_s, end_s, max_len=15):

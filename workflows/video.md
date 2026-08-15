@@ -101,20 +101,24 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
             - **强制 3 层 DOM 结构**：所有物理实体（如农田、水库大坝、水闸阀门、渠道水流、芯片、数据库等）必须封装在 `<g id="...">` 组内，且必须完整包含 3 层 DOM 元素：
               1) Layer 1 实体基底：带有 fill 充盈色与 stroke 轮廓的底座/基础图形；
               2) Layer 2 具象特征纹理：必须包含至少 2 条以上表达物理特征的 `<path>` 路径（如农田田垄与幼苗 `<path>`、水库/大坝刻度与波纹 `<path>`、芯片电路/引脚 `<path>`、阀门轮辐/螺纹 `<path>`）；
-              3) Layer 3 标示：居中/高对比度的中文 `<text>` 标注或数据值。
+              3) Layer 3 微观细节与可选标示：螺帽/铆钉点位、LED 发光指示灯、刻度指针、高光/阴影切线等微观质感细节，或必要时的精简中文 `<text>`（图样自解释的实体切勿强行加文字破坏拟物美感）。
             - **🚫 反例硬禁令**：针对物理实体，**绝对禁止在 index.html 中仅用单个 `<rect>`、`<circle>` 或 `<polygon>` 标签占位充当实体**！若检测到仅用单个无纹理裸框/几何块作为物理实体，渲染质检将直接判定失败打回。同时保留全部指定的 `id` 供 GSAP 驱动。
          4. IP Mascot 矢量源码嵌入与关节动画硬性规则：
-            - **DOM 节点强制内联**：必须直接将 `public/mascot.svg` 内部包含 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-body` 的完整 `<g>` 矢量 DOM 节点原样复制内嵌写入 `index.html` 的 `<g id="mascot">` 内部。**严禁使用 `<use href="./public/mascot.svg#...">`**，**绝对禁止手写或脑补生成 `<rect fill="#fbbf24">` 等彩色块/粗线条占位图形**！
-            - **GSAP svgOrigin 关节锁死**：使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。
-            - **⚠️ 严禁使用 CSS `transformOrigin: "px px"`**，防止关节脱臼断裂。
-         5. 物理隐喻动作绑定 (Action Recipe Execution)：
+             - **DOM 节点强制内联与最顶层渲染**：必须直接将 `public/mascot.svg` 内部包含 `#mascot-head`, `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-body` 的完整 `<g>` 矢量 DOM 节点原样复制内嵌写入 `index.html` 的 `<g id="mascot">` 内部。在 `<svg>` 主画布中，**`<g id="mascot">` 必须放在所有物理场景构件（水坝、管道、芯片、水流等）的最后方（末位 DOM 节点）**。基于 SVG Painter's Model 绘制规则，后置节点必定置顶，100% 保证 IP 形象在最上一层不被场景遮挡！**严禁使用 `<use href="./public/mascot.svg#...">`**，**绝对禁止手写或脑补生成 `<rect fill="#fbbf24">` 等彩色块/粗线条占位图形**！
+             - **GSAP svgOrigin 关节锁死与常驻 5s 微动作引擎**：使用 GSAP 对 `#mascot-arm-left`, `#mascot-arm-right`, `#mascot-leg-left`, `#mascot-leg-right`, `#mascot-head` 施加旋转/位移/缩放时，**必须且仅能使用 GSAP `svgOrigin: "X Y"` 锁定 300x400 viewBox 坐标**（如左肩 `svgOrigin: "90 205"`、右肩 `svgOrigin: "210 205"`、左髋 `svgOrigin: "120 300"`、右髋 `svgOrigin: "180 300"`、颈部 `svgOrigin: "150 160"`）。同时**必须建立常驻双层微动作引擎**（2.2s 浮动呼吸 + 3.5s 眨眼 + 每 4~5s 习惯性微动作循环如点头晃手臂），彻底杜绝镜头长达 5~6s 的静止死板。
+             - **⚠️ 严禁使用 CSS `transformOrigin: "px px"`**，防止关节脱臼断裂。
+          5. 画布三区安全隔离与平台 UI 底部留白规程：
+             - **画布三区隔离**：画面划分为 **顶部标题区**（Y: 60-200px）、**中间主舞台视觉区**（16:9 Y: 200-880px / 9:16 Y: 240-1550px）、**唱词字幕区**（16:9 bottom: 50px / 9:16 bottom: 320px，即 Y: 1460-1580px）。
+             - **9:16 视频平台 (小红书/抖音) 底部 UI 避让留白**：9:16 竖屏底部 **Y: 1600px - 1920px (至少 320px+)** 必须保留为纯净背景避让留白区（Zero Elements），唱词字幕盒子向上提升至 `bottom: 320px` 处，绝对禁止在底部 320px 放置任何实体或字幕，防止发布后被小红书/抖音的作者头像、文案与互动按钮遮挡！
+            - **SVG 文本防覆盖**：所有 `<text>` 标签必须放置在实体边框、管道水流或阀门外侧（保留 15px+ 间距）或显式使用 `dominant-baseline="hanging"`/`middle`，绝对禁止文本基线与实体线条重合叠加。
+         6. 物理隐喻动作绑定 (Action Recipe Execution)：
             - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]` 拖拽发力、`[Action Recipe: PUSH_PRESS]` 蓄力下压、`[Action Recipe: KICK_STEP]` 单腿踢飞、`[Action Recipe: OPERATE_LEVER]` 摇手柄/转阀门、`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导）。
-         6. 音轨与字幕原生地固化：
+         7. 音轨与字幕原生地固化：
             - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在网页 DOM 中原生动态展示高对比度 HTML 唱词字幕。
-         7. 首帧曝光与防白规程：
+         8. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
-         8. 执行渲染导出：
+         9. 执行渲染导出：
             - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
 
          【产物交付】
@@ -122,7 +126,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
          ```
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
      - **【阶段 B：渲染 9:16 竖屏版】**：
-       - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1080x1920`（同时在 `## Notes` 中写入非 16:9 防裁剪与竖屏流式布局规则）。
+       - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1080x1920`（同时在 `## Notes` 中写入物理实体纵向 Top-to-Bottom 瀑布流排列、构件 1.3x~1.5x 放大与管道 Path V-path 转换规则，防止画面缩成一小条）。
        - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 9:16 竖屏版本的代码调整与 MP4 导出。
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_9x16.mp4`，并将源码备份存盘为 `BRIEF_9x16.md` 和 `index_9x16.html`。
      - 该单元 16:9 与 9:16 两种比例均渲染归档完成后，主 Agent 自主切入下一个单元 `unit_YY`。

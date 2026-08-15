@@ -74,7 +74,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    ```
 
    **`## Intent` 板块**须包含：
-   - **3 层矢量物理骨架草案（必须直接输出完整 Raw SVG XML 代码块）**：遵循 `physical_metaphor_schema.md` 3 步推演与 3 层矢量精细化指南，必须在 `## Intent` 中直接输出完整的 `<svg>`/`<g id="...">` XML 代码段（包含 Layer 1 实体基底底座 + Layer 2 田垄/幼苗/波纹/刻度/电路纹理 `<path>` + Layer 3 标示 `<text>`），并标明 GSAP 驱动的具名 `id`。**绝对禁止仅输出高层文字描述（如“带有田垄纹理 <path>”）或无纹理的死板矩形框/占位符！**
+   - **3 层矢量物理骨架草案（必须直接输出完整 Raw SVG XML 代码块）**：遵循 `physical_metaphor_schema.md` 3 步推演与 3 层矢量精细化指南，必须在 `## Intent` 中按物理实体解耦输出独立的具名 `<g id="...">` XML 构件组（如 `<g id="dam-body">`、`<g id="water-gate">`、`<g id="farmland-target">`），**每个构件内部独立封装其自身的 Layer 1 底座 + Layer 2 纹理 + Layer 3 细节/指示灯**。自解释图形切勿强行加字！**🚫 绝对禁止按 Layer 1/2/3 建立全局大组包裹所有实体（如 `<g id="macro-system"><g id="textures">...</g></g>`）！绝对禁止仅输出高层文字描述或无纹理死板裸框！**
    - **画面元素清单**：按切片列出所有活跃构件（含 `#mascot`），每切片 ≤ 5 个。
    - **二次分镜切片**：带时间戳（如 `[Sub-shot 1: 00:00-00:10]`），明确各元素入场/退场动画与 IP Recipe 绑定。
 
@@ -91,10 +91,14 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    **`## Notes` 板块**（强制写入以下全部规程）：
    > `- SVG Mascot Joint Animation: When animating SVG mascot elements (#mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-head) with GSAP, ALWAYS use GSAP svgOrigin: "X Y" based on viewBox coordinates (e.g. svgOrigin: "90 205"), NEVER use CSS transformOrigin: "px px", to prevent arm dislocation.`
    > `- IP 与道具空间耦合规程：IP 角色与物理道具交互时，必须将 <g id="mascot"> 直接嵌入主场景 SVG 容器，或通过 gsap.set("#mascot", { x, y }) 对齐绝对坐标，确保手掌/手臂接触点 100% 触碰道具锚点。严禁 IP 在独立底部 div 而道具在顶部 SVG 中。`
-   > `- IP Mascot 矢量源码嵌入规程：在 index.html 中，必须将 public/mascot.svg 内部包含 #mascot-head, #mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-body 的完整 <g> 矢量 DOM 节点直接原样内嵌写入主场景 <g id="mascot"> 内部。严禁使用跨文件 <use href="./public/mascot.svg#..."> 标签，绝对禁止在 index.html 中手写或脑补生成 <rect fill="#fbbf24"> 等彩色块/粗线条占位图形替代 IP 形象！`
+   > `- IP 角色常驻微呼吸与 5s 习惯性微动作规程：在 index.html 中必须建立常驻微动作引擎，挂载 Y 轴 2.2s 浮动呼吸 + 3.5s 眨眼循环，并每 4~5s 周期性触发习惯性微动作（点头微摇手、侧身摇头、手势点按脉冲），消除场景静止僵硬感，无需复杂的画面静止检测！`
+   > `- IP 角色空间智能避让与留白停留规程：在场景主体进行核心演示/放大的停留状态时，IP Mascot 必须通过 GSAP 自动平移避让至画布两侧的通透留白槽 (Negative Space, 对角互补法则：主体居右则 IP 避让至左侧 X:250，主体居左则 IP 避让至右侧 X:1650)，并微调头尖/眼珠朝向主体，绝对禁止在静止停留状态时停留在中央遮挡主体内容！`
+   > `- IP Mascot 矢量源码嵌入与最顶层渲染规程：在 index.html 中，必须将 public/mascot.svg 内部包含 #mascot-head, #mascot-arm-left, #mascot-arm-right, #mascot-leg-left, #mascot-leg-right, #mascot-body 的完整 <g> 矢量 DOM 节点直接原样内嵌写入主场景 <g id="mascot"> 内部。在 <svg> DOM XML 结构中，<g id="mascot"> 必须放置在所有场景背景与物理实体 (如 #dam, #farmland, #chip, #stream) 的最下排末尾节点。基于 SVG Painter's Model 画家法则，DOM 顺序靠后的节点必定覆盖前面的节点，由此 100% 保证 IP 形象渲染在最顶层，绝对不被场景遮挡！严禁使用跨文件 <use href="./public/mascot.svg#..."> 标签，绝对禁止手写或脑补生成 <rect fill="#fbbf24"> 等彩色块/粗线条占位图形替代 IP 形象！`
    > `- 音轨绑定规程：必须在 index.html 中挂载 <audio id="unit-audio" class="clip" src="./public/audio.mp3" data-start="0" data-duration="..." data-track-index="0"></audio>。`
    > `- 字幕同步规程：必须读取 public/timestamps.json 建立 GSAP 字幕时间轴，在 DOM 中动态展示高对比度唱词字幕。`
-   > `- 非 16:9 防裁剪规程：针对非 16:9 画幅（如 1080x1920 竖屏），主 SVG 容器必须设置 preserveAspectRatio="xMidYMid meet" 或采用上下流式堆叠排版，防止左右元素被 overflow:hidden 裁剪。`
+   > `- 非 16:9 物理实体纵向流与防缩小规程：针对 9:16 竖屏画幅，必须将 3 层物理骨架中解耦的独立 <g id="..."> 构件由横向排列重构成纵向 Top-to-Bottom 瀑布流 (上:源头实体 ➔ 中:控制阀门 ➔ 下:受水目标)，同时将构件尺寸放大 1.3x~1.5x (充盈 1080px 宽度)，管道 path 改为纵向 V 形式，绝对禁止将全场景打包在单一死板组中导致竖屏整体缩成一小条！`
+   > `- 9:16 视频平台 (小红书/抖音/视频号) 底部 UI 避让留白规程：针对 9:16 竖屏，底部 Y: 1600px - 1920px (至少 320px+) 必须保留为纯净背景避让留白区，唱词字幕盒子必须向上提升放置在 bottom: 320px (Y: 1460px - 1580px) 处，绝对禁止在底部 320px 内放置任何实体构件或字幕，防止发布后被小红书/抖音的头像、作者文案与互动按钮覆盖遮挡！`
+   > `- IP Mascot 全局最高 Z-Index 最顶层置顶规程：在 index.html 中，必须将 public/mascot.svg 的完整 <g> 矢量节点直接内嵌写入 <g id="mascot">，并将其放置在全局最高层级 (z-index: 100，高于 Title Card z-index: 50 与场景 z-index: 10)。无论 IP Mascot 巡视位移至画面任何区域（包含靠近顶部标题栏），均 100% 保持为绝对最顶层，彻底杜绝任何图层压头遮挡！严禁使用跨文件 <use> 标签或手写彩色方块占位。`
    > `- 首帧防空白封面规程：t=0.0s 时首帧绝对不能是纯白画布！必须通过 gsap.set() 在 t=0 渲染主要标题、背景卡片与 IP 姿态 (opacity: 1)，确保小红书/微信视频号自动抽取的封面丰富可读。`
    > `- 字号下限规程：主标题 ≥ 64px、副标题/卡片标题 ≥ 38px、正文/标签 ≥ 32px（绝对禁止 font-size < 30px）、数据大字 ≥ 56px、唱词字幕 ≥ 44px、SVG 图表文字 ≥ 30px。`
    > `- SVG 文本字体与顶部防裁切规程：SVG 内部所有 <text> 节点必须显式指定 font-family（或在全局 CSS 中设置 svg text { font-family: "Noto Sans SC", sans-serif; }）；主标题组 transform 必须留足顶部安全距（16:9 顶部 translate.y ≥ 160px，9:16 顶部 translate.y ≥ 240px），第一行 <text> 必须显式设置 y 坐标（如 y="50" 或 dominant-baseline="hanging"），且标题进场动画禁止使用向上推顶的 y 位移（如 y: -25），绝对防止字顶向上溢出顶端边缘裁切。`
