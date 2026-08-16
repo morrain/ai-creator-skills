@@ -159,7 +159,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 | **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
 | **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
 | **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
-| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 逐单元渲染 16:9 与 9:16 双比例切片，FFmpeg 极速缝合导出双比例成品。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video_16x9.mp4`<br>`./<主题目录>/video_9x16.mp4` |
+| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，TTS 配音，派发 SubAgent 默认逐单元渲染 9:16 竖屏切片（可选 16:9 宽屏），FFmpeg 极速缝合成品。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/video_9x16.mp4`<br>`./<主题目录>/video_16x9.mp4` (按需生成) |
 | **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 搜集最近一轮审核意见归纳供用户选择，将所选规则沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---

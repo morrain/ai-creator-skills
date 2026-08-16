@@ -18,7 +18,8 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 1. **双模式自适应输入 (Dual-Mode Input Handling)**：
    - 支持文章转视频 (`article_derived`) 与独立知识主题创作 (`standalone_topic`) 双模式自适应流。
 2. **默认免人工审核原则 (Default Non-Interactive Execution)**：
-   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 16:9 与 9:16 双比例切片** ➔ **Step 5: 合成双比例成品视频**。
+   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 9:16 竖屏切片（及可选 16:9 宽屏切片）** ➔ **Step 5: 合成成品视频**。
+   - **默认仅生成 9:16 竖屏格式**：为了适配移动端主流媒体平台（小红书/微信视频号/抖音/Shorts），工作流默认仅渲染 9:16 竖屏视频（`1080x1920`）。仅当用户命令行或指令中显式包含生成宽屏版本的指令（如包含 `--widescreen` 选项或明确要求生成宽屏版本）时，才会在 9:16 渲染完成后，逐单元继续渲染生成 16:9 宽屏切片（`1920x1080`）。
    - **默认无需人工审核**：管道默认在各步骤间自主衔接运行。在 Step 4 中，主 Agent 在后台逐个单元唤起 HyperFrames SubAgent 进行 HTML 制作与视频渲染，子 Agent 交付后自主切入下一个单元，全程无需人类用户手动 Confirm。
    - 仅当用户命令行指令中显式包含 `--interactive` 选项时，才会在 Step 1 与 Step 3 停顿等待人工 Confirmation。
 3. **音画字幕单元内固化与纯视频缝合 (Unit Self-Contained Audio & Subtitles)**：
@@ -83,21 +84,21 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 ---
 
-### Step 4: 逐单元渲染 16:9 与 9:16 双比例视频片段 (Render 16:9 & 9:16 Aspect Ratios Per Unit)
+### Step 4: 逐单元渲染 9:16 竖屏视频片段（及可选 16:9 宽屏片段） (Render 9:16 Portrait & Optional 16:9 Widescreen Per Unit)
 
 1. **⚠️ Step 4 核心调度原则 (SubAgent Invocation Mandate)**：
-   - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！** 针对每一个 `unit_XX`，必须先串行唤起 SubAgent 完成 16:9 版本的制作与渲染归档，收到 `[SUCCESS]` 响应后再唤起 SubAgent 完成 9:16 版本的制作与渲染归档。当前单元双比例均完成后，主 Agent 方可切入下一个单元 `unit_YY`。
+   - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！** 针对每一个 `unit_XX`，默认首先串行唤起 SubAgent 完成 9:16 竖屏版本的制作与渲染归档。仅当用户有明确指令要生成宽屏版本（如包含 `--widescreen` 或要求生成宽屏）时，收到 9:16 响应后再串行唤起 SubAgent 完成 16:9 宽屏版本的制作与渲染归档。当前单元所需比例渲染完成后，主 Agent 方可切入下一个单元 `unit_YY`。
    - **强制 SubAgent 写入权限 (SubAgent TypeName Mandate)**：主 Agent 在通过 `invoke_subagent` 唤起 SubAgent 时，**必须显式将其 `TypeName` 参数设置为具有文件写入与代码编辑权限的全功能型代理 `self`**，**绝对禁止错误地设置为只读的 `research`（研究型子代理）**！否则 SubAgent 将因缺乏写入权限而无法写入 `index.html` 或导出 MP4 视频。
    - **严禁编写渲染脚本**：**绝对禁止 Agent 编写任何替代渲染的 Python 脚本（如 `render_all_units.py`）或在主进程中直接批量 Shell 渲染**！
    - **必须逐单元依次串行唤起 SubAgent**：主 Agent 必须通过 `invoke_subagent` 依次逐个进驻 `./assets/video/unit_XX/` 目录，严格加载 HyperFrames 官方 Skill 执行 HTML 网页代码编写与 MP4 导出。
-2. **逐单元双比例渲染流程**：
+2. **逐单元渲染流程**：
    - 依次遍历 `./<article-slug>/assets/video/unit_01/` 到 `unit_N/`：
-     - **【阶段 A：渲染 16:9 宽屏版】**：
-       - 主 Agent 确保该单元的 `BRIEF.md` YAML Frontmatter 中 `aspect: 1920x1080`。
+     - **【阶段 A：默认渲染 9:16 竖屏版 (Default Aspect: 1080x1920)】**：
+       - 主 Agent 确保该单元的 `BRIEF.md` YAML Frontmatter 中 `aspect: 1080x1920`（同时在 `## Notes` 中写入物理实体纵向 Top-to-Bottom 瀑布流排列、构件 1.3x~1.5x 放大与管道 Path V-path 转换规则，防止画面缩成一小条）。
        - 显式调用 `invoke_subagent` 启动独立的 SubAgent（**必须设置 `TypeName: "self"`**），必须 100% 格式化传入以下精简的标准提示词模板：
          ```text
          1. 优先读取 HyperFrames 主控技能文件（`.agents/skills/hyperframes/SKILL.md`），严格按照其规程完成 HTML 组帧与渲染。
-         2. 画幅、时长与全局视觉主题：卡点匹配 `BRIEF.md` 声明的 `aspect` 与 `length`，且必须 100% 继承 BRIEF.md Frontmatter 中声明的 `theme` 配色代币（背景 Canvas BG、主色 Primary Accent 等），全局统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。
+         2. 画幅、时长与全局视觉主题：卡点匹配 `BRIEF.md` 声明的 `aspect` (`1080x1920`) 与 `length`，且必须 100% 继承 BRIEF.md Frontmatter 中声明的 `theme` 配色代币（背景 Canvas BG、主色 Primary Accent 等），全局统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。
          3. 矢量精细化与 3 层结构规程（物理实体硬性铁律）：
             - **强制 3 层 DOM 结构**：所有物理实体（如农田、水库大坝、水闸阀门、渠道水流、芯片、数据库等）必须封装在 `<g id="...">` 组内，且必须完整包含 3 层 DOM 元素：
               1) Layer 1 实体基底：带有 fill 充盈色与 stroke 轮廓的底座/基础图形；
@@ -119,7 +120,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
               - **⚠️ 物理构件自转防甩飞规则（阀门/手轮/齿轮）**：手轮圆盘与内部轮辐线条必须统一封装在同一个 `<g id="xxx-wheel">` 矢量组内。使用 GSAP 驱动其旋转时，**必须强制使用 `svgOrigin: "X Y"` 传入其 viewBox 中心坐标**，绝对禁止误用 CSS `transformOrigin: "px px"`（因为 CSS transformOrigin 会以元素包围盒左上角二次偏移计算，导致手轮偏离原点做巨型圆周公转并甩飞出画面）。
               - **⚠️ IP Mascot 动作完成走动归位与空白待命注视规程**：IP Mascot 在物理构件处完成指定动作任务（拉手柄/搬箱子/按按钮）后，若无后续动作，必须通过 GSAP 触发双腿交替摆动（yoyo 摆腿 rotation ±25°）平移归位回退至空白待命区（Home Anchor），并微倾头部与视角（rotation: ±8°）持续注视当前核心构件，绝对禁止动作完成后长期滞留在物理实体上遮挡画面！
          5. 画布三区安全隔离与平台 UI 底部留白规程：
-             - **画布三区隔离**：画面划分为 **顶部标题区**（Y: 60-200px）、**中间主舞台视觉区**（16:9 Y: 200-880px / 9:16 Y: 240-1550px）、**唱词字幕区**（16:9 bottom: 50px / 9:16 bottom: 320px，即 Y: 1460-1580px）。
+             - **画布三区隔离**：画面划分为 **顶部标题区**（Y: 60-200px）、**中间主舞台视觉区**（9:16 Y: 240-1550px）、**唱词字幕区**（9:16 bottom: 320px，即 Y: 1460-1580px）。
              - **9:16 视频平台 (小红书/抖音) 底部 UI 避让留白**：9:16 竖屏底部 **Y: 1600px - 1920px (至少 320px+)** 必须保留为纯净背景避让留白区（Zero Elements），唱词字幕盒子向上提升至 `bottom: 320px` 处，绝对禁止在底部 320px 放置任何实体或字幕，防止发布后被小红书/抖音的作者头像、文案与互动按钮遮挡！
             - **SVG 文本防覆盖**：所有 `<text>` 标签必须放置在实体边框、管道水流或阀门外侧（保留 15px+ 间距）或显式使用 `dominant-baseline="hanging"`/`middle`，绝对禁止文本基线与实体线条重合叠加。
           6. 物理隐喻动作绑定 (Action Recipe Execution)：
@@ -129,33 +130,34 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在网页 DOM 中原生动态展示高对比度 HTML 唱词字幕。
          8. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
-         9. 执行渲染导出：
-            - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
+         9. 执行 9:16 竖屏渲染导出：
+            - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" --resolution portrait`。
 
          【产物交付】
          完成渲染后，请仅回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4`。
          ```
-       - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
-     - **【阶段 B：渲染 9:16 竖屏版】**：
-       - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1080x1920`（同时在 `## Notes` 中写入物理实体纵向 Top-to-Bottom 瀑布流排列、构件 1.3x~1.5x 放大与管道 Path V-path 转换规则，防止画面缩成一小条）。
-       - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 9:16 竖屏版本的代码调整与 MP4 导出。在 9:16 竖屏渲染导出命令中，**必须显式加入 `--resolution portrait` 参数**：`npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" --resolution portrait`。
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_9x16.mp4`，并将源码备份存盘为 `BRIEF_9x16.md` 和 `index_9x16.html`。
-     - 该单元 16:9 与 9:16 两种比例均渲染归档完成后，主 Agent 自主切入下一个单元 `unit_YY`。
+     - **【阶段 B：可选渲染 16:9 宽屏版 (Optional Aspect: 1920x1080 - 仅在用户明确指令时触发)】**：
+       - **仅当用户有明确指令要生成宽屏版本时**（如命令行中包含 `--widescreen` 或显式要求生成宽屏）：
+       - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1920x1080`。
+       - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 16:9 宽屏版本的代码调整与 MP4 导出：`npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
+       - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
+     - 该单元当前所需比例渲染归档完成后，主 Agent 自主切入下一个单元 `unit_YY`。
 
 ---
 
-### Step 5: 合成双比例成品视频 (Stitch Both Aspect Ratios Final Videos)
+### Step 5: 合成成品视频 (Stitch Final Videos)
 
 1. **前置门控 (Strict Execution Gate)**：
-   - **全量单元渲染完成触发**：必须在所有单元（`unit_01` 至 `unit_N`）的 16:9 与 9:16 两种比例切片片段（`unit_XX_16x9.mp4` 与 `unit_XX_9x16.mp4`）全部渲染成功且归档完毕后，方可触发 Step 5 缝合！
-2. **极速缝合导出双比例成品视频**：
+   - **全量单元渲染完成触发**：必须在所有单元（`unit_01` 至 `unit_N`）的 9:16 竖屏切片片段（`unit_XX_9x16.mp4` 或 `unit_XX.mp4`）全部渲染成功且归档完毕后，方可触发 Step 5 缝合！若用户要求生成宽屏版本，则需等待 16:9 切片片段（`unit_XX_16x9.mp4`）也归档完毕。
+2. **极速缝合导出成品视频**：
    - 调度原子技能 `video-renderer` 运行纯视频拼接脚本：
      ```bash
      python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --fast-concat
      ```
-   - 脚本会自动扫描各个 `unit_XX` 目录下的 `unit_XX_16x9.mp4` 与 `unit_XX_9x16.mp4` 切片，通过 `ffmpeg -c copy` 极速缝合导出双比例成品视频。
-3. **交付双比例成品与自进化闭环**：
-   - 校验并在对话框呈报两种比例最终成品视频文件路径：
-     - 横屏版：`./<article-slug>/video_16x9.mp4`（或软链 `./<article-slug>/video.mp4`）
-     - 竖屏版：`./<article-slug>/video_9x16.mp4`
+   - 脚本会自动扫描各个 `unit_XX` 目录下的切片，通过 `ffmpeg -c copy` 极速缝合导出成品视频。
+3. **交付成品与自进化闭环**：
+   - 校验并在对话框呈报最终成品视频文件路径：
+     - 竖屏成品版（默认）：`./<article-slug>/video_9x16.mp4`（或软链/复制 `./<article-slug>/video.mp4`）
+     - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/video_16x9.mp4`
    - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。
