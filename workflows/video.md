@@ -17,11 +17,11 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 1. **双模式自适应输入 (Dual-Mode Input Handling)**：
    - 支持文章转视频 (`article_derived`) 与独立知识主题创作 (`standalone_topic`) 双模式自适应流。
-2. **剧本方案人工确认与免人工渲染原则 (Script Human Approval & Auto-Rendering Execution)**：
-   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本与方案确认** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 9:16 竖屏切片（及可选 16:9 宽屏切片）** ➔ **Step 5: 合成成品视频**。
+2. **双节点强制人工审核卡点 (Dual Mandatory Human Approval Gates)**：
+   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本与方案确认** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染与逐单元人工审核** ➔ **Step 5: 合成成品视频**。
    - **默认仅生成 9:16 竖屏格式**：为了适配移动端主流媒体平台（小红书/微信视频号/抖音/Shorts），工作流默认仅渲染 9:16 竖屏视频（`1080x1920`）。仅当用户命令行或指令中显式包含生成宽屏版本的指令（如包含 `--widescreen` 选项或明确要求生成宽屏版本）时，才会在 9:16 渲染完成后，逐单元继续渲染生成 16:9 宽屏切片（`1920x1080`）。
-   - **剧本方案强制人工确认 (Mandatory Human Gate in Step 1)**：在 Step 1 剧本生成阶段，Agent 提炼并完成 SubAgent 盲审后，**必须先在对话框向人类主编输出剧本拆分方案**（包含拆分 unit 数量、拆分逻辑、各 unit 时长、口播台词及动画设计等），中途停顿等待主编给出修改意见。**只有在主编显式确认通过后，才正式存盘落盘 `video_script.json` 并开启 Step 2 至 Step 5 的全自动生成**。
-   - **Step 2~5 默认自动衔接**：剧本获批后，Step 2~5 管道默认自主衔接运行，在后台逐单元唤起 SubAgent 渲染，无需手动 Confirm。
+   - **卡点 1：剧本方案强制人工确认 (Step 1 Gate)**：在 Step 1 剧本生成阶段，Agent 提炼并完成 SubAgent 盲审后，**必须先在对话框向人类主编输出剧本拆分方案**（包含拆分 unit 数量、拆分逻辑、各 unit 时长、口播台词及动画设计等），中途停顿等待主编给出修改意见。**只有在主编显式确认通过后，才正式存盘落盘 `video_script.json` 并开启 Step 2**。
+   - **卡点 2：逐单元渲染强制人工审核 (Step 4 Gate - 严禁全自动无人值守)**：鉴于 HTML 动画与视频渲染存在隐蔽的视觉不确定性（如动画错位、IP 动作异常、字幕或构件遮挡等），在 Step 4 渲染阶段，**每渲染完成一个 `unit_XX` 输出 MP4 视频后，主 Agent 必须强制停顿**，在对话框呈报该单元视频路径与预览结果，等待人类主编审核确认。**只有在主编确认“通过”或“继续”后，才允许切入下一个单元 `unit_YY` 的制作与渲染！彻底废除全自动连续渲染逻辑！**
 3. **音画字幕单元内固化与纯视频缝合 (Unit Self-Contained Audio & Subtitles)**：
    - 音频配音、时间戳与美化 HTML 字幕在 Step 3 & Step 4 渲染视频单元时已原生固化压制在单元 MP4 中。Step 5 仅做极速纯视频 `ffmpeg -c copy` 拼接，不重新压制字幕或重算声音。
 4. **双轨自进化规则闭环 (`/workflow-learn`)**：
@@ -87,20 +87,24 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      - `public/audio.mp3`（复制自 `../audio/unit_XX.mp3` 本单元配音切片）
      - `public/timestamps.json`（复制自 `../audio/timestamps.json` 本单元字幕时间戳契约）
    - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`（在 Frontmatter 注入 `theme` 代币）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**全局视觉主题 Token 继承铁律**、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
-4. **⚠️ Step 3 绝对禁令 (Strict Prohibition Rules)**：
+4. **⚠️ Step 3 绝对禁令与脚手架初始化 (Strict Prohibition Rules)**：
    - **严禁编写初始化或 HTML 脚本**：Step 3 仅负责契约与脚手架逐单元初始化，**绝对禁止 Agent 编写任何批量初始化脚本（如 `setup_units.py`）或拼接 HTML/CSS/GSAP 代码的脚本（如 `build_unit_htmls.py`）**！
-   - （仅当带有 `--interactive` 显式卡点选项时，暂停并等待回复 `[继续]` 后继续；默认无需人工审核，直接进入 Step 4）。
+   - 完成全部单元脚手架初始化后，自动进入 Step 4 逐单元渲染与人工审核。
 
 ---
 
 ### Step 4: 逐单元渲染 9:16 竖屏视频片段（及可选 16:9 宽屏片段） (Render 9:16 Portrait & Optional 16:9 Widescreen Per Unit)
 
 1. **⚠️ Step 4 核心调度原则 (SubAgent Invocation Mandate)**：
-   - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！** 针对每一个 `unit_XX`，默认首先串行唤起 SubAgent 完成 9:16 竖屏版本的制作与渲染归档。仅当用户有明确指令要生成宽屏版本（如包含 `--widescreen` 或要求生成宽屏）时，收到 9:16 响应后再串行唤起 SubAgent 完成 16:9 宽屏版本的制作与渲染归档。当前单元所需比例渲染完成后，主 Agent 方可切入下一个单元 `unit_YY`。
+   - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！**
+   - **⚠️ 强制逐单元人工审核卡点 (Mandatory Per-Unit Human Gate)**：**主 Agent 在渲染完成一个 `unit_XX` 输出 MP4 视频后，绝对禁止自动连续切入下一个 `unit_YY` 的制作！** 鉴于动画与 HTML 渲染存在不确定性（如动画错位、IP 动作异常、文字遮挡等），主 Agent 必须立即在对话框呈报当前单元的视频 MP4 路径与动画视觉效果，中途强制停顿并向人类主编提问：“*单元 `unit_XX` 渲染完成，导出文件：`./assets/video/unit_XX/unit_XX.mp4`。请主编审阅动画效果。确认无误后回复【通过】或【继续】，我将为您制作下一个单元。*”
+   - **交互修改与进驻门控 (Unit Re-render & Human Confirmation)**：
+     - 若主编提出修改意见（如动画节奏错位、IP Mascot 姿态脱臼、构件遮挡、文字层叠等），主 Agent 必须重新进驻 `unit_XX` 调整 `BRIEF.md`/`index.html` 并重新渲染 MP4，直至主编满意；
+     - **只有当人类主编显式回复“通过”、“确认”或“继续”后**，主 Agent 才允许进驻并切入下一个单元 `unit_YY` 的制作与渲染。
    - **强制 SubAgent 写入权限 (SubAgent TypeName Mandate)**：主 Agent 在通过 `invoke_subagent` 唤起 SubAgent 时，**必须显式将其 `TypeName` 参数设置为具有文件写入与代码编辑权限的全功能型代理 `self`**，**绝对禁止错误地设置为只读的 `research`（研究型子代理）**！否则 SubAgent 将因缺乏写入权限而无法写入 `index.html` 或导出 MP4 视频。
    - **严禁编写渲染脚本**：**绝对禁止 Agent 编写任何替代渲染的 Python 脚本（如 `render_all_units.py`）或在主进程中直接批量 Shell 渲染**！
-   - **必须逐单元依次串行唤起 SubAgent**：主 Agent 必须通过 `invoke_subagent` 依次逐个进驻 `./assets/video/unit_XX/` 目录，严格加载 HyperFrames 官方 Skill 执行 HTML 网页代码编写与 MP4 导出。
-2. **逐单元渲染流程**：
+   - **必须逐单元依次进驻唤起 SubAgent**：主 Agent 必须通过 `invoke_subagent` 依次逐个进驻 `./assets/video/unit_XX/` 目录，严格加载 HyperFrames 官方 Skill 执行 HTML 网页代码编写与 MP4 导出。
+2. **逐单元渲染与人工审核流程**：
    - 依次遍历 `./<article-slug>/assets/video/unit_01/` 到 `unit_N/`：
      - **【阶段 A：默认渲染 9:16 竖屏版 (Default Aspect: 1080x1920)】**：
        - 主 Agent 确保该单元的 `BRIEF.md` YAML Frontmatter 中 `aspect: 1080x1920`（同时在 `## Notes` 中写入物理实体纵向 Top-to-Bottom 瀑布流排列、构件 1.3x~1.5x 放大与管道 Path V-path 转换规则，防止画面缩成一小条）。
@@ -151,7 +155,9 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
        - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1920x1080`。
        - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 16:9 宽屏版本的代码调整与 MP4 导出：`npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
-     - 该单元当前所需比例渲染归档完成后，主 Agent 自主切入下一个单元 `unit_YY`。
+     - **【阶段 C：单单元人工审核卡点 (Per-Unit Human Gate)】**：
+       - 当该单元所需比例切片渲染归档完成后，**主 Agent 必须强制暂停，在对话框呈报当前单元视频产物文件路径**（`./assets/video/unit_XX/unit_XX.mp4`），等待主编审阅。
+       - **只有当主编确认“通过”或“继续”后**，主 Agent 方可进驻下一个单元 `unit_YY`。若主编提出修改意见，主 Agent 重新调整本单元并重新渲染呈报。
 
 ---
 
