@@ -1,6 +1,6 @@
 # Poster Layout Specifications (海报 10 大经典版式与 Prompt 构图模板)
 
-本文档为 `poster-designer` 技能提供 10 大经典手绘海报版式的结构定义、适用场景与双语 Prompt 构图模板。Agent 在进行单张海报设计时，**必须根据输入知识文本的属性（如痛点对比、步骤流水线、硬核数据测评、避坑指南、Q&A 问答等）灵活匹配最佳版式**。
+本文档为 `poster-designer` 技能提供 10 大经典手绘海报版式的结构定义、适用场景与双语 Prompt 构图模板。Agent 在进行单张海报设计时，**必须根据输入知识文本的属性（如痛点对比、步骤流水线、硬核数据测评、避坑指南、Q&A 问答等）灵活匹配最佳版式**。所有版式（特别是封底/末页海报及底部 Footer 区域）均支持搭配手绘胶囊/贴纸组件（如 `'🔗 点击阅读完整原文'`）引导读者关注并阅读原文长文。
 
 ---
 
@@ -55,12 +55,13 @@
 ---
 
 ## 6. 极简金句闭环版 (Golden Quote & Bookmark Ending Layout)
-- **适用场景**：章节末尾总结、全文思想沉淀、组图末页唤起收藏与转发（**首选用于海报 N 封底页**）。
+- **适用场景**：章节末尾总结、全文思想沉淀、组图末页唤起收藏转发与原文阅读（**首选用于组图的海报 N 封底页**）。
 - **视觉结构**：
   - 中央巨大暖金虚线边框卡片，包裹精炼爆款金句。
-  - 右下角放置 IP Mascot 举“点赞+收藏”招牌或比心动作。
+  - 右下角放置 IP Mascot 举“点赞+收藏”招招牌或比心动作。
+  - 底部/右下显式带入手绘提示胶囊/贴纸组件，渲染原生中文文本 `'🔗 点击/长按阅读完整原文'` 或 `'深度长文拆解见原文链接 🔗'`。
 - **Prompt 模板 (EN)**：
-  > Minimalist golden quote infographic poster, warm off-white cream paper texture, Morandi color palette, oversized quote card in center with dashed golden border, IP mascot robot standing in bottom-right holding a sign, clean hand-drawn style, Morandi accents, 3:4 aspect ratio, strictly NO fake subtext underneath capsule headers, NO random garbled text/gibberish, NO unintended bullet points, only render explicitly specified text inside single quotes.
+  > Minimalist golden quote infographic poster, warm off-white cream paper texture, Morandi color palette, oversized quote card in center with dashed golden border, IP mascot robot standing in bottom-right holding a sign, small hand-drawn capsule sticker at bottom with call-to-action text guiding viewers to read full article '🔗 点击阅读原文', clean hand-drawn style, Morandi accents, 3:4 aspect ratio, strictly NO fake subtext underneath capsule headers, NO random garbled text/gibberish, NO unintended bullet points, only render explicitly specified text inside single quotes.
 
 ---
 
