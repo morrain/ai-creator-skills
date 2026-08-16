@@ -17,11 +17,11 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 1. **双模式自适应输入 (Dual-Mode Input Handling)**：
    - 支持文章转视频 (`article_derived`) 与独立知识主题创作 (`standalone_topic`) 双模式自适应流。
-2. **默认免人工审核原则 (Default Non-Interactive Execution)**：
-   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 9:16 竖屏切片（及可选 16:9 宽屏切片）** ➔ **Step 5: 合成成品视频**。
+2. **剧本方案人工确认与免人工渲染原则 (Script Human Approval & Auto-Rendering Execution)**：
+   - 管道划分为 5 大递进步骤：**Step 1: 生成脚本与方案确认** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染 9:16 竖屏切片（及可选 16:9 宽屏切片）** ➔ **Step 5: 合成成品视频**。
    - **默认仅生成 9:16 竖屏格式**：为了适配移动端主流媒体平台（小红书/微信视频号/抖音/Shorts），工作流默认仅渲染 9:16 竖屏视频（`1080x1920`）。仅当用户命令行或指令中显式包含生成宽屏版本的指令（如包含 `--widescreen` 选项或明确要求生成宽屏版本）时，才会在 9:16 渲染完成后，逐单元继续渲染生成 16:9 宽屏切片（`1920x1080`）。
-   - **默认无需人工审核**：管道默认在各步骤间自主衔接运行。在 Step 4 中，主 Agent 在后台逐个单元唤起 HyperFrames SubAgent 进行 HTML 制作与视频渲染，子 Agent 交付后自主切入下一个单元，全程无需人类用户手动 Confirm。
-   - 仅当用户命令行指令中显式包含 `--interactive` 选项时，才会在 Step 1 与 Step 3 停顿等待人工 Confirmation。
+   - **剧本方案强制人工确认 (Mandatory Human Gate in Step 1)**：在 Step 1 剧本生成阶段，Agent 提炼并完成 SubAgent 盲审后，**必须先在对话框向人类主编输出剧本拆分方案**（包含拆分 unit 数量、拆分逻辑、各 unit 时长、口播台词及动画设计等），中途停顿等待主编给出修改意见。**只有在主编显式确认通过后，才正式存盘落盘 `video_script.json` 并开启 Step 2 至 Step 5 的全自动生成**。
+   - **Step 2~5 默认自动衔接**：剧本获批后，Step 2~5 管道默认自主衔接运行，在后台逐单元唤起 SubAgent 渲染，无需手动 Confirm。
 3. **音画字幕单元内固化与纯视频缝合 (Unit Self-Contained Audio & Subtitles)**：
    - 音频配音、时间戳与美化 HTML 字幕在 Step 3 & Step 4 渲染视频单元时已原生固化压制在单元 MP4 中。Step 5 仅做极速纯视频 `ffmpeg -c copy` 拼接，不重新压制字幕或重算声音。
 4. **双轨自进化规则闭环 (`/workflow-learn`)**：
@@ -43,10 +43,19 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 3. **SubAgent 剧本盲审闭环**：
    - 检查项目根目录是否存在自进化规则 `./learnings/video_script.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/video-script-writer/references/script_reviewer_standards.md` 与 `learnings_file: ./learnings/video_script.md`）；若不存在，启动 `blind-reviewer`（仅传入 `default_standards`）。
    - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
-4. **落盘剧本与 3s 独立 Outro 单元约束**：
-   - 存盘至 `./<article-slug>/assets/video/video_script.json`。
+4. **剧本拆分方案输出与人工确认卡点 (Human Approval Gate - 强制停顿确认)**：
+   - **⚠️ 暂不落盘文件**：盲审 `[PASS]` 后，Agent **严禁直接写入 `video_script.json`**，必须先在对话中将剧本方案结构化呈报给人类主编审阅。
+   - **方案呈报格式要求**：呈报内容必须包含以下 5 大核心要素：
+     1) 📌 **单元拆分总数与核心逻辑**：明确全片拆分为多少个 `unit_XX`（如 5 个单元），以及各单元对应的文章章节、知识脉络与逻辑递进关系；
+     2) ⏱️ **单元预估时长**：逐单元标注预计口播时长（`duration_seconds`）；
+     3) 🎙️ **逐字口播台词**：逐单元输出 `voiceover` 的完整解说文案；
+     4) 🎨 **画面视觉与 IP 动作设计**：逐单元输出 `visual_prompt` 画面构图与 `ip_action` 角色物理交互动作（长单元标注多阶段时间切片）；
+     5) 🔤 **上屏元素与花字**：标注包含的 `on_screen_elements`（如标题花字、唱词高亮词及图形提示）。
    - **⚠️ 尾部 3s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 3s`），专门用于互动引导（如 "如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
-   - （仅当带有 `--interactive` 显式卡点选项时，暂停并等待回复 `[通过]` 后继续；默认无需人工审核，直接进入 Step 2）。
+   - **交互修改与落盘门控 (Human Feedback Loop & File Save Mandate)**：
+     - 向主编发问提示：“*以上为视频剧本拆分与分镜设计草案，请主编审阅并提出修改意见。确认通过后我将为您生成 `video_script.json` 并进入后续语音生成与视频渲染流程。*”
+     - 若主编提出修改意见（如调整口播字数、增减视频单元、修改 IP Mascot 动作或画面隐喻），Agent 必须针对性修改剧本方案并重新呈报；
+     - **只有当主编回复“确认”、“通过”或“同意”后**，Agent 方可将最终定稿落盘至 `./<article-slug>/assets/video/video_script.json`，并自动切入 Step 2 继续后续流程。
 
 ---
 
