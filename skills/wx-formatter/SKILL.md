@@ -22,7 +22,7 @@ description: 微信公众号原生 HTML 排版转换技能。当需要将 Markdo
 5. **爆款金句统一组件法则 (Golden Quote Card Standard)**：
    - 文章末尾添加爆款金句总结：使用 **`💡 金句总结`** 暖金虚线边框卡片（设计系统组件 5，`#FFF9F0` 浅黄底 + `1px dashed #FA9D3B` 虚线边框）。
 6. **结尾互动关注卡片必含法则 (End-of-Article Engagement Card)**：
-   - 在正文最末尾必须嵌入设计系统 (`references/mp_style_design_system.md`) 组件 7（`🔥 结尾互动与引导关注卡片`），包含项目开源链接与“点赞 + 在看 + 转发”互动提示。
+   - 在正文最末尾必须嵌入设计系统 (`references/mp_style_design_system.md`) 组件 7（`🔥 结尾互动与引导关注卡片`），用一句话介绍开源项目 `ai-creator-skills` 并说明本文由该项目生成，包含 GitHub 开源链接与“点赞 + 在看 + 转发”互动提示。
 
 ---
 
