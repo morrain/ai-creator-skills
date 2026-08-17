@@ -85,6 +85,8 @@
 ```
 
 ### 6. 🖼 正文插图与居中图注容器
+> 💡 **动态图片后缀提示**：`src` 路径中的扩展名不得硬编码写死为 `.png`。Agent 需根据 `illustration_N` 文件名主干扫描 `./images/` 目录中实际存在的图片文件，自适应提取其真实扩展名（如 `.png` / `.jpg` / `.jpeg` / `.webp` 等）。
+
 ```html
 <section style="text-align: center; margin: 22px 0;">
   <img src="images/illustration_1.png" style="max-width: 100%; border-radius: 8px; vertical-align: middle;" />
