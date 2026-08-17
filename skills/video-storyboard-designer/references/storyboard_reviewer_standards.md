@@ -34,7 +34,7 @@
 - [ ] **SVG 3层物理骨架代码硬卡质检**：`## Intent` 中必须直接包含 Raw `<svg>` 3 层 XML 代码片段（Layer 1 基底 + Layer 2 具象特征纹理 `<path>` 如田垄/刻度/电路 + Layer 3 微观细节/螺栓/指示灯/高光切线或可选标示）；物理构件必须拆分为独立 `<g id="...">` 组，严禁打包在单一死板宏组内；图样自解释的实体严禁强行加字；若仅包含高层自然语言描述（如“带有田垄纹理 <path>”），或仅用死板裸方块 `<rect>` + `<text>` / `<div class="card">` 充当物理实体的，直接判定 `[REJECT]` 打回。
 - [ ] **IP Mascot 全局最高 Z-Index 置顶质检**：`## Notes` 显式声明 IP Mascot 容器在 HTML 堆叠上下文中处于全局最高层级（`#main-stage` CSS `z-index: 100; pointer-events: none;`，高于浮动卡片 `z-index: 20`），且在 SVG 内部位于末位节点，确保 IP Mascot 在全屏任意位置均为绝对最顶层，且关节旋转使用 GSAP `svgOrigin: "X Y"`（绝对禁止 CSS transformOrigin）。
 - [ ] **IP Mascot 走动归位与空白待命注视质检**：`## Intent` 动作切片中必须标注包含动作任务完成后的【空白归位坐标】与 `[Action Recipe: EXECUTE_THEN_RETREAT]` 指令，且 `## Notes` 中写入 IP 走动平移回退与空白待命注视规程（禁止动作完成后长期滞留在构件重叠区）。
-- [ ] **9:16 小红书/抖音平台底部 UI 避让质检**：`## Notes` 显式写入 9:16 竖屏底部 Y: 1600px-1920px (至少 320px+) 平台 UI 纯净留白避让规程，且唱词字幕盒子设在 bottom: 320px 处（绝对禁止物理构件或字幕侵入底部 320px 平台 UI 遮挡区）。
+- [ ] **9:16 小红书/抖音平台双向 (顶底) UI 避让质检**：`## Notes` 显式写入 9:16 竖屏顶部 Y: 0-120px (至少 120px+) 顶部 UI 避让规程（标题从 Y: 120px 开始）及 底部 Y: 1600px-1920px (至少 320px+) 底部 UI 避让规程，且唱词字幕盒子设在 bottom: 320px 处（绝对禁止文字或物理构件侵入顶部 120px 或底部 320px 平台 UI 遮挡区）。
 - [ ] **SVG 文本字体与顶部防裁切质检**：`## Notes` 显式包含 SVG 文本 `font-family` 继承声明与顶部安全距声明（16:9 标题组 `translate.y ≥ 160px`、9:16 标题组 `translate.y ≥ 240px`，第一行 `<text>` 显式指定 `y ≥ 50` 或 `dominant-baseline="hanging"`，禁止向上 `y: -25` 推顶动画），防止字顶向上溢出顶端边缘被截断。
 
 ---
