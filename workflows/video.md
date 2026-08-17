@@ -176,7 +176,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      ```
    - 脚本会自动扫描各个 `unit_XX` 目录下的切片，通过 `ffmpeg -c copy` 极速缝合导出以文章标题命名的成品视频。
 3. **交付成品与自进化闭环**：
-   - 校验并在对话框呈报最终以文章标题命名的成品视频文件路径：
-     - 竖屏成品版（默认）：`./<article-slug>/<article-title>_9x16.mp4`（或软链/复制 `./<article-slug>/<article-title>.mp4`）
-     - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/<article-title>_16x9.mp4`
+   - 校验并在对话框呈报最终在 `./<article-slug>/assets/video/` 目录下导出的成品视频文件路径：
+     - 竖屏成品版（默认）：`./<article-slug>/assets/video/<article-title>_9x16.mp4`
+     - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/assets/video/<article-title>_16x9.mp4`
    - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。

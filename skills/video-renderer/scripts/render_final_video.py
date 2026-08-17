@@ -29,7 +29,7 @@ def find_first_existing(project_dir, candidates):
     return None
 
 
-def concat_video_files(project_dir, input_files, output_filename, root_output_filename=None, bgm_path=None):
+def concat_video_files(project_dir, input_files, output_filename, bgm_path=None):
     """Losslessly concatenates input MP4 files using FFmpeg copy mode."""
     if not input_files:
         return None
@@ -69,16 +69,6 @@ def concat_video_files(project_dir, input_files, output_filename, root_output_fi
             subprocess.run(concat_cmd, cwd=project_dir, check=True)
 
         print(f"[Success] Concatenated final video: {out_path}")
-
-        # Copy to root directory if project_dir is inside assets/video
-        if root_output_filename and 'assets/video' in project_dir:
-            root_v = os.path.abspath(os.path.join(project_dir, f'../../{root_output_filename}'))
-            try:
-                shutil.copyfile(out_path, root_v)
-                print(f"[Success] Copied final video to root: {root_v}")
-            except Exception as e:
-                print(f"[Notice] Failed to copy to root: {e}")
-
         return out_path
     finally:
         if os.path.exists(concat_txt):
@@ -117,35 +107,33 @@ def main():
         for aspect, a_files in aspect_files_map.items():
             a_files = sorted(a_files)
             print(f"[Video Renderer] Processing aspect group '{aspect}' ({len(a_files)} files)...")
-            root_filename = f"{title_name}_{aspect}.mp4" if title_name else f"video_{aspect}.mp4"
+            out_filename = f"{title_name}_{aspect}.mp4" if title_name else f"video_{aspect}.mp4"
             concat_video_files(
                 project_dir,
                 a_files,
-                output_filename=f"final_video_{aspect}.mp4",
-                root_output_filename=root_filename,
+                output_filename=out_filename,
                 bgm_path=bgm_path
             )
             processed_any = True
+    else:
+        # 2. Standard Single-Aspect Mode (fallback when no aspect-suffixed unit files exist)
+        unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*', 'unit_*.mp4')))
+        unit_files = [uf for uf in unit_files if not re.search(r'unit_\d+_(\d+x\d+)\.mp4$', os.path.basename(uf))]
+        if not unit_files:
+            unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*.mp4')))
+        if not unit_files:
+            unit_files = sorted(glob.glob(os.path.join(project_dir, 'scene_*.mp4')))
 
-    # 2. Standard Single-Aspect Mode (e.g. unit_01/unit_01.mp4 or unit_01.mp4)
-    unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*', 'unit_*.mp4')))
-    unit_files = [uf for uf in unit_files if not re.search(r'unit_\d+_(\d+x\d+)\.mp4$', os.path.basename(uf))]
-    if not unit_files:
-        unit_files = sorted(glob.glob(os.path.join(project_dir, 'unit_*.mp4')))
-    if not unit_files:
-        unit_files = sorted(glob.glob(os.path.join(project_dir, 'scene_*.mp4')))
-
-    if unit_files:
-        print(f"[Video Renderer] Standard Mode: Found {len(unit_files)} primary unit MP4 files.")
-        root_filename = f"{title_name}.mp4" if title_name else "video.mp4"
-        concat_video_files(
-            project_dir,
-            unit_files,
-            output_filename="final_video.mp4",
-            root_output_filename=root_filename,
-            bgm_path=bgm_path
-        )
-        processed_any = True
+        if unit_files:
+            print(f"[Video Renderer] Standard Mode: Found {len(unit_files)} primary unit MP4 files.")
+            out_filename = f"{title_name}.mp4" if title_name else "video.mp4"
+            concat_video_files(
+                project_dir,
+                unit_files,
+                output_filename=out_filename,
+                bgm_path=bgm_path
+            )
+            processed_any = True
 
     if not processed_any:
         print(f"[Error] No unit MP4 files found in {project_dir}")
