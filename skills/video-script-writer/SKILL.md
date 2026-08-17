@@ -26,16 +26,19 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
 4. **口播听感与短句呼吸感 (Natural Voiceover Pacing)**：
    - 必须使用口语化、接地气的听觉语言，杜绝“综上所述”、“显而易见”等书面套话。
    - 语速控制在 **4 ~ 5 字/秒**（例如 10 秒单元，口播在 35 ~ 45 字之间），单句控制在 25 字以内，具备自然呼吸停顿。
-5. **IP 角色动作核心化 (IP Action Centricity)**：
+5. **单元间口播承上启下与叙事逻辑连贯性 (Inter-Unit Narration Continuity & Smooth Transitions)**：
+   - **保留原文逻辑链与转折关联**：在拆解长文（`mode: article_derived`）或知识主题（`mode: standalone_topic`）为多单元时，绝对禁止将各单元切碎为孤立的摘要块。必须完整保留原文中的因果推演、逻辑钩子与转折关联（如“问题 ➔ 根因 ➔ 破局解法 ➔ 效果演进”）。
+   - **严禁割裂与关键信息丢失 (Zero Logical Gap Rule)**：严禁在单元分割处删减原文关键的逻辑过渡词、因果推理和上下文锚点，避免导致上下单元口播脱节、逻辑断裂。
+6. **IP 角色动作核心化 (IP Action Centricity)**：
    - 剧本提炼阶段无须加载具体的 IP 形象规范。在 `ip_action` 与 `visual_prompt` 字段中，统一使用泛称 **`IP Mascot 角色`**，确保剧本绝对无状态与解耦。角色不是背景贴纸或卖萌吉祥物，而是正在拉扯线缆、推推闸门、盖章或操作机器的核心系统操作员。
-6. **长单元（>20s）结合口播的多阶段画面与动作详细描绘 (Multi-Stage Visual & Action Progression)**：
+7. **长单元（>20s）结合口播的多阶段画面与动作详细描绘 (Multi-Stage Visual & Action Progression)**：
    - 当视频单元时长大于 20 秒（`duration_seconds > 20s`）或口播包含多层次逻辑时，`visual_prompt` 与 `ip_action` 必须紧密结合当前单元的 `voiceover` 文本进行逐层深入的描述。
    - 必须按时间轴划分为多阶段演进（例如 `[0-10s]` 场景背景与动作一 ➔ `[10-20s]` 画面演变与动作二 ➔ `[20-30s]` 结果呈现与动作三），详细交代随口播推进画面构件的变迁、视觉焦点的转移以及 IP Mascot 角色的具体物理交互链，为下游分镜设计提供极其充实的多幕推演依据。
-7. **尾部 3s 独立点赞关注引导单元 (Standalone Outro CTA Unit)**：
+8. **尾部 3s 独立点赞关注引导单元 (Standalone Outro CTA Unit)**：
    - **必须作为单独一个独立单元**：剧本结尾 **必须单独划分出一个独立的 Outro 视频单元**（即全片最后一个 `unit_N`，`duration_seconds: 3s`），绝对禁止将其与前文总结或金句合并写在同一个单元内！
    - `voiceover`: 温暖简洁的互动引导语（如 "如果对你有启发，记得点赞关注，我们下期见！"）。
    - `ip_action` 与 `visual_prompt`: 指示 `IP Mascot 角色` 动作，指定下游绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]`，做活泼弹跳与手持/举起点赞、关注、收藏三连花字徽章动作。
-8. **全局视觉主题与设计代币固化 (Global Visual Theme & Token Allocation)**：
+9. **全局视觉主题与设计代币固化 (Global Visual Theme & Token Allocation)**：
    - **必须在 metadata 中定义全局视觉主题 (`visual_theme`)**：在提炼剧本时，必须主动读取 [`references/theme_presets.json`](references/theme_presets.json)，根据视频题材与受众自动匹配预设主题（如 `light_water_metaphor` 水利自然风、`dark_cyber_tech` 硬核赛博风、`warm_flat_academic` 人文暖色风、`minimal_emerald_finance` 理财金融风），在 `metadata` 块中落盘填充具象的代币色值（`canvas_bg`, `card_bg`, `primary_accent`, `warning_accent`, `success_accent`, `subtitle_box_bg` 等），作为贯穿下游所有分镜与网页渲染的单一事实源。
 
 ---

@@ -26,6 +26,8 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 音频配音、时间戳与美化 HTML 字幕在 Step 3 & Step 4 渲染视频单元时已原生固化压制在单元 MP4 中。Step 5 仅做极速纯视频 `ffmpeg -c copy` 拼接，不重新压制字幕或重算声音。
 4. **双轨自进化规则闭环 (`/workflow-learn`)**：
    - 支持主编通过 `/workflow-learn video_script` 与 `/workflow-learn video_storyboard` 沉淀动画与文案规程。
+5. **单元间口播自然衔接与完整叙事连贯性 (Unit Narration Continuity & Logical Flow)**：
+   - 拆解视频单元时，**严禁将各个单元切碎为孤立的内容摘要。** 口播台词要依据原文叙事逻辑包含自然平滑的过渡与衔接，确保全片音频口播浑然一体、逻辑通顺无割裂感。当然**严禁为了衔接而生硬的增加或改写内容，保证不要没用的废话。**
 
 ---
 
@@ -39,16 +41,16 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 若传入纯主题字符串（如 `Vue 3.5 响应式原理`），进入**模式 2 (独立主题创作)**。
    - **低密度视觉排版规程**：在 `BRIEF.md` 中不填写 `style_preset` 字段。视频排版严格遵循低密度呼吸感规程（70%+ 留白空间，一屏仅表达 1 个核心结论，单切片活跃元素 $\le 5$）。
 2. **调度原子技能 `video-script-writer` 提炼 4 轨剧本**：
-   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。
+   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。在撰写各单元 `voiceover` 时，必须融入原文过渡词句，确保单元间逻辑紧密挂钩。
 3. **SubAgent 剧本盲审闭环**：
    - 检查项目根目录是否存在自进化规则 `./learnings/video_script.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/video-script-writer/references/script_reviewer_standards.md` 与 `learnings_file: ./learnings/video_script.md`）；若不存在，启动 `blind-reviewer`（仅传入 `default_standards`）。
-   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
+   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**单元间口播承上启下过渡词句与因果推理链完整性（严禁口播割裂或丢失原文逻辑钩子）**、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
 4. **剧本拆分方案输出与人工确认卡点 (Human Approval Gate - 强制停顿确认)**：
    - **⚠️ 暂不落盘文件**：盲审 `[PASS]` 后，Agent **严禁直接写入 `video_script.json`**，必须先在对话中将剧本方案结构化呈报给人类主编审阅。
    - **方案呈报格式要求**：呈报内容必须包含以下 5 大核心要素：
-     1) 📌 **单元拆分总数与核心逻辑**：明确全片拆分为多少个 `unit_XX`（如 5 个单元），以及各单元对应的文章章节、知识脉络与逻辑递进关系；
+     1) 📌 **单元拆分总数、逻辑递进与承上启下衔接**：明确全片拆分为多少个 `unit_XX`（如 5 个单元），各单元对应的文章章节与知识脉络，并**显式标注单元间的承上启下过渡逻辑**；
      2) ⏱️ **单元预估时长**：逐单元标注预计口播时长（`duration_seconds`）；
-     3) 🎙️ **逐字口播台词**：逐单元输出 `voiceover` 的完整解说文案；
+     3) 🎙️ **逐字口播台词**：逐单元输出包含自然过渡句的 `voiceover` 完整解说文案；
      4) 🎨 **画面视觉与 IP 动作设计**：逐单元输出 `visual_prompt` 画面构图与 `ip_action` 角色物理交互动作（长单元标注多阶段时间切片）；
      5) 🔤 **上屏元素与花字**：标注包含的 `on_screen_elements`（如标题花字、唱词高亮词及图形提示）。
    - **⚠️ 尾部 3s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 3s`），专门用于互动引导（如 "如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
