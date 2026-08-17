@@ -62,13 +62,13 @@ description: 知识总结与社媒海报生成工作流。当用户发送 /知�
 ### 阶段三：社媒文案合成与阶段三审查
 
 1. **社媒文案合成 (`poster_post.md`)**：
-   - 📌 **标题顶部独立矩阵 (共 8 个备选标题：3 个 ≤ 20 字 + 1 个 ≤ 16 字)**：文案最顶部单独列出 8 个爆款备选标题，**第一备选标题必须严格为母版正文大标题 H1**。8 个备选标题必须满足梯度字数结构：**包含 3 个不超过 20 字的标题、1 个不超过 16 字的短标题，其余 4 个字数不限制**。
+   - 📌 **标题顶部独立矩阵 (共 8 个备选标题：3 个 ≤ 20 字 + 1 个 ≤ 16 字)**：文案最顶部单独列出 8 个爆款备选标题。**第一备选标题必须严格为母版正文大标题 H1**（固定列举，无需标注字数）。8 个备选标题必须满足梯度字数结构：**包含 3 个不超过 20 字的标题、1 个不超过 16 字的短标题，其余 4 个字数不限制**。在满足字数限制的前提下，标题字数要尽可能多、尽可能完整表达原文意思。**除了第 1 个固定列举的文章大标题外，其它所有备选标题必须在标题末尾使用括号显式标注字数**（如 `示例爆款备选标题文本 (19字)`）。
    - 🎨 **高密度 Emoji 视觉排版与 100 字内极简**：正文控制在 100 字以内，**每一行/每个逻辑短句开头必须搭配与语义契合的 Emoji 表情符号**（如 🌤️, 💡, 🔴, 🔵, 👀, ✨, 👇, 🚀），采用小红书/即刻风格的极简短句换行结构，视觉层次丰富、生动吸睛，严禁大段无 Emoji 纯文字。
    - 💬 **深度长文留言与私信引导 (Messaging CTA)**：正文结尾、话题标签之前，**强制加入 1-2 行醒目的留言或私信引导提示句**（如 `👇 想要解锁完整深度拆解？留言或者私信获取 💬`），规避各平台外链限制并安全引导粉丝互动。
    - 🏷️ **6-10 个热门话题标签**：文案最末尾**强制输出 6-10 个**以 `#` 开头的相关热门话题标签（如 `#科普 #物理学原理 #干货总结 #冷知识 #光学原理 #涨知识`）。
    - ⚠️ **纯文本硬性限制 (Clean Plain Text Only)**：发布文案 `poster_post.md` **必须绝对使用纯文本格式**，严禁使用任何 Markdown 语法标记（如加粗 `**`、斜体 `*`、标题 `##`、列表 `- ` 或链接 `[text](url)`），仅靠换行与 Emoji 符号进行视觉结构分割。
 2. **阶段三 SubAgent 文案审稿与落盘**：
-   - 检查项目根目录是否存在项目进化规则 `./learnings/poster_post.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/poster-designer/references/poster_reviewer_standards.md` 与 `learnings_file: ./learnings/poster_post.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/poster-designer/references/poster_reviewer_standards.md`）。审查 `poster_post.md` 的顶部 8 个备选标题矩阵（含 3 个 ≤ 20 字 + 1 个 ≤ 16 字短标题）、高密度 Emoji 表情覆盖率、100 字限制、纯文本隔离度、留言/私信引导句与 6-10 个 `#话题标签` 完整性，修正直至 `[PASS]`，落盘至 `./<article-slug>/poster_post.md`。
+   - 检查项目根目录是否存在项目进化规则 `./learnings/poster_post.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/poster-designer/references/poster_reviewer_standards.md` 与 `learnings_file: ./learnings/poster_post.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/poster-designer/references/poster_reviewer_standards.md`）。审查 `poster_post.md` 的顶部 8 个备选标题矩阵（含 1 个固定文章 H1 大标题、3 个 ≤ 20 字 + 1 个 ≤ 16 字短标题，满足字数限制下尽可能多且完整表达原文含义，且除第 1 个标题外其余标题末尾均显式带有 `(X字)` 括号字数标注）、高密度 Emoji 表情覆盖率、100 字限制、纯文本隔离度、留言/私信引导句与 6-10 个 `#话题标签` 完整性，修正直至 `[PASS]`，落盘至 `./<article-slug>/poster_post.md`。
 3. **结构化汇报与人工确认提示**：
    - 呈报成果与可点击链接（[`./<article-slug>/poster_post.md`](./<article-slug>/poster_post.md) 及配置文件）。
    - **统一人工确认提示**：
