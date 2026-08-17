@@ -165,14 +165,15 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 
 1. **前置门控 (Strict Execution Gate)**：
    - **全量单元渲染完成触发**：必须在所有单元（`unit_01` 至 `unit_N`）的 9:16 竖屏切片片段（`unit_XX_9x16.mp4` 或 `unit_XX.mp4`）全部渲染成功且归档完毕后，方可触发 Step 5 缝合！若用户要求生成宽屏版本，则需等待 16:9 切片片段（`unit_XX_16x9.mp4`）也归档完毕。
-2. **极速缝合导出成品视频**：
-   - 调度原子技能 `video-renderer` 运行纯视频拼接脚本：
+2. **提取文章标题与极速缝合导出成品视频**：
+   - **提取文章标题名**：从 `./<article-slug>/<article-slug>.md` 的 H1 标题或 `video_script.json` 的 `metadata.title` 中提取文章标题名 `<article-title>`（如 `什么是猪周期`）；若无标题则退回到 `<article-slug>`。文件名必须统一使用文章标题名。
+   - 调度原子技能 `video-renderer` 运行纯视频拼接脚本，指定输出文章标题名：
      ```bash
-     python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --fast-concat
+     python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --output-name "<article-title>" --fast-concat
      ```
-   - 脚本会自动扫描各个 `unit_XX` 目录下的切片，通过 `ffmpeg -c copy` 极速缝合导出成品视频。
+   - 脚本会自动扫描各个 `unit_XX` 目录下的切片，通过 `ffmpeg -c copy` 极速缝合导出以文章标题命名的成品视频。
 3. **交付成品与自进化闭环**：
-   - 校验并在对话框呈报最终成品视频文件路径：
-     - 竖屏成品版（默认）：`./<article-slug>/video_9x16.mp4`（或软链/复制 `./<article-slug>/video.mp4`）
-     - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/video_16x9.mp4`
+   - 校验并在对话框呈报最终以文章标题命名的成品视频文件路径：
+     - 竖屏成品版（默认）：`./<article-slug>/<article-title>_9x16.mp4`（或软链/复制 `./<article-slug>/<article-title>.mp4`）
+     - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/<article-title>_16x9.mp4`
    - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。

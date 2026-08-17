@@ -14,14 +14,13 @@ description: FFmpeg 极速视频拼接技能。当需要将各单元视频片段
 2. **执行拼接合并**：
    调用本技能下的 Python 脚本，传入目标项目目录。脚本会自动智能扫描并拼接各比例切片（若存在背景音乐 `bgm.mp3` 则自动混入背景音乐）：
    ```bash
-   python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video/ --fast-concat
+   python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video/ --output-name "<article-title>" --fast-concat
    ```
 
 ## 交付产物
 
-在项目根目录及 `assets/video/` 目录下生成最终视频：
-- `video_16x9.mp4` / `video_9x16.mp4` / `video.mp4`
+在项目根目录及 `assets/video/` 目录下生成以文章标题命名的最终视频：
+- `<article-title>_16x9.mp4` / `<article-title>_9x16.mp4` / `<article-title>.mp4`
 
 ## 核心实现说明
 - **极速无损拼接**：HyperFrames 各单元在渲染 MP4 时已原生固化压制口播音频轨与 HTML 唱词字幕，本技能直接进行极速 `-c copy` 拼合，毫秒级导出最终视频，彻底杜绝字幕重叠与视频二次重编码损耗。
-

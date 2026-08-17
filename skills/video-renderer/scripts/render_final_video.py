@@ -14,6 +14,12 @@ import re
 import shutil
 
 
+def sanitize_filename(name):
+    """Sanitizes filename by removing/replacing characters unsafe for file paths."""
+    name = re.sub(r'[\\/:*?"<>|]', '_', name)
+    return name.strip()
+
+
 def find_first_existing(project_dir, candidates):
     """Finds the first existing file among candidate paths relative to project_dir."""
     for cand in candidates:
@@ -85,11 +91,14 @@ def concat_video_files(project_dir, input_files, output_filename, root_output_fi
 def main():
     parser = argparse.ArgumentParser(description="Pure video slice concatenator for HyperFrames units")
     parser.add_argument('--project-dir', required=True, help="Path to the project assets/video directory")
+    parser.add_argument('--output-name', default=None, help="Base output filename using article title")
     parser.add_argument('--fast-concat', action='store_true', help="Accepted for backward compatibility")
     args = parser.parse_args()
 
     project_dir = os.path.abspath(args.project_dir)
     bgm_path = find_first_existing(project_dir, ['bgm.mp3', 'audio/bgm.mp3', 'bgm.wav', 'audio/bgm.wav'])
+
+    title_name = sanitize_filename(args.output_name) if args.output_name else None
 
     processed_any = False
 
@@ -108,11 +117,12 @@ def main():
         for aspect, a_files in aspect_files_map.items():
             a_files = sorted(a_files)
             print(f"[Video Renderer] Processing aspect group '{aspect}' ({len(a_files)} files)...")
+            root_filename = f"{title_name}_{aspect}.mp4" if title_name else f"video_{aspect}.mp4"
             concat_video_files(
                 project_dir,
                 a_files,
                 output_filename=f"final_video_{aspect}.mp4",
-                root_output_filename=f"video_{aspect}.mp4",
+                root_output_filename=root_filename,
                 bgm_path=bgm_path
             )
             processed_any = True
@@ -127,11 +137,12 @@ def main():
 
     if unit_files:
         print(f"[Video Renderer] Standard Mode: Found {len(unit_files)} primary unit MP4 files.")
+        root_filename = f"{title_name}.mp4" if title_name else "video.mp4"
         concat_video_files(
             project_dir,
             unit_files,
             output_filename="final_video.mp4",
-            root_output_filename="video.mp4",
+            root_output_filename=root_filename,
             bgm_path=bgm_path
         )
         processed_any = True

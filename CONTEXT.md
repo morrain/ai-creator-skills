@@ -53,7 +53,7 @@ _Avoid_: 自由分镜文本, 非标 Markdown
 _Avoid_: 纯文本字幕, 忽略时间轴
 
 **合成渲染引擎 (Video Composite Engine)**:
-基于代码（如 FFmpeg `render_final_video.py --fast-concat`）将已包含声音与字幕花字的各视频单元 MP4 片段执行纯视频 stream copy 缝合，导出成品 MP4 视频。因为字幕与音频已在单元视频渲染中固化，合成阶段不重新压制任何字幕与音轨（仅在有 `bgm.mp3` 时追加背景音乐混音）。
+基于代码（如 FFmpeg `render_final_video.py --output-name "<article-title>" --fast-concat`）将已包含声音与字幕花字的各视频单元 MP4 片段执行纯视频 stream copy 缝合，导出成品 MP4 视频。因为字幕与音频已在单元视频渲染中固化，合成阶段不重新压制任何字幕与音轨（仅在有 `bgm.mp3` 时追加背景音乐混音）。
 _Avoid_: 视频剪辑软件, 导出器, 自动二次压字幕, 重算语音时间轴
 
 **全自动连续调度 (Full-Automation Orchestration Protocol)**:
