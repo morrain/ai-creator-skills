@@ -99,10 +99,10 @@
 ### 7. 🔥 结尾互动与引导关注卡片
 ```html
 <section style="background-color: #F8F9FA; border-radius: 10px; padding: 20px; margin: 30px 0 10px 0; text-align: center; border: 1px solid #EAEAEA;">
-  <p style="font-size: 15px; font-weight: bold; color: #1A1A1A; margin-bottom: 8px;">🚀 开源项目直达 & 免费体验</p>
-  <p style="font-size: 13px; color: #555555; margin-bottom: 10px; line-height: 1.6;">💡 本文由开源项目 <strong style="color: #10AEFF;">ai-creator-skills</strong> 自动化生成——这是一个面向创作者的 AI 端到端内容工程化套件，包含爆款长文写作、认知隐喻插画、微信防擦除排版与社媒海报生成。</p>
-  <p style="font-size: 14px; color: #10AEFF; margin-bottom: 12px;"><a href="https://github.com/morrain/ai-creator-skills" style="color: #10AEFF; text-decoration: underline;">https://github.com/morrain/ai-creator-skills</a></p>
-  <p style="font-size: 13px; color: #777777; margin: 0;">🔥 喜欢本文？欢迎“点赞 + 在看 + 转发”支持！欢迎 Star & Fork 体验！</p>
+  <p style="font-size: 15px; font-weight: bold; color: #1A1A1A; margin-bottom: 8px;">🚀 开源项目获取 & 免费体验</p>
+  <p style="font-size: 13px; color: #555555; margin-bottom: 10px; line-height: 1.6;">💡 本文由 AI 内容工程套件（涵盖爆款长文写作、认知插画、微信排版、海报生成与视频动画创作）<strong style="color: #10AEFF;">ai-creator-skills</strong> 自动生成。</p>
+  <p style="font-size: 14px; font-weight: bold; color: #10AEFF; margin-bottom: 12px;">💬 留言或发送私信即可获取完整开源项目与体验方式</p>
+  <p style="font-size: 13px; color: #777777; margin: 0;">🔥 喜欢本文？欢迎“点赞 + 在看 + 转发”支持！</p>
 </section>
 ```
 
