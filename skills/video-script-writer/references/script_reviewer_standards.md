@@ -39,7 +39,7 @@
 
 ---
 
-## 5. 尾部 3s 独立点赞关注 Outro 单元硬卡点 (Standalone Outro CTA Gate)
+## 5. 尾部 5s 独立点赞关注 Outro 单元硬卡点 (Standalone Outro CTA Gate)
 
-- ❤️ **必须独立为单独一个单元**：`units` 数组末尾 **必须单独划分为一个独立的 Outro 视频单元**（即全片最后一个 `unit_N`，`duration_seconds: 3s`），绝对禁止将其与前文总结或金句合并写在同一个单元内！
-- 🗣️ **口播与动作契约**：`voiceover` 须包含点赞关注引导词，`ip_action` 必须显式指示 `IP Mascot 角色` 绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]` 进行弹跳与举起三连徽章的引导动作。未包含尾部 3s 独立 Outro 单元者质检直接打回！
+- ❤️ **必须独立为单独一个单元**：`units` 数组末尾 **必须单独划分为一个独立的 Outro 视频单元**（即全片最后一个 `unit_N`，`duration_seconds: 5s`），绝对禁止将其与前文总结或金句合并写在同一个单元内！
+- 🗣️ **口播与动作契约**：`voiceover` 须包含点赞关注引导词，`ip_action` 必须显式指示 `IP Mascot 角色` 绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]` 进行弹跳与举起三连徽章的引导动作。未包含尾部 5s 独立 Outro 单元者质检直接打回！

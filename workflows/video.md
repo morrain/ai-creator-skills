@@ -44,7 +44,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。在撰写各单元 `voiceover` 时，必须融入原文过渡词句，确保单元间逻辑紧密挂钩。
 3. **SubAgent 剧本盲审闭环**：
    - 检查项目根目录是否存在自进化规则 `./learnings/video_script.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/video-script-writer/references/script_reviewer_standards.md` 与 `learnings_file: ./learnings/video_script.md`）；若不存在，启动 `blind-reviewer`（仅传入 `default_standards`）。
-   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**单元间口播承上启下过渡词句与因果推理链完整性（严禁口播割裂或丢失原文逻辑钩子）**、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 3s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
+   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**单元间口播承上启下过渡词句与因果推理链完整性（严禁口播割裂或丢失原文逻辑钩子）**、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 5s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
 4. **剧本拆分方案输出与人工确认卡点 (Human Approval Gate - 强制停顿确认)**：
    - **⚠️ 暂不落盘文件**：盲审 `[PASS]` 后，Agent **严禁直接写入 `video_script.json`**，必须先在对话中将剧本方案结构化呈报给人类主编审阅。
    - **方案呈报格式要求**：呈报内容必须包含以下 5 大核心要素：
@@ -53,7 +53,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      3) 🎙️ **逐字口播台词**：逐单元输出包含自然过渡句的 `voiceover` 完整解说文案；
      4) 🎨 **画面视觉与 IP 动作设计**：逐单元输出 `visual_prompt` 画面构图与 `ip_action` 角色物理交互动作（长单元标注多阶段时间切片）；
      5) 🔤 **上屏元素与花字**：标注包含的 `on_screen_elements`（如标题花字、唱词高亮词及图形提示）。
-   - **⚠️ 尾部 3s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 3s`），专门用于互动引导（如 "如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
+   - **⚠️ 尾部 5s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 5s`），专门用于互动引导（如 "深度完整拆解，留言或者私信获取吧。如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
    - **交互修改与落盘门控 (Human Feedback Loop & File Save Mandate)**：
      - 向主编发问提示：“*以上为视频剧本拆分与分镜设计草案，请主编审阅并提出修改意见。确认通过后我将为您生成 `video_script.json` 并进入后续语音生成与视频渲染流程。*”
      - 若主编提出修改意见（如调整口播字数、增减视频单元、修改 IP Mascot 动作或画面隐喻），Agent 必须针对性修改剧本方案并重新呈报；

@@ -117,7 +117,7 @@ liftTl.to("#mascot-arm-left", { rotation: -135, duration: 0.7 })
 ---
 
 ### 模式 F: 点赞关注引导 (LIKE & SUBSCRIBE / OUTRO CTA)
-* **物理隐喻场景**：视频结尾 3s 引导观众点赞、收藏与关注。
+* **物理隐喻场景**：视频结尾 5s 引导观众点赞、收藏与关注。
 * **动作要领**：IP Mascot 欢快向上跳跃 (`y: -20px`)，双手向上举高开怀招手 (`rotation: -140deg`, `140deg`)；头部轻微点头，上方顺次弹性弹显 `👍 点赞`、`⭐ 收藏`、`🔔 关注` 3 个带有 `ease: "back.out(2)"` 的互动徽章卡片。
 
 ```javascript

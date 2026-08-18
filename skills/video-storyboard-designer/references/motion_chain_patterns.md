@@ -56,12 +56,12 @@
 
 ---
 
-## 尾部 3s 点赞关注引导动作模式 (Outro Call-To-Action Pattern)
+## 尾部 5s 点赞关注引导动作模式 (Outro Call-To-Action Pattern)
 
-在全片最后一个独立视频单元中，必须推演 3s 互动引导幕：
+在全片最后一个独立视频单元中，必须推演 5s 互动引导幕：
 
 ### 模式范例：点赞关注三连引导 (Like & Subscribe Outro Pattern)
-- **口播文本**: *"如果对你有启发，记得点赞关注，我们下期见！"*
+- **口播文本**: *"深度完整拆解，留言或者私信获取吧。如果对你有启发，记得点赞关注，我们下期见！"*
 - **画面元素全量清单**: `#badge-like` (点赞徽章), `#badge-favorite` (收藏徽章), `#badge-follow` (关注徽章), `#sparkles` (星光与爱心粒子), `#mascot-*` (IP 角色节点)。
 - **动作演进与 Recipe 绑定**:
   - IP Mascot 向上小跃起跳，双臂举高做热情的点赞关注手势（`[Action Recipe: LIKE_AND_SUBSCRIBE]`）。

@@ -46,7 +46,7 @@
 
 ---
 
-## 5. 尾部 3s 点赞关注引导硬卡点 (Outro CTA Gate)
+## 5. 尾部 5s 点赞关注引导硬卡点 (Outro CTA Gate)
 
-- ❤️ **尾部单元 CTA 契约**: 最终单元的 `BRIEF.md` 必须明确包含 3s 点赞关注引导分镜，显式绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]`。
+- ❤️ **尾部单元 CTA 契约**: 最终单元的 `BRIEF.md` 必须明确包含 5s 点赞关注引导分镜，显式绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]`。
 - 🌟 **IP Mascot 互动表现**: 要求 IP Mascot 做欢快跳跃与举手向观众展示 `👍 点赞`、`⭐ 收藏`、`🔔 关注` 三连徽章。未包含尾部 Outro 单元契约者质检打回！

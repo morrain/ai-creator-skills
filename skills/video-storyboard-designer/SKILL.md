@@ -111,7 +111,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    > `- 首帧防空白封面规程：t=0.0s 时首帧绝对不能是纯白画布！必须通过 gsap.set() 在 t=0 渲染主要标题、背景卡片与 IP 姿态 (opacity: 1)，确保小红书/微信视频号自动抽取的封面丰富可读。`
    > `- 字号下限规程：主标题 ≥ 64px、副标题/卡片标题 ≥ 38px、正文/标签 ≥ 32px（绝对禁止 font-size < 30px）、数据大字 ≥ 56px、唱词字幕 ≥ 44px、SVG 图表文字 ≥ 30px。`
    > `- SVG 文本字体与顶部防裁切规程：SVG 内部所有 <text> 节点必须显式指定 font-family（或在全局 CSS 中设置 svg text { font-family: "Noto Sans SC", sans-serif; }）；主标题组 transform 必须留足顶部安全距（16:9 顶部 translate.y ≥ 160px，9:16 顶部 translate.y ≥ 240px），第一行 <text> 必须显式设置 y 坐标（如 y="50" 或 dominant-baseline="hanging"），且标题进场动画禁止使用向上推顶的 y 位移（如 y: -25），绝对防止字顶向上溢出顶端边缘裁切。`
-   > `- 尾部 Outro 规程：全片最后 ~3s Outro 单元必须绑定 [Action Recipe: LIKE_AND_SUBSCRIBE]，驱动 IP 欢快跳跃并举起点赞、收藏、关注互动徽章。`
+   > `- 尾部 Outro 规程：全片最后 ~5s Outro 单元必须绑定 [Action Recipe: LIKE_AND_SUBSCRIBE]，驱动 IP 欢快跳跃并举起点赞、收藏、关注互动徽章。`
    > `- 禁止 Dashboard UI 卡片风格：物理实体（水库、闸门、阀门、齿轮等）必须使用 SVG 矢量线条绘制，严禁用 <div class="card"> 矩形框替代。`
 
 ---

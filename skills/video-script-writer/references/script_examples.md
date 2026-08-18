@@ -62,8 +62,8 @@
     },
     {
       "unit_id": "Unit 05",
-      "duration_seconds": 3,
-      "voiceover": "如果对你有启发，记得点赞关注，我们下期见！",
+      "duration_seconds": 5,
+      "voiceover": "深度完整拆解，留言或者私信获取吧。如果对你有启发，记得点赞关注，我们下期见！",
       "visual_prompt": "16:9 纯白背景，中央弹起发光的 [点赞] [收藏] [关注] 三连交互徽章，四周伴随欢快的星光与爱心粒子。",
       "ip_action": "IP Mascot 角色开心地原地向上小跃（[Action Recipe: LIKE_AND_SUBSCRIBE]），双臂向上高举并指向三个互动徽章，做热情的点赞关注招手引导动作。",
       "on_screen_elements": {
