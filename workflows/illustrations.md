@@ -23,6 +23,9 @@ description: 正文认知隐喻插图设计工作流。当用户发送 /文章�
    - 命中即止，拦截下位文件。
 3. **磁盘文件最高事实源与正文前置读取 (Disk Source of Truth Protocol)**：
    - **设计插画前，强制阅读正文源文件**：Agent 在提炼认知锚点与设计插画前，**必须首先强制显式调用 `view_file` 重新读取磁盘上的正文源文件 `./<article-slug>/<article-slug>.md`**。
+4. **代码块图表强制插画化与替代原则 (Mandatory Code-Block Diagram Replacement)**：
+   - **强制转换与替代**：原文中凡是用 Markdown 代码块（如 ```mermaid、```ascii、```text 等）描述的流程图、架构图、时序图、系统拓扑图等结构化图表，在插画设计环节**强制要求设计为独立的认知隐喻插画**。
+   - **后续替换目的**：此类插图配置文件及后续生成的图片，专用于在后续文章排版与展示环节中**完整替换掉原文中用 Markdown 代码块展示的纯文本/ASCII 图表**。
 
 ---
 
@@ -35,8 +38,9 @@ description: 正文认知隐喻插图设计工作流。当用户发送 /文章�
 2. **短路加载 IP 规范**：
    - 按 `主题级 ➔ 全局级 ➔ 原子技能默认级` 的顺序装载 1 份 IP 描述。
 3. **提取认知锚点与调度原子 Skill**：
-   - 提炼 4-8 个核心认知锚点。
-   - 对每一张拟设计的插图（`N = 1, 2, ...`），调度原子技能 `illustration-designer` 生成单图画风构图与双语 Prompt。
+   - **代码块图表强力提取**：扫描正文 Markdown 时，强制优先扫描并提取所有使用 Markdown 代码块（```mermaid、```text、```ascii 等）描述的流程图、架构图或拓扑图，为每个代码块图分配独立的插图认知锚点。
+   - 提炼 4-8 个核心认知锚点（确保覆盖所有代码块图表）。
+   - 对每一张拟设计的插图（`N = 1, 2, ...`），调度原子技能 `illustration-designer` 生成单图画风构图与双语 Prompt（代码块转换插画需精准还原其节点拓扑与逻辑流转）。
 4. **逐张落盘与 SubAgent 盲审**：
    - 将方案落盘为 `./<article-slug>/assets/illustration_N.md`。
    - 检查项目根目录是否存在项目进化规则 `./learnings/illustrations.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/illustration-designer/references/illustration_reviewer_standards.md` 与 `learnings_file: ./learnings/illustrations.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/illustration-designer/references/illustration_reviewer_standards.md`）。若裁决 `[REJECT]`，修正重写直至 `[PASS]`（上限 5 次）。
