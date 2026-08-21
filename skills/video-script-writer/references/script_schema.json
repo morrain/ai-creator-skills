@@ -61,7 +61,8 @@
                 "success_accent": { "type": "string" },
                 "text_primary": { "type": "string" },
                 "subtitle_box_bg": { "type": "string" },
-                "subtitle_box_border": { "type": "string" }
+                "subtitle_box_border": { "type": "string" },
+                "subtitle_text_color": { "type": "string" }
               }
             }
           }

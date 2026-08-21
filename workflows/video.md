@@ -141,9 +141,9 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
             - **SVG 文本防覆盖**：所有 `<text>` 标签必须放置在实体边框、管道水流或阀门外侧（保留 15px+ 间距）或显式使用 `dominant-baseline="hanging"`/`middle`，绝对禁止文本基线与实体线条重合叠加。
           6. 物理隐喻动作绑定 (Action Recipe Execution)：
              - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]`、`[Action Recipe: PUSH_PRESS]`、`[Action Recipe: OPERATE_LEVER]`、`[Action Recipe: LIKE_AND_SUBSCRIBE]`），**且在每次物理动作任务完成后，必须强制挂载 `references/action_recipes.md` 中的 `[Action Recipe: EXECUTE_THEN_RETREAT]` 动作组，驱动 IP 双腿交替摆动走动平移回退至 BRIEF.md 约定的空白待命点**。
-         7. 音轨与字幕原生地固化：
-            - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
-            - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在网页 DOM 中原生动态展示高对比度 HTML 唱词字幕。
+          7. 音轨与字幕原生地固化：
+             - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
+             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在 DOM 中原生动态展示高对比度 HTML 唱词字幕。严格按 `BRIEF.md` 的 `theme` 声明渲染，浅色画布必须使用 transparent/浅透底框 + 高对比深色字，绝对禁止在浅色画布上误用黑色/深色背景盒！
          8. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
          9. 执行 9:16 竖屏渲染导出：

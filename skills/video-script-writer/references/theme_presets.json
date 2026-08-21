@@ -1,69 +1,89 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Standard Curated Visual Theme Presets for Explainer Videos",
-  "presets": {
-    "light_water_metaphor": {
-      "name": "水利自然/流动性金融科普",
-      "applicable_topics": ["央行货币政策", "金融概念水利隐喻", "水利工程", "生态科普", "社会基础设施"],
-      "tokens": {
-        "canvas_bg": "linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 50%, #eff6ff 100%)",
+  "description": "Content-Driven Visual Design System and Color Token Specification for Explainer Videos",
+  "design_principles": {
+    "dynamic_content_driven": "绝对禁止机械套用固定预设模板。Agent 在提炼剧本时，必须根据输入文章/主题的具体内容属性、情感基调与品牌定位，动态推导并设计具象、和谐且高对比度的 Palette Tokens。",
+    "canvas_subtitle_adaptive_rule": {
+      "light_canvas": {
+        "condition": "当 canvas_bg 为浅色/白底/淡渐变（如 #f8fafc, #f1f5f9, #fafaf9）时",
+        "subtitle_box_bg": "transparent 或 rgba(255, 255, 255, 0.88)",
+        "subtitle_box_border": "none 或 1px solid rgba(203, 213, 225, 0.5)",
+        "subtitle_text_color": "#0f172a",
+        "rule": "严禁在浅色画布上使用黑色或深色背景卡片包裹字幕！必须保持页面通透高对比。"
+      },
+      "dark_canvas": {
+        "condition": "当 canvas_bg 为暗色/赛博黑夜（如 #0f172a, #1e293b）时",
+        "subtitle_box_bg": "rgba(15, 23, 42, 0.88)",
+        "subtitle_box_border": "2px solid rgba(56, 189, 248, 0.5)",
+        "subtitle_text_color": "#ffffff",
+        "rule": "深色画布可使用深色微光卡片衬托白字，确保亮字高醒目度。"
+      }
+    }
+  },
+  "token_specification": {
+    "canvas_bg": "全局视频画布背景色/渐变色（必须与字幕盒子保持明暗呼应）",
+    "card_bg": "画面信息与实体卡片背景色",
+    "card_border": "实体卡片描边与轮廓",
+    "primary_accent": "主强调色（用于品牌标题、重点图形与高亮节点）",
+    "secondary_accent": "辅助强调色（用于次要构件、连线与指示灯）",
+    "brand_accent": "品牌/IP专属调性色（用于IP道具或特有材质）",
+    "warning_accent": "警示/对比强调色",
+    "success_accent": "成功/积极完成色",
+    "text_primary": "主文本颜色",
+    "subtitle_box_bg": "字幕容器背景色（严格遵循自适应规则：浅底用 transparent/浅透，深底用暗透）",
+    "subtitle_box_border": "字幕容器边框（浅底用 none，深底用发光描边）",
+    "subtitle_text_color": "字幕文字颜色（浅底用 #0f172a，深底用 #ffffff）"
+  },
+  "color_archetypes_reference": {
+    "content_driven_light": {
+      "description": "清爽极简/通用科普/浅色自然风（适用于绝大多数通用解说与IP成长场景）",
+      "example_tokens": {
+        "canvas_bg": "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
         "card_bg": "rgba(255, 255, 255, 0.94)",
         "card_border": "2px solid #cbd5e1",
         "primary_accent": "#2563eb",
-        "secondary_accent": "#38bdf8",
+        "secondary_accent": "#0284c7",
+        "brand_accent": "#b45309",
         "warning_accent": "#ef4444",
         "success_accent": "#10b981",
         "text_primary": "#0f172a",
-        "subtitle_box_bg": "rgba(15, 23, 42, 0.92)",
-        "subtitle_box_border": "2.5px solid rgba(59, 130, 246, 0.6)"
+        "subtitle_box_bg": "transparent",
+        "subtitle_box_border": "none",
+        "subtitle_text_color": "#0f172a"
       }
     },
-    "dark_cyber_tech": {
-      "name": "硬核科技/赛博芯片",
-      "applicable_topics": ["AI芯片", "编程开发", "数据库", "云计算", "黑客网络"],
-      "tokens": {
+    "content_driven_dark": {
+      "description": "硬核科技/赛博芯片/黑夜极客风（适用于AI底座、芯片架构与黑客网络）",
+      "example_tokens": {
         "canvas_bg": "radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #0b0f19 100%)",
         "card_bg": "rgba(30, 41, 59, 0.88)",
         "card_border": "2.5px solid #334155",
         "primary_accent": "#38bdf8",
         "secondary_accent": "#818cf8",
-        "warning_accent": "#f59e0b",
+        "brand_accent": "#f59e0b",
+        "warning_accent": "#ef4444",
         "success_accent": "#22c55e",
         "text_primary": "#f8fafc",
-        "subtitle_box_bg": "rgba(15, 23, 42, 0.94)",
-        "subtitle_box_border": "2.5px solid #0284c7"
+        "subtitle_box_bg": "rgba(15, 23, 42, 0.88)",
+        "subtitle_box_border": "2px solid rgba(56, 189, 248, 0.5)",
+        "subtitle_text_color": "#ffffff"
       }
     },
-    "warm_flat_academic": {
-      "name": "人文历史/商业故事",
-      "applicable_topics": ["历史商业", "人物传记", "社会学", "哲学思考", "品牌故事"],
-      "tokens": {
+    "content_driven_warm": {
+      "description": "人文历史/商业故事/温润纸感风（适用于历史商业、社会学与哲学思考）",
+      "example_tokens": {
         "canvas_bg": "linear-gradient(180deg, #fafaf9 0%, #f5f5f4 100%)",
         "card_bg": "rgba(255, 255, 255, 0.96)",
         "card_border": "2px solid #e7e5e4",
         "primary_accent": "#ea580c",
         "secondary_accent": "#d97706",
+        "brand_accent": "#b45309",
         "warning_accent": "#dc2626",
         "success_accent": "#16a34a",
         "text_primary": "#1c1917",
-        "subtitle_box_bg": "rgba(28, 25, 23, 0.92)",
-        "subtitle_box_border": "2.5px solid rgba(234, 88, 12, 0.6)"
-      }
-    },
-    "minimal_emerald_finance": {
-      "name": "金融理财/投资分析",
-      "applicable_topics": ["金融概念解说", "股票基金", "个人理财", "宏观经济", "财报分析"],
-      "tokens": {
-        "canvas_bg": "linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%)",
-        "card_bg": "rgba(255, 255, 255, 0.95)",
-        "card_border": "2px solid #a7f3d0",
-        "primary_accent": "#059669",
-        "secondary_accent": "#0284c7",
-        "warning_accent": "#eab308",
-        "success_accent": "#10b981",
-        "text_primary": "#064e3b",
-        "subtitle_box_bg": "rgba(6, 78, 59, 0.92)",
-        "subtitle_box_border": "2.5px solid rgba(16, 185, 129, 0.6)"
+        "subtitle_box_bg": "transparent",
+        "subtitle_box_border": "none",
+        "subtitle_text_color": "#1c1917"
       }
     }
   }

@@ -38,15 +38,16 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
    - **必须作为单独一个独立单元**：剧本结尾 **必须单独划分出一个独立的 Outro 视频单元**（即全片最后一个 `unit_N`，`duration_seconds: 5s`），绝对禁止将其与前文总结或金句合并写在同一个单元内！
    - `voiceover`: 温暖简洁的互动引导语（如 "深度完整拆解，留言或者私信获取吧。如果对你有启发，记得点赞关注，我们下期见！"）。
    - `ip_action` 与 `visual_prompt`: 指示 `IP Mascot 角色` 动作，指定下游绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]`，做活泼弹跳与手持/举起点赞、关注、收藏三连花字徽章动作。
-9. **全局视觉主题与设计代币固化 (Global Visual Theme & Token Allocation)**：
-   - **必须在 metadata 中定义全局视觉主题 (`visual_theme`)**：在提炼剧本时，必须主动读取 [`references/theme_presets.json`](references/theme_presets.json)，根据视频题材与受众自动匹配预设主题（如 `light_water_metaphor` 水利自然风、`dark_cyber_tech` 硬核赛博风、`warm_flat_academic` 人文暖色风、`minimal_emerald_finance` 理财金融风），在 `metadata` 块中落盘填充具象的代币色值（`canvas_bg`, `card_bg`, `primary_accent`, `warning_accent`, `success_accent`, `subtitle_box_bg` 等），作为贯穿下游所有分镜与网页渲染的单一事实源。
+9. **内容驱动全局视觉主题与设计代币计算 (Content-Driven Visual Theme Allocation)**：
+   - **必须在 metadata 中定义全局视觉主题 (`visual_theme`)**：在提炼剧本时，必须主动读取 [`references/theme_presets.json`](references/theme_presets.json)，**绝对禁止机械套用固定预设模板**。Agent 必须根据视频实际题材、情感基调与受众特征，**动态计算并设计一套具象的代币色值**（`canvas_bg`, `card_bg`, `primary_accent`, `secondary_accent`, `text_primary`, `subtitle_box_bg`, `subtitle_text_color` 等），作为贯穿下游所有分镜与网页渲染的单一事实源。
+   - **⚠️ 字幕与画布明暗自适应硬性约束**：若 `canvas_bg` 为浅色/白底/淡渐变，`subtitle_box_bg` **必须设为 `"transparent"`**（或浅色微高透），`subtitle_box_border` 设为 `"none"`，`subtitle_text_color` 设为深色 `#0f172a`，**绝对禁止在浅色画布上生成黑框/深色字幕底板**！
 
 ---
 
 ## 关联参考规范
 
 在执行剧本提炼时，主动读取以下参考规范：
-- [`references/theme_presets.json`](references/theme_presets.json)：标准全局视觉主题预设调色库。
+- [`references/theme_presets.json`](references/theme_presets.json)：内容驱动调色系统与字幕自适应规则指南。
 - [`references/script_schema.json`](references/script_schema.json)：4 轨 JSON Schema 协议定义。
 - [`references/script_examples.md`](references/script_examples.md)：标准 4 轨剧本 JSON 示范文件。
 - [`references/script_reviewer_standards.md`](references/script_reviewer_standards.md)：脚本盲审与质检标准。
@@ -66,19 +67,20 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
     "mode": "article_derived",
     "source_article_path": "./path/to/article.md",
     "visual_theme": {
-      "preset": "light_water_metaphor",
-      "style_description": "清爽高对比水利自然风格，浅色画布背景，配合高质感水流与实体颜色",
+      "preset": "content_driven_custom",
+      "style_description": "根据内容动态设计的清爽高对比浅色视觉主题",
       "tokens": {
-        "canvas_bg": "linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 50%, #eff6ff 100%)",
+        "canvas_bg": "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
         "card_bg": "rgba(255, 255, 255, 0.94)",
         "card_border": "2px solid #cbd5e1",
         "primary_accent": "#2563eb",
-        "secondary_accent": "#38bdf8",
+        "secondary_accent": "#0284c7",
         "warning_accent": "#ef4444",
         "success_accent": "#10b981",
         "text_primary": "#0f172a",
-        "subtitle_box_bg": "rgba(15, 23, 42, 0.92)",
-        "subtitle_box_border": "2.5px solid rgba(59, 130, 246, 0.6)"
+        "subtitle_box_bg": "transparent",
+        "subtitle_box_border": "none",
+        "subtitle_text_color": "#0f172a"
       }
     }
   },
