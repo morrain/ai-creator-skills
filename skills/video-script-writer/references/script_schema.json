@@ -99,7 +99,7 @@
           "visual_prompt": {
             "type": "string",
             "minLength": 1,
-            "description": "Scene visual background and atmosphere description. For units >20s, must combine voiceover text to detail multi-stage visual progression (e.g. [0-10s] -> [10-20s] -> [20-30s])."
+            "description": "Scene visual and content-driven physical animation description. Must specify concrete SVG entities and their dynamic evolution/flow (strictly forbid simple text-card sliding/moving as primary visuals). For units >20s, detail multi-stage metamorphosis (e.g. [0-10s] -> [10-20s] -> [20-30s])."
           },
           "ip_action": {
             "type": "string",
@@ -110,8 +110,8 @@
             "type": "object",
             "properties": {
               "title_card": {
-                "type": "string",
-                "description": "Optional scene title (typically only for Unit 01 Hook or major section breaks)"
+                "type": ["string", "null"],
+                "description": "Optional scene title card. Unless truly necessary (e.g. Unit 01 Hook opening or major section break), default to null. Strictly avoid adding title_card to regular units."
               },
               "highlight_keywords": {
                 "type": "array",
@@ -122,7 +122,7 @@
               },
               "graphics_hint": {
                 "type": "string",
-                "description": "Optional UI component/diagram hint"
+                "description": "Optional 2D scene kinetic graphics/flow animation hint (must not be simple text-card sliding)"
               }
             }
           }

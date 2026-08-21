@@ -3,20 +3,20 @@
   "description": "Content-Driven Visual Design System and Color Token Specification for Explainer Videos",
   "design_principles": {
     "dynamic_content_driven": "绝对禁止机械套用固定预设模板。Agent 在提炼剧本时，必须根据输入文章/主题的具体内容属性、情感基调与品牌定位，动态推导并设计具象、和谐且高对比度的 Palette Tokens。",
-    "canvas_subtitle_adaptive_rule": {
+    "canvas_subtitle_frameless_rule": {
+      "frameless_subtitles": {
+        "condition": "所有视频主题与画布背景",
+        "subtitle_box_bg": "transparent",
+        "subtitle_box_border": "none",
+        "rule": "唱词字幕绝对禁止使用任何背景卡片、黑框或半透明框！必须保持 100% 透明无框通透展示。"
+      },
       "light_canvas": {
-        "condition": "当 canvas_bg 为浅色/白底/淡渐变（如 #f8fafc, #f1f5f9, #fafaf9）时",
-        "subtitle_box_bg": "transparent 或 rgba(255, 255, 255, 0.88)",
-        "subtitle_box_border": "none 或 1px solid rgba(203, 213, 225, 0.5)",
-        "subtitle_text_color": "#0f172a",
-        "rule": "严禁在浅色画布上使用黑色或深色背景卡片包裹字幕！必须保持页面通透高对比。"
+        "condition": "当 canvas_bg 为浅色/白底/淡渐变（如 #f8fafc, #f1f5f9）时",
+        "subtitle_text_color": "#0f172a"
       },
       "dark_canvas": {
         "condition": "当 canvas_bg 为暗色/赛博黑夜（如 #0f172a, #1e293b）时",
-        "subtitle_box_bg": "rgba(15, 23, 42, 0.88)",
-        "subtitle_box_border": "2px solid rgba(56, 189, 248, 0.5)",
-        "subtitle_text_color": "#ffffff",
-        "rule": "深色画布可使用深色微光卡片衬托白字，确保亮字高醒目度。"
+        "subtitle_text_color": "#ffffff"
       }
     }
   },
@@ -30,8 +30,8 @@
     "warning_accent": "警示/对比强调色",
     "success_accent": "成功/积极完成色",
     "text_primary": "主文本颜色",
-    "subtitle_box_bg": "字幕容器背景色（严格遵循自适应规则：浅底用 transparent/浅透，深底用暗透）",
-    "subtitle_box_border": "字幕容器边框（浅底用 none，深底用发光描边）",
+    "subtitle_box_bg": "字幕容器背景色（一律为 transparent，无背景框）",
+    "subtitle_box_border": "字幕容器边框（一律为 none，无框线）",
     "subtitle_text_color": "字幕文字颜色（浅底用 #0f172a，深底用 #ffffff）"
   },
   "color_archetypes_reference": {
@@ -64,8 +64,8 @@
         "warning_accent": "#ef4444",
         "success_accent": "#22c55e",
         "text_primary": "#f8fafc",
-        "subtitle_box_bg": "rgba(15, 23, 42, 0.88)",
-        "subtitle_box_border": "2px solid rgba(56, 189, 248, 0.5)",
+        "subtitle_box_bg": "transparent",
+        "subtitle_box_border": "none",
         "subtitle_text_color": "#ffffff"
       }
     },

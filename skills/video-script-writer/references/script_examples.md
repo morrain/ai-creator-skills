@@ -28,12 +28,12 @@
       "unit_id": "Unit 02",
       "duration_seconds": 8,
       "voiceover": "在旧版 Vue 中，响应式就像一个无休止拉取消息的轮询管道，既吃内存又容易阻塞。",
-      "visual_prompt": "16:9 纯白背景，展示粗暴的转轮机械与堆积如山的数据管道。",
-      "ip_action": "IP Mascot 角色正奋力推着一个巨大的齿轮阀门，展现笨拙但认真的工作状态。",
+      "visual_prompt": "16:9 清爽高对比背景，展示粗暴笨重的轮询齿轮与剧烈震动堵塞的数据管道，管壁持续冒出红色过载蒸汽脉冲。",
+      "ip_action": "IP Mascot 角色在震动的平台上手握摇杆，奋力转动巨大齿轮阀门，配合阀门自转与蒸汽喷出产生物理排气响应。",
       "on_screen_elements": {
-        "title_card": "传统轮询机制的痛点",
+        "title_card": null,
         "highlight_keywords": ["吃内存", "阻塞"],
-        "graphics_hint": "出现红色 [高内存占用] 警示卡片"
+        "graphics_hint": "齿轮狂转震动 & 管道过载蒸汽喷出动画"
       }
     },
     {
@@ -43,7 +43,7 @@
       "visual_prompt": "16:9 纯白背景，线条变得精简清爽，两条并行自愈的发光双向链表横跨画面。",
       "ip_action": "IP Mascot 角色轻巧地将两块双向插头锁扣踩入槽位，手持钢印在数据节点上盖上 [56% OFF] 绿色印章。",
       "on_screen_elements": {
-        "title_card": "Vue 3.5 双向链表重构",
+        "title_card": null,
         "highlight_keywords": ["内存骤降 56%", "性能拉满"],
         "graphics_hint": "内存对比柱状图从 100% 降至 44%"
       }

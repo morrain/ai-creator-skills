@@ -19,7 +19,7 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
      - `time_code` & `duration_seconds`: 单元编号与精准预估时长（单位：秒）。
      - `voiceover`: 极具知识博主/科普解说听感的逐字口播文案。
      - `visual_prompt & ip_action`: 画面背景描述与 IP Mascot（IP 角色）的具体物理动作指示。对于 **`duration_seconds > 20s`** 的较长单元，必须结合 `voiceover` 口播逐字逻辑进行详细的多阶段描绘（划分 `[0-10s] ➔ [10-20s] ➔ [20-30s]` 等连续演进切片），严禁写成单句概括！
-     - `on_screen_elements` (可选与克制原则): 画面标题花字 `title_card`（**通常仅在 Unit 01 Hook 开篇或重大章节转折时设置，严禁在每个单元机械堆叠**）、唱词高亮词 `highlight_keywords`（可选，非必要不堆砌）及视觉组件提示 `graphics_hint`（可选）。主要视觉布局与节奏交由下游 `video-storyboard-designer` 灵活排布。
+     - `on_screen_elements` (可选与极简克制原则): 画面标题花字 `title_card`（**若非确实需要，绝对不要使用 `title_card`，默认设为 `null`！通常仅在 Unit 01 Hook 开篇或重大章节转折时设置，严禁在每个单元机械堆叠**）、唱词高亮词 `highlight_keywords`（可选，非必要不堆砌）及视觉组件提示 `graphics_hint`（可选）。主要视觉布局与节奏交由下游 `video-storyboard-designer` 灵活排布。
 3. **双模式支持 (Dual-Mode Support)**：
    - **模式 1 (文章衍生 `article_derived`)**：分析长文的正文脉络与金句，保留文章插图中已确立的物理隐喻方向，将其重构为流畅的视频单元。
    - **模式 2 (独立主题 `standalone_topic`)**：直接根据输入的知识主题，自动规划引钩 (Hook)、原理解析与总结，生成 0 到 1 的讲解脚本。
@@ -40,7 +40,17 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
    - `ip_action` 与 `visual_prompt`: 指示 `IP Mascot 角色` 动作，指定下游绑定 `[Action Recipe: LIKE_AND_SUBSCRIBE]`，做活泼弹跳与手持/举起点赞、关注、收藏三连花字徽章动作。
 9. **内容驱动全局视觉主题与设计代币计算 (Content-Driven Visual Theme Allocation)**：
    - **必须在 metadata 中定义全局视觉主题 (`visual_theme`)**：在提炼剧本时，必须主动读取 [`references/theme_presets.json`](references/theme_presets.json)，**绝对禁止机械套用固定预设模板**。Agent 必须根据视频实际题材、情感基调与受众特征，**动态计算并设计一套具象的代币色值**（`canvas_bg`, `card_bg`, `primary_accent`, `secondary_accent`, `text_primary`, `subtitle_box_bg`, `subtitle_text_color` 等），作为贯穿下游所有分镜与网页渲染的单一事实源。
-   - **⚠️ 字幕与画布明暗自适应硬性约束**：若 `canvas_bg` 为浅色/白底/淡渐变，`subtitle_box_bg` **必须设为 `"transparent"`**（或浅色微高透），`subtitle_box_border` 设为 `"none"`，`subtitle_text_color` 设为深色 `#0f172a`，**绝对禁止在浅色画布上生成黑框/深色字幕底板**！
+   - **⚠️ 字幕彻底消除背景框硬性约束**：全片所有调色主题中，`subtitle_box_bg` **必须强制设为 `"transparent"`**，`subtitle_box_border` 设为 `"none"`。**绝对禁止为唱词字幕添加任何深色/浅色背景矩形框或卡片**！浅色画布字幕文字设为深色 `#0f172a`，深色画布字幕文字设为亮色 `#ffffff`，确保通透无遮挡。
+10. **内容驱动的高级感动效设计原则 (Content-Driven Premium Animation Design)**：
+    - 剧本与脚本设计阶段是全片动画动效的源头！在设计各单元的 `visual_prompt` 与 `ip_action` 时，必须深度结合正文知识逻辑，从 5 个维度设计高级 2D 场景动效：
+      1) **具象物理隐喻 (Concrete Metaphors)**：将抽象逻辑转化为带具名构件的机械/物理结构（如阀门、管道、电路引脚、齿轮、导轨、分流闸机）；
+      2) **画面状态演进与形态转换 (Scene Evolution & Metamorphosis)**：场景构件随口播动态拆分、组合、蜕变、缩放（如拥挤办事大厅重组为智能闸机，单管道扩展为双向链表）；
+      3) **动态数据与物理流向 (Dynamic Flow & Micro-Physics)**：光束导轨脉冲、水流充盈、仪表盘指针弹跳、能量扩散、刻度变化等动态流向；
+      4) **微观物理交互 (Micro-Physics Interactions)**：IP Mascot 与实体构件产生拉手柄、踩槽位、盖印章、插拨塞子等物理机械力学响应；
+      5) **层次感与空间位移动画 (Layer Depth & Spatial Kinetics)**：空间焦点转移、构件层次推拉与平滑过渡。
+11. **拒绝文字卡片平移主导的反例硬禁令 (Anti-Text-Card Animation Mandate)**：
+    - **🚫 绝对禁止在 `visual_prompt` 或 `graphics_hint` 中将“文字卡片平移/浮动/弹入”作为主画面动效**（例如“红色警示卡片从左滑入”、“三个文字框依次浮现”）。
+    - 文字卡片与花字仅能充当辅助性文字注解，**画面视觉的核心焦点必须是具象 SVG 场景实体、场景状态变换与 IP Mascot 的物理动作链**！无具象物理场景演化的纯文字卡片浮动被判定为粗陋低质。
 
 ---
 

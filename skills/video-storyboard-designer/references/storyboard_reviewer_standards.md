@@ -36,6 +36,8 @@
 - [ ] **IP Mascot 走动归位与空白待命注视质检**：`## Intent` 动作切片中必须标注包含动作任务完成后的【空白归位坐标】与 `[Action Recipe: EXECUTE_THEN_RETREAT]` 指令，且 `## Notes` 中写入 IP 走动平移回退与空白待命注视规程（禁止动作完成后长期滞留在构件重叠区）。
 - [ ] **9:16 小红书/抖音平台双向 (顶底) UI 避让质检**：`## Notes` 显式写入 9:16 竖屏顶部 Y: 0-200px (至少 200px+) 顶部 UI 避让规程（标题从 Y: 200px 开始）及 底部 Y: 1600px-1920px (至少 320px+) 底部 UI 避让规程，且唱词字幕盒子设在 bottom: 320px 处（绝对禁止文字或物理构件侵入顶部 200px 或底部 320px 平台 UI 遮挡区）。
 - [ ] **SVG 文本字体与顶部防裁切质检**：`## Notes` 显式包含 SVG 文本 `font-family` 继承声明与顶部安全距声明（16:9 标题组 `translate.y ≥ 160px`、9:16 标题组 `translate.y ≥ 240px`，第一行 `<text>` 显式指定 `y ≥ 50` 或 `dominant-baseline="hanging"`，禁止向上 `y: -25` 推顶动画），防止字顶向上溢出顶端边缘被截断。
+- [ ] **浅色画布标题防突兀黑框质检**：当 Frontmatter 中 `theme.canvas_bg` 为浅色/淡渐变时，`## Intent` 中的 `<g id="title-group">` 绝对禁止包含 `<rect fill="#0f172a">` 或深色矩形黑框；必须采用深色文字无框展示，违反直接判定 `[REJECT]` 打回。
+- [ ] **字幕彻底无背景框质检**：`#subtitles` 唱词字幕容器 CSS 必须强制为 `background: transparent; border: none;`，绝对禁止包含任何深/浅背景矩形框或底板；违反直接判定 `[REJECT]` 打回。
 
 ---
 

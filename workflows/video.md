@@ -28,6 +28,8 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 支持主编通过 `/workflow-learn video_script` 与 `/workflow-learn video_storyboard` 沉淀动画与文案规程。
 5. **单元间口播自然衔接与完整叙事连贯性 (Unit Narration Continuity & Logical Flow)**：
    - 拆解视频单元时，**严禁将各个单元切碎为孤立的内容摘要。** 口播台词要依据原文叙事逻辑包含自然平滑的过渡与衔接，确保全片音频口播浑然一体、逻辑通顺无割裂感。当然**严禁为了衔接而生硬的增加或改写内容，保证不要没用的废话。**
+6. **内容驱动的高级感动效设计与拒绝文字卡片平移硬禁令 (Content-Driven Premium Animation Design & Anti-Text-Card Mandate)**：
+   - 在脚本与剧本设计阶段，动画动效必须深度根据文章内容与知识逻辑进行具象推演（包含具象物理隐喻、画面状态演进、数据/粒子流向脉冲、结构拆合与 IP 物理交互），**绝对禁止将“文字卡片平移/浮动/弹入”作为主画面动效**！文字与卡片仅能作为辅助性注解，绝对禁止缺乏具象场景动效的粗陋设计！
 
 ---
 
@@ -41,18 +43,18 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
    - 若传入纯主题字符串（如 `Vue 3.5 响应式原理`），进入**模式 2 (独立主题创作)**。
    - **低密度视觉排版规程**：在 `BRIEF.md` 中不填写 `style_preset` 字段。视频排版严格遵循低密度呼吸感规程（70%+ 留白空间，一屏仅表达 1 个核心结论，单切片活跃元素 $\le 5$）。
 2. **调度原子技能 `video-script-writer` 提炼 4 轨剧本**：
-   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。在撰写各单元 `voiceover` 时，必须融入原文过渡词句，确保单元间逻辑紧密挂钩。
+   - 调度 `video-script-writer`（传入模式与输入文本），生成包含 `metadata.visual_theme` 全局视觉主题代币、`time_code`、`voiceover`、`visual_prompt & ip_action` 及 `on_screen_elements` 4 轨结构的 `video_script.json` 草案。在撰写各单元 `voiceover` 时，必须融入原文过渡词句，确保单元间逻辑紧密挂钩；在设计 `visual_prompt` 与 `ip_action` 时，**必须根据内容推演具象场景演进与高级动效，严禁以文字卡片平移/浮动作为主画面动效**。
 3. **SubAgent 剧本盲审闭环**：
    - 检查项目根目录是否存在自进化规则 `./learnings/video_script.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/video-script-writer/references/script_reviewer_standards.md` 与 `learnings_file: ./learnings/video_script.md`）；若不存在，启动 `blind-reviewer`（仅传入 `default_standards`）。
-   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**单元间口播承上启下过渡词句与因果推理链完整性（严禁口播割裂或丢失原文逻辑钩子）**、**全局视觉主题 `visual_theme` 代币完整性**及**尾部 5s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
+   - 校验语速节奏（4-5字/秒）、短句呼吸感、IP Mascot 动作定位、**单元间口播承上启下过渡词句与因果推理链完整性（严禁口播割裂或丢失原文逻辑钩子）**、**全局视觉主题 `visual_theme` 代币完整性**、**画面高级感动效设计与拒绝文字卡片平移硬卡点（严禁将文字卡片平移/浮动作为主画面动效，必须具备具象物理演化）**、**`title_card` 极简克制门控（若非确实需要如 Unit 01 Hook 开篇，默认设为 null，严禁逐单元堆叠）**及**尾部 5s 点赞关注 Outro 单元契约**。若结论为 `[REJECT]`，针对性修正直至 `[PASS]`。
 4. **剧本拆分方案输出与人工确认卡点 (Human Approval Gate - 强制停顿确认)**：
    - **⚠️ 暂不落盘文件**：盲审 `[PASS]` 后，Agent **严禁直接写入 `video_script.json`**，必须先在对话中将剧本方案结构化呈报给人类主编审阅。
    - **方案呈报格式要求**：呈报内容必须包含以下 5 大核心要素：
      1) 📌 **单元拆分总数、逻辑递进与承上启下衔接**：明确全片拆分为多少个 `unit_XX`（如 5 个单元），各单元对应的文章章节与知识脉络，并**显式标注单元间的承上启下过渡逻辑**；
      2) ⏱️ **单元预估时长**：逐单元标注预计口播时长（`duration_seconds`）；
      3) 🎙️ **逐字口播台词**：逐单元输出包含自然过渡句的 `voiceover` 完整解说文案；
-     4) 🎨 **画面视觉与 IP 动作设计**：逐单元输出 `visual_prompt` 画面构图与 `ip_action` 角色物理交互动作（长单元标注多阶段时间切片）；
-     5) 🔤 **上屏元素与花字**：标注包含的 `on_screen_elements`（如标题花字、唱词高亮词及图形提示）。
+     4) 🎨 **画面视觉与高级动效/IP 动作设计**：逐单元输出 `visual_prompt` 具象物理场景演进与 `ip_action` 角色物理交互动作（长单元标注多阶段时间切片，必须指明具体的构件形变、流动、变幻等高级动效，严禁描述为“文字卡片平移展示”）；
+     5) 🔤 **上屏元素与花字**：标注包含的 `on_screen_elements`（明确 `title_card` 克制规则：若非确实需要，默认设为 null，严禁在常规单元堆叠；唱词高亮词及图形提示）。
    - **⚠️ 尾部 5s 独立单元强制规程**：剧本结尾 **必须单独划分为一个独立的视频单元**（即最后一个 `unit_N`，`duration_seconds: 5s`），专门用于互动引导（如 "深度完整拆解，留言或者私信获取吧。如果对你有启发，记得点赞关注，我们下期见！"），绝对禁止将点赞关注引导口播与正文总结单元合并混写！
    - **交互修改与落盘门控 (Human Feedback Loop & File Save Mandate)**：
      - 向主编发问提示：“*以上为视频剧本拆分与分镜设计草案，请主编审阅并提出修改意见。确认通过后我将为您生成 `video_script.json` 并进入后续语音生成与视频渲染流程。*”
@@ -90,14 +92,15 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      - `public/timestamps.json`（复制自 `../audio/timestamps.json` 本单元字幕时间戳契约）
    - 写入 `./<article-slug>/assets/video/unit_XX/BRIEF.md`，显式注入口播时长 `length: max(A_i + 0.3s, 4.0s)`（在 Frontmatter 注入 `theme` 代币）、3 幕动态动作链二次分镜切片、低密度限制规程、非 16:9 布局防裁剪规程、**全局视觉主题 Token 继承铁律**、**首帧曝光与封面防白规程 (`t=0.0s` 即刻渲染高对比度封面与 IP 姿态)** 以及尾部单元专属 **`[Action Recipe: LIKE_AND_SUBSCRIBE]` 互动引导规程**。
 4. **⚠️ Step 3 绝对禁令与脚手架初始化 (Strict Prohibition Rules)**：
-   - **严禁编写初始化或 HTML 脚本**：Step 3 仅负责契约与脚手架逐单元初始化，**绝对禁止 Agent 编写任何批量初始化脚本（如 `setup_units.py`）或拼接 HTML/CSS/GSAP 代码的脚本（如 `build_unit_htmls.py`）**！
-   - 完成全部单元脚手架初始化后，自动进入 Step 4 逐单元渲染与人工审核。
+   - **严禁修改 `index.html` 或编写 HTML/GSAP 代码**：Step 3 仅负责契约与脚手架逐单元初始化（生成 `BRIEF.md`、拷贝 `public/` 资产与 `hyperframes init`）。**绝对禁止主 Agent 或本阶段技能在 Step 3 中修改、创建或编辑任何 `index.html` 文件**，严禁编写任何批量初始化脚本或拼接 HTML 代码的脚本！`index.html` 的编写与编辑必须且只能在 Step 4 由独立的 SubAgent 进驻执行。
+   - 完成全部单元脚手架初始化与 BRIEF.md 落盘后，自动切入 Step 4 逐单元渲染与人工审核。
 
 ---
 
 ### Step 4: 逐单元渲染 9:16 竖屏视频片段（及可选 16:9 宽屏片段） (Render 9:16 Portrait & Optional 16:9 Widescreen Per Unit)
 
 1. **⚠️ Step 4 核心调度原则 (SubAgent Invocation Mandate)**：
+   - **🔒 主 Agent 工具排他锁 (Main Agent Tool Lock Mandate)**：在 Step 4 渲染阶段，**主 Agent 自身的唯一许可工具动作是调用 `invoke_subagent`**！**绝对禁止主 Agent 亲自调用 `write_to_file`、`replace_file_content` 或 `multi_replace_file_content` 撰写、创建或编辑 `unit_XX/index.html` 文件**！主 Agent 必须严格扮演“调度指挥官”的角色，把所有 HTML 代码编写、GSAP 动画挂载与 MP4 渲染导出任务，全权封包并移交给 `invoke_subagent` 唤起的 SubAgent 独立进程执行。
    - **单Turn逐单元单比例串行调度 (Strict Sequential Execution Mandate)**：**主 Agent 在单个推理 Turn 中绝对禁止并发唤起多个 SubAgent！**
    - **⚠️ 强制逐单元人工审核卡点 (Mandatory Per-Unit Human Gate)**：**主 Agent 在渲染完成一个 `unit_XX` 输出 MP4 视频后，绝对禁止自动连续切入下一个 `unit_YY` 的制作！** 鉴于动画与 HTML 渲染存在不确定性（如动画错位、IP 动作异常、文字遮挡等），主 Agent 必须立即在对话框呈报当前单元的视频 MP4 路径与动画视觉效果，中途强制停顿并向人类主编提问：“*单元 `unit_XX` 渲染完成，导出文件：`./assets/video/unit_XX/unit_XX.mp4`。请主编审阅动画效果。确认无误后回复【通过】或【继续】，我将为您制作下一个单元。*”
    - **交互修改与进驻门控 (Unit Re-render & Human Confirmation)**：
@@ -113,7 +116,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
        - 显式调用 `invoke_subagent` 启动独立的 SubAgent（**必须设置 `TypeName: "self"`**），必须 100% 格式化传入以下精简的标准提示词模板：
          ```text
          1. 优先读取 HyperFrames 主控技能文件（`.agents/skills/hyperframes/SKILL.md`），严格按照其规程完成 HTML 组帧与渲染。
-         2. 画幅、时长与全局视觉主题：卡点匹配 `BRIEF.md` 声明的 `aspect` (`1080x1920`) 与 `length`，且必须 100% 继承 BRIEF.md Frontmatter 中声明的 `theme` 配色代币（背景 Canvas BG、主色 Primary Accent 等），全局统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。
+         2. 画幅、时长与全局视觉主题：卡点匹配 `BRIEF.md` 声明的 `aspect` (`1080x1920`) 与 `length`，且必须 100% 继承 BRIEF.md Frontmatter 中声明的 `theme` 配色代币（背景 Canvas BG、主色 Primary Accent 等），全局统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。当画布为浅色/淡渐变时，标题绝对禁止包含深色/黑色背景矩形框（如 `<rect fill="#0f172a">`），必须直接使用深色高对比文字无框展示，消除顶部突兀黑块！
          3. 矢量精细化与 3 层结构规程（物理实体硬性铁律）：
             - **强制 3 层 DOM 结构**：所有物理实体（如农田、水库大坝、水闸阀门、渠道水流、芯片、数据库等）必须封装在 `<g id="...">` 组内，且必须完整包含 3 层 DOM 元素：
               1) Layer 1 实体基底：带有 fill 充盈色与 stroke 轮廓的底座/基础图形；
@@ -143,7 +146,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
              - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]`、`[Action Recipe: PUSH_PRESS]`、`[Action Recipe: OPERATE_LEVER]`、`[Action Recipe: LIKE_AND_SUBSCRIBE]`），**且在每次物理动作任务完成后，必须强制挂载 `references/action_recipes.md` 中的 `[Action Recipe: EXECUTE_THEN_RETREAT]` 动作组，驱动 IP 双腿交替摆动走动平移回退至 BRIEF.md 约定的空白待命点**。
           7. 音轨与字幕原生地固化：
              - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
-             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在 DOM 中原生动态展示高对比度 HTML 唱词字幕。严格按 `BRIEF.md` 的 `theme` 声明渲染，浅色画布必须使用 transparent/浅透底框 + 高对比深色字，绝对禁止在浅色画布上误用黑色/深色背景盒！
+             - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在 DOM 中原生动态展示高对比度 HTML 唱词字幕。唱词字幕 DOM (`#subtitles`) 必须强制设为 `background: transparent; border: none;`，绝对禁止使用任何背景卡片、黑框或半透明底板！浅色画布使用深色文字 (`#0f172a`)，深色画布使用纯白文字 (`#ffffff`)，保证通透无遮挡。
          8. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
          9. 执行 9:16 竖屏渲染导出：
