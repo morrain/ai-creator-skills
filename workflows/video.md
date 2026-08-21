@@ -178,8 +178,19 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      python skills/video-renderer/scripts/render_final_video.py --project-dir ./<article-slug>/assets/video --output-name "<article-title>" --fast-concat
      ```
    - 脚本会自动扫描各个 `unit_XX` 目录下的切片，通过 `ffmpeg -c copy` 极速缝合导出以文章标题命名的成品视频。
-3. **交付成品与自进化闭环**：
+3. **交付成品与全平台发布文案生成 (Deliver Video & Generate Publishing Post)**：
    - 校验并在对话框呈报最终在 `./<article-slug>/assets/video/` 目录下导出的成品视频文件路径：
      - 竖屏成品版（默认）：`./<article-slug>/assets/video/<article-title>_9x16.mp4`
      - 宽屏成品版（仅当显式要求生成宽屏时）：`./<article-slug>/assets/video/<article-title>_16x9.mp4`
+   - **全平台发布文案自动生成规程 (Mandatory Post Copywriting)**：
+     - 视频合成成功后，Agent **必须在对话框中同步呈报一份结构化的全平台发布文案**，包含以下 3 大模块（支持主编直接一键复制发布）：
+       1) 📌 **多平台差异化标题（严格按各平台字数限制与调性定制）**：
+          - **小红书标题**（限制 $\le 20$ 字，带情绪/悬念与 Emoji 视觉点缀）
+          - **微信视频号 / 公众号标题**（限制 $\le 30$ 字，偏深度干货/专业解读）
+          - **抖音 / 快手标题**（限制 $\le 30$ 字，短平快/爆款痛点/热点引流）
+          - **B站 / 横屏标题**（限制 20-30 字，偏硬核原理/科普/求知）
+       2) 📝 **精炼内容简介（100 字左右）**：
+          - 结合视频核心痛点与结论，撰写一段适合发布在各平台视频简介/正文区的精炼摘要（控制在 90 ~ 110 字），通顺有吸引力。
+       3) 🏷️ **核心话题标签（6 ~ 8 个）**：
+          - 提取 6 ~ 8 个与视频主题高度相关的热门 Tag，格式为 `#话题名称`（如 `#AI工具` `#硬核科普` 等），方便一键一键复制粘贴发布。
    - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。
