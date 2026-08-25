@@ -109,8 +109,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         f.write(header + "\n".join(events) + "\n")
 
 def clean_sub_text(text):
-    """Strips trailing punctuation marks (commas, periods, exclamation, etc.) from subtitles."""
-    t = re.sub(r'[，,。！？!？；;：:、\s]+$', '', text.strip())
+    """Strips SSML tags and trailing punctuation marks (commas, periods, exclamation, etc.) from subtitles."""
+    t = strip_ssml(text)
+    t = re.sub(r'[，,。！？!？；;：:、\s]+$', '', t.strip())
     return t
 
 def split_long_sentence(text, start_s, end_s, max_len=15):
@@ -155,6 +156,24 @@ def split_long_sentence(text, start_s, end_s, max_len=15):
         curr_t = c_end
     return res
 
+def extract_polyphone_texts(text):
+    """
+    Parses {display_text|spoken_text} annotations in voiceover text.
+    Returns (plain_text, spoken_text, polyphone_pairs).
+    
+    Example:
+    "它的操作模式叫{发|法}短买长！"
+    -> plain_text:  "它的操作模式叫发短买长！"  (used for subtitles & timestamps.json)
+    -> spoken_text: "它的操作模式叫法短买长！" (used for TTS audio synthesis)
+    -> polyphone_pairs: [("发", "法")]
+    """
+    if not text:
+        return "", "", []
+    pairs = re.findall(r'\{([^|{}]+)\|([^|{}]+)\}', text)
+    plain_text = re.sub(r'\{([^|{}]+)\|([^|{}]+)\}', r'\1', text)
+    spoken_text = re.sub(r'\{([^|{}]+)\|([^|{}]+)\}', r'\2', text)
+    return strip_ssml(plain_text), strip_ssml(spoken_text), pairs
+
 def sanitize_tts_text(text):
     """Sanitizes text by stripping SSML, special quotes, symbols and non-spoken marks that break Edge-TTS."""
     t = strip_ssml(text)
@@ -186,8 +205,6 @@ async def generate_single_unit_tts(text, output_mp3_path, voice="zh-CN-YunxiNeur
 
     cleaned = sanitize_tts_text(text)
     prompts = [cleaned]
-    if text.strip() != cleaned:
-        prompts.append(text.strip())
     ultra_clean = re.sub(r'[^\w\s\u4e00-\u9fa5]', '', cleaned)
     if ultra_clean and ultra_clean not in prompts:
         prompts.append(ultra_clean)
@@ -277,10 +294,8 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
 
     for idx, unit in enumerate(units):
         unit_id = unit.get("unit_id", f"Unit {idx+1:02d}")
-        # tts_text: raw voiceover (may contain SSML tags for polyphone disambiguation)
-        # plain_text: SSML-stripped version used for subtitles and JSON output
-        tts_text = unit.get("voiceover", "").strip()
-        plain_text = strip_ssml(tts_text)
+        raw_voiceover = unit.get("voiceover", "").strip()
+        plain_text, spoken_text, polyphone_pairs = extract_polyphone_texts(raw_voiceover)
         desired_dur = float(unit.get("duration_seconds", 5))
         
         unit_mp3_filename = f"unit_{idx+1:02d}.mp3"
@@ -289,9 +304,9 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
         # Try generating real TTS for unit
         success = False
         boundaries = []
-        if provider == "edge_tts" and tts_text:
+        if provider == "edge_tts" and spoken_text:
             try:
-                success, boundaries = asyncio.run(generate_single_unit_tts(tts_text, unit_mp3_path, voice))
+                success, boundaries = asyncio.run(generate_single_unit_tts(spoken_text, unit_mp3_path, voice))
                 time.sleep(2.0) # 2.0s pause between units to prevent WebSocket rate limiting
             except Exception as e:
                 print(f"Unit {idx+1} TTS Error: {e}", file=sys.stderr)
@@ -308,7 +323,7 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
                 time.sleep(3.0 * retry_attempt)
                 print(f"[自检修复尝试 {retry_attempt}/3] 正在使用目标音色 '{voice}' 重新合成 Unit {idx+1}...", file=sys.stderr)
                 try:
-                    success, boundaries = asyncio.run(generate_single_unit_tts(tts_text, unit_mp3_path, voice=voice, max_retries=3))
+                    success, boundaries = asyncio.run(generate_single_unit_tts(spoken_text, unit_mp3_path, voice=voice, max_retries=3))
                     if success and os.path.exists(unit_mp3_path):
                         f_size = os.path.getsize(unit_mp3_path)
                         actual_dur = get_audio_duration(unit_mp3_path, fallback_duration=0.0)
@@ -331,11 +346,15 @@ def process_voiceover(script_path, output_dir, voice="zh-CN-YunxiNeural", provid
         unit_sub_items = []
         if boundaries:
             for b_start, b_end, b_text in boundaries:
+                # Map spoken words back to display words in subtitle boundaries
+                clean_b_text = b_text
+                for disp, spk in polyphone_pairs:
+                    clean_b_text = clean_b_text.replace(spk, disp)
                 # Clamp end boundary to actual_dur
                 b_end_clamped = min(b_end, actual_dur)
                 g_start = start_time + b_start
                 g_end = start_time + b_end_clamped
-                clauses = split_long_sentence(b_text, g_start, g_end, max_len=18)
+                clauses = split_long_sentence(clean_b_text, g_start, g_end, max_len=18)
                 unit_sub_items.extend(clauses)
         else:
             # Fallback: use plain_text (SSML stripped) to avoid tags leaking into subtitles
