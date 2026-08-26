@@ -135,7 +135,10 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
                   `gsap.set("#mascot-leg-left", { svgOrigin: "120 300" });`
                   `gsap.set("#mascot-leg-right", { svgOrigin: "180 300" });`
                   `gsap.set("#mascot-head", { svgOrigin: "150 160" });`
-              - **⚠️ 物理构件自转防甩飞规则（阀门/手轮/齿轮）**：手轮圆盘与内部轮辐线条必须统一封装在同一个 `<g id="xxx-wheel">` 矢量组内。使用 GSAP 驱动其旋转时，**必须强制使用 `svgOrigin: "X Y"` 传入其 viewBox 中心坐标**，绝对禁止误用 CSS `transformOrigin: "px px"`（因为 CSS transformOrigin 会以元素包围盒左上角二次偏移计算，导致手轮偏离原点做巨型圆周公转并甩飞出画面）。
+              - **⚠️ 物理构件旋转与摆动防错位铁律（仪表指针/天平支点/阀门手轮/齿轮）**：
+                1) **仪表指针/度量计 (Gauge Needles & Pointers)**：指针旋转轴心绝对禁止误用 CSS `transformOrigin: "bottom center"` 或 `center`（因为异形指针与包围盒中心/底部偏离轴心）。必须使用 GSAP `svgOrigin: "cx cy"` 显式传入针座在 viewBox 中的绝对圆心坐标（如 `gsap.set("#gauge-needle", { svgOrigin: "150 200" })`）。
+                2) **天平/摆动杠杆 (Balance Scale & Pendulum/Lever)**：必须实现 3 层 DOM 结构解耦（静态底座固定 + 绕中央支点旋转横梁 + 保持水平的独立托盘）。横梁摆动强制使用 `svgOrigin: "cx cy"` 锁定中央销轴坐标；托盘必须独立挂载并施加逆向旋转补偿 (`-rotation`) 或独立的 `translate` 平移动画，绝对禁止将底座或托盘强行打包在横梁同一 `<g>` 组内直接旋转导致底座或托盘倾斜歪倒！
+                3) **旋转阀门/手轮/齿轮 (Valves, Wheels & Gears)**：手轮圆盘与内部轮辐线条必须统一封装在同一个 `<g id="xxx-wheel">` 矢量组内。使用 GSAP 驱动其旋转时，**必须强制使用 `svgOrigin: "X Y"` 传入其 viewBox 中心坐标**，绝对禁止误用 CSS `transformOrigin: "px px"`（因为 CSS transformOrigin 会以元素包围盒左上角二次偏移计算，导致手轮偏离原点做巨型圆周公转并甩飞出画面）。
               - **⚠️ IP Mascot 动作完成走动归位与空白待命注视规程**：IP Mascot 在物理构件处完成指定动作任务（拉手柄/搬箱子/按按钮）后，若无后续动作，必须通过 GSAP 触发双腿交替摆动（yoyo 摆腿 rotation ±25°）平移归位回退至空白待命区（Home Anchor），并微倾头部与视角（rotation: ±8°）持续注视当前核心构件，绝对禁止动作完成后长期滞留在物理实体上遮挡画面！
          5. 画布安全隔离与平台 UI 双向 (顶底) 留白避让规程：
               - **9:16 竖屏画布四区隔离**：画面划分为 **顶部 UI 避让留白区**（Y: 0-200px）、**顶部标题区**（Y: 200-360px）、**中间主舞台视觉区**（Y: 380-1440px）、**唱词字幕区**（bottom: 320px，即 Y: 1460-1580px）及 **底部 UI 避让留白区**（Y: 1600-1920px）。
@@ -149,11 +152,23 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
              - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在 DOM 中原生动态展示高对比度 HTML 唱词字幕。唱词字幕 DOM (`#subtitles`) 必须强制设为 `background: transparent; border: none;`，绝对禁止使用任何背景卡片、黑框或半透明底板！浅色画布使用深色文字 (`#0f172a`)，深色画布使用纯白文字 (`#ffffff`)，保证通透无遮挡。
          8. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
-         9. 执行 9:16 竖屏渲染导出：
+         9. 执行 9:16 竖屏渲染导出与抓帧自检：
             - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" --resolution portrait`。
+            - **抓帧自检 3 大视效硬核检查 (Keyframe Extraction & 3-Point Visual Inspection)**：
+              - 导出 MP4 后，必须通过 `ffmpeg` 自动在首帧 (`t=0.5s`)、中段 (`t=mid`) 与尾帧 (`t=end`) 抽取 3 张关键帧截图至 `./<article-slug>/assets/video/unit_<XX>/frames/`：
+                ```bash
+                mkdir -p "./<article-slug>/assets/video/unit_<XX>/frames"
+                ffmpeg -y -ss 0.5 -i "./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" -vframes 1 "./<article-slug>/assets/video/unit_<XX>/frames/frame_01.jpg"
+                ffmpeg -y -ss <mid_second> -i "./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" -vframes 1 "./<article-slug>/assets/video/unit_<XX>/frames/frame_02.jpg"
+                ffmpeg -y -ss <end_second> -i "./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" -vframes 1 "./<article-slug>/assets/video/unit_<XX>/frames/frame_03.jpg"
+                ```
+              - **自检核验卡点 (Must-Pass Visual Gates)**：
+                1) 🔍 **无看不清的小字**：检查画面内所有文本标签，绝不能出现 `<30px` 的模糊看不清文字（正文/标签 $\ge 32px$、主标题 $\ge 64px$、字幕 $\ge 44px$），确保高对比度通透可读；
+                2) 🙈 **无异常遮挡与 UI 侵入**：检查 IP Mascot 动作路径是否被场景构件/卡片覆盖（IP 必须处于全局最高置顶层）；检查标题与字幕是否侵入 9:16 顶部 200px 或底部 320px 平台 UI 避让禁区；
+                3) 🎯 **旋转/摆动构件原点无甩飞**：重点核查仪表指针、天平横梁、手轮齿轮等旋转摆动元素，必须精确绕 `svgOrigin` 销轴/针座转动，绝不能有脱离原点甩飞或天平托盘歪斜现象。
 
          【产物交付】
-         完成渲染后，请仅回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4`。
+         完成渲染与抓帧自检后，请回复 `[SUCCESS] 视频单元 unit_<XX> 制作完成，导出文件：./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4` 并附带 3 张抓帧截图路径与自检结论。
          ```
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_9x16.mp4`，并将源码备份存盘为 `BRIEF_9x16.md` 和 `index_9x16.html`。
      - **【阶段 B：可选渲染 16:9 宽屏版 (Optional Aspect: 1920x1080 - 仅在用户明确指令时触发)】**：
@@ -161,8 +176,8 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
        - 主 Agent 将该单元 `BRIEF.md` YAML Frontmatter 修改为 `aspect: 1920x1080`。
        - 再次显式调用 `invoke_subagent` 启动 SubAgent（**必须设置 `TypeName: "self"`**），执行 16:9 宽屏版本的代码调整与 MP4 导出：`npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4"`。
        - 渲染完成后，主 Agent 校验 `unit_<XX>.mp4` 存在且有效，将其归档备份为 `unit_<XX>_16x9.mp4`，并将源码备份存盘为 `BRIEF_16x9.md` 和 `index_16x9.html`。
-     - **【阶段 C：单单元人工审核卡点 (Per-Unit Human Gate)】**：
-       - 当该单元所需比例切片渲染归档完成后，**主 Agent 必须强制暂停，在对话框呈报当前单元视频产物文件路径**（`./assets/video/unit_XX/unit_XX.mp4`），等待主编审阅。
+     - **【阶段 C：单单元抓帧自检呈报与人工审核卡点 (Per-Unit Human Gate with Frame Preview)】**：
+       - 当该单元所需比例切片渲染归档与抓帧自检完成后，**主 Agent 必须强制暂停，在对话框呈报当前单元视频产物文件路径**（`./assets/video/unit_XX/unit_XX.mp4`）、3 张抓帧自检截图路径及视效自检结论（已核验无小字、无遮挡、旋转原点正常），等待主编审阅。
        - **只有当主编确认“通过”或“继续”后**，主 Agent 方可进驻下一个单元 `unit_YY`。若主编提出修改意见，主 Agent 重新调整本单元并重新渲染呈报。
 
 ---
