@@ -54,7 +54,7 @@ description: 深入探讨类长文写作工作流。当用户发送 /长文 指�
 1. **强制重新读取大纲源文件 (Disk Pre-Read Gate)**：
    - 用户批准后，Agent **必须首先显式调用 `view_file` 重新读取磁盘上的 `./<article-slug>/outline.md` 文件**（以磁盘最新文件内容为唯一事实源，绝对禁止复用 Memory 里的旧大纲缓存，确保完整包含主编在编辑器中修改的大纲字句）。
 2. **调度原子技能 `article-writer` 展开正文**：
-   - 调度 `article-writer`（模式 `mode: full_article`），将 `【撰写指令】` 转化为行文推导与爆款金句，应用呼吸感排版（单段 2-4 行）与富 Markdown 组件（引用卡片、列表、加粗、对比表格）。
+   - 调度 `article-writer`（模式 `mode: full_article`），将 `【撰写指令】` 转化为行文推导与爆款金句，应用呼吸感排版（单段 2-4 行）与富 Markdown 组件（引用卡片、列表、加粗）。
 3. **SubAgent 正文盲审闭环**：
    - 检查项目根目录是否存在项目进化规则 `./learnings/article_content.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/article-writer/references/reviewer_standards.md` 与 `learnings_file: ./learnings/article_content.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/article-writer/references/reviewer_standards.md`）。
    - 若打回，修正草稿直至 `[PASS]`（上限 8 次）。
