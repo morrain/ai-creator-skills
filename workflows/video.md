@@ -20,7 +20,7 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
 2. **双节点强制人工审核卡点 (Dual Mandatory Human Approval Gates)**：
    - 管道划分为 5 大递进步骤：**Step 1: 生成脚本与封面配置文件** ➔ **Step 2: 生成语音** ➔ **Step 3: 设计单元分镜契约** ➔ **Step 4: 逐单元渲染与逐单元人工审核** ➔ **Step 5: 合成成品视频**。
    - **默认仅生成 9:16 竖屏格式**：为了适配移动端主流媒体平台（小红书/微信视频号/抖音/Shorts），工作流默认仅渲染 9:16 竖屏视频（`1080x1920`）。仅当用户命令行或指令中显式包含生成宽屏版本的指令（如包含 `--widescreen` 选项或明确要求生成宽屏版本）时，才会在 9:16 渲染完成后，逐单元继续渲染生成 16:9 宽屏切片（`1920x1080`）。
-   - **卡点 1：剧本方案强制人工确认 (Step 1 Gate)**：在 Step 1 剧本生成阶段，Agent 提炼并完成 SubAgent 盲审后，**必须先在对话框向人类主编输出剧本拆分方案**（包含拆分 unit 数量、拆分逻辑、各 unit 时长、口播台词及动画设计等），中途停顿等待主编给出修改意见。**只有在主编显式确认通过后，才正式落盘 `video_script.json`，并自动调度原子技能 `cover-designer` 提炼落盘 `./assets/video/cover.md`（与 `video_script.json` 在同级目录），随后开启 Step 2**。
+   - **卡点 1：剧本方案强制人工确认 (Step 1 Gate)**：在 Step 1 剧本生成阶段，Agent 提炼并完成 SubAgent 盲审后，**必须先在对话框向人类主编输出剧本拆分方案**（包含拆分 unit 数量、拆分逻辑、各 unit 时长、口播台词及动画设计等），中途停顿等待主编给出修改意见。**只有在主编显式确认通过后，才正式落盘 `video_script.json`，并自动调度原子技能 `cover-designer` 提炼落盘 `./<article-slug>/assets/cover.md`，随后开启 Step 2**。
    - **卡点 2：逐单元渲染强制人工审核 (Step 4 Gate - 严禁全自动无人值守)**：鉴于 HTML 动画与视频渲染存在隐蔽的视觉不确定性（如动画错位、IP 动作异常、字幕或构件遮挡等），在 Step 4 渲染阶段，**每渲染完成一个 `unit_XX` 输出 MP4 视频后，主 Agent 必须强制停顿**，在对话框呈报该单元视频路径与预览结果，等待人类主编审核确认。**只有在主编确认“通过”或“继续”后，才允许切入下一个单元 `unit_YY` 的制作与渲染！彻底废除全自动连续渲染逻辑！**
 3. **音画字幕单元内固化与纯视频缝合 (Unit Self-Contained Audio & Subtitles)**：
    - 音频配音、时间戳与美化 HTML 字幕在 Step 3 & Step 4 渲染视频单元时已原生固化压制在单元 MP4 中。Step 5 仅做极速纯视频 `ffmpeg -c copy` 拼接，不重新压制字幕或重算声音。
@@ -60,9 +60,9 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
      - 向主编发问提示：“*以上为视频剧本拆分与分镜设计草案，请主编审阅并提出修改意见。确认通过后我将为您生成 `video_script.json` 并进入后续语音生成与视频渲染流程。*”
      - 若主编提出修改意见（如调整口播字数、增减视频单元、修改 IP Mascot 动作或画面隐喻），Agent 必须针对性修改剧本方案并重新呈报；
      - **只有当主编回复“确认”、“通过”或“同意”后**，Agent 方可将最终定稿落盘至 `./<article-slug>/assets/video/video_script.json`。
- 5. **自动调度原子技能 `cover-designer` 提炼封面配置文件**：
-    - `video_script.json` 落盘后，Agent 自动调度 `cover-designer` 提炼封面方案，落盘至同级目录 [`./<article-slug>/assets/video/cover.md`](./<article-slug>/assets/video/cover.md)。
-    - 呈报文件链接并提示：“*已为您生成封面配置文件：`./assets/video/cover.md`。回复【开始生图】或【生成封面】可渲染静态图片。*”，随后切入 Step 2。
+ 5. **自动调度原子技能 `cover-designer` 提炼封面方案**：
+    - `video_script.json` 落盘后，检查 `./<article-slug>/assets/cover.md` 是否存在。若不存在或需更新，自动调度原子技能 `name: cover-designer`（`platform: video`），提炼视频封面方案，落盘至统一资产文件 `./<article-slug>/assets/cover.md`。
+    - 呈报文件链接并提示：“*已为您生成封面设计方案：`./<article-slug>/assets/cover.md`。若需渲染导出图像，回复【渲染封面】或【开始生图】即可调用生图引擎渲染静态图片。*”，随后切入 Step 2。
 
 ---
 
@@ -212,5 +212,5 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
        3) 🏷️ **核心话题标签（6 ~ 8 个）**：
           - 提取 6 ~ 8 个与视频主题高度相关的热门 Tag，格式为 `#话题名称`（如 `#AI工具` `#硬核科普` 等），方便一键一键复制粘贴发布。
  4. **封面延时生图 (Lazy Generation) 响应规程**：
-    - 当主编在任何阶段回复“**开始生图**”、“**生成封面**”或指定平台生图指令（如“生成小红书封面”）时，Agent 自动抓取 `./<article-slug>/assets/video/cover.md` 中的对应 `🟢 英文生图版 Prompt` 代码块，调用 `generate_image` 生图工具渲染导出图片至 `./<article-slug>/images/cover_xhs.png` (3:4) 或指定平台图片文件，并在对话框呈报预览与保存路径。
+    - 当主编在任何阶段回复“**渲染封面**”、“**开始生图**”或指定平台生图指令（如“渲染小红书封面”）时，Agent 自动抓取 `./<article-slug>/assets/cover.md` 中的对应 `🟢 英文生图版 Prompt` 代码块，调用 `generate_image` 生图工具渲染导出图片至 `./<article-slug>/assets/cover.jpg` (或 `./<article-slug>/images/cover_xhs.png`)，并在对话框呈报预览与保存路径。
  - **自进化规则提示**：提示主编可使用 `/workflow-learn video_script` 或 `/workflow-learn video_storyboard` 沉淀自进化规程。
