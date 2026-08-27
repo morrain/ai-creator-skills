@@ -96,14 +96,14 @@
 </section>
 ```
 
-### 7. 🔥 结尾互动与引导关注卡片
+### 7. 🔥 结尾互动与引导关注卡片 (自然个人化结尾)
+> ⚠️ **防限流避坑要求**：严禁出现“本文由 AI/Agent 排版生成”、“ai-creator-skills 自动化工具”等明文 AIGC 文本标记或机械引流套话，避免触发平台 AIGC 检测与同质化限流。卡片文案须与文章主题自然结合。
+
 ```html
 <section style="background-color: #F8F9FA; border-radius: 10px; padding: 20px; margin: 30px 0 10px 0; text-align: center; border: 1px solid #EAEAEA;">
-  <p style="font-size: 15px; font-weight: bold; color: #1A1A1A; margin-bottom: 8px;">🚀 开源项目获取 & 免费体验</p>
-  <p style="font-size: 13px; color: #555555; margin-bottom: 6px; line-height: 1.6;">💡 本文由 Agent 使用 <strong style="color: #10AEFF;">ai-creator-skills</strong> 排版。</p>
-  <p style="font-size: 13px; color: #555555; margin-bottom: 10px; line-height: 1.6;">涵盖爆款长文写作、认知插画、微信排版、海报生成与视频动画创作</p>
-  <p style="font-size: 14px; font-weight: bold; color: #10AEFF; margin-bottom: 12px;">💬 留言或私信即可获取完整开源项目与体验方式</p>
-  <p style="font-size: 13px; color: #777777; margin: 0;">🔥 喜欢本文？欢迎“点赞 + 在看 + 转发”支持！</p>
+  <p style="font-size: 15px; font-weight: bold; color: #1A1A1A; margin-bottom: 8px;">💡 感谢阅读与交流</p>
+  <p style="font-size: 13px; color: #555555; margin-bottom: 10px; line-height: 1.6;">如果你对本文探讨的主题有独到见解或疑问，欢迎在评论区留言交流！</p>
+  <p style="font-size: 13px; color: #777777; margin: 0;">🔥 觉得有启发？欢迎“点赞 + 在看 + 转发”支持！</p>
 </section>
 ```
 

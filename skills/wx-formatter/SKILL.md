@@ -19,10 +19,11 @@ description: 微信公众号原生 HTML 排版转换技能。当需要将 Markdo
    - 绝对严禁添加、删除或改写原文正文的任何字词与句子，严禁擅自新增 AI 提炼总结卡片。高亮仅通过草稿安全的 `<span style="...">` 行内包裹原文已有词句（每个 H2 小节 2~3 处）。
 4. **Markdown 表格 100% 彻底消解 (Table Deconstruction)**：
    - 原生 `| col1 | col2 |` 表格重构为 `🔴 痛点 / 🟢 优势` 双色卡片或 `🚀 步骤解析卡片`。
-5. **爆款金句统一组件法则 (Golden Quote Card Standard)**：
-   - 文章末尾添加爆款金句总结：使用 **`💡 金句总结`** 暖金虚线边框卡片（设计系统组件 5，`#FFF9F0` 浅黄底 + `1px dashed #FA9D3B` 虚线边框）。
-6. **结尾互动关注卡片必含法则 (End-of-Article Engagement Card)**：
-   - 在正文最末尾必须嵌入设计系统 (`references/mp_style_design_system.md`) 组件 7（`🔥 结尾互动与引导关注卡片`），精简介绍开源项目 `ai-creator-skills` 并引导读者留言或私信获取开源项目，包含“点赞 + 在看 + 转发”互动提示。
+5. **金句总结卡片弹性适配法则 (Flexible Golden Quote Card Standard)**：
+   - 当原文包含金句总结或结尾提炼时，使用设计系统组件 5（`#FFF9F0` 浅黄底 + `1px dashed #FA9D3B` 虚线边框）进行美化装扮；若原文未包含总结，严禁擅自造词硬塞。
+6. **结尾互动与引导关注卡片无指纹法则 (No-AIGC-Fingerprint Engagement Card Standard)**：
+   - 在正文最末尾嵌入设计系统 (`references/mp_style_design_system.md`) 组件 7（`🔥 结尾互动与引导关注卡片`）。
+   - ❌ **硬性禁止**：卡片内部严禁出现“本文由 Agent 排版”、“ai-creator-skills 自动化工具生成”等明文 AIGC 指纹词汇或机械引流套话。文案必须自然结合文章主题进行互动发问（如：“对此你有何看法？欢迎在评论区留言交流...”），消除平台 AIGC 审查与同质化风险。
 7. **插图文件名主干匹配与后缀自适应 (Dynamic Image Format Resolution)**：
    - 在为正文嵌入插画图片时，严禁写死固定的 `.png` 扩展名。应按主干文件名 `illustration_N` 匹配扫描 `./<article-slug>/images/` 目录下实际存在的图片文件，识别并适配实际后缀（如 `.png`、`.jpg`、`.jpeg`、`.webp` 等），填入 `<img src="images/illustration_N.<ext>" ... />`。
 
