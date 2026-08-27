@@ -58,11 +58,12 @@ description: 深入探讨类长文写作工作流。当用户发送 /长文 指�
 3. **SubAgent 正文盲审闭环**：
    - 检查项目根目录是否存在项目进化规则 `./learnings/article_content.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/article-writer/references/reviewer_standards.md` 与 `learnings_file: ./learnings/article_content.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/article-writer/references/reviewer_standards.md`）。
    - 若打回，修正草稿直至 `[PASS]`（上限 8 次）。
-4. **纯净 Markdown 落盘交付**：
+4. **纯净 Markdown 落盘交付与封面提炼**：
    - 中英文排版自动加空格处理。
    - 最终正文存盘至 `./<article-slug>/<article-slug>.md`。
+   - **自动调度 `cover-designer` 提炼封面**：调度原子技能 `cover-designer`，从文章核心观点与金句中提炼带有 10-14字爆款痛点 Hook 标题、评论区引导标记与 2D 物理隐喻的封面方案，落盘至 `./<article-slug>/assets/cover.md`。
 5. **呈报成果与人工审阅卡点提示**：
-   - 呈报正文完成信息及本地查看链接（[`./<article-slug>/<article-slug>.md`](./<article-slug>/<article-slug>.md)）。
+   - 呈报正文完成信息及本地查看链接（[`./<article-slug>/<article-slug>.md`](./<article-slug>/<article-slug>.md) 与 [`./<article-slug>/assets/cover.md`](./<article-slug>/assets/cover.md)）。
    - **统一人工确认提示**：
      > 💡 **主编审阅与自进化提示**：
      > 1. 您可在编辑器中查看并修饰正文内容。
