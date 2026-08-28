@@ -12,7 +12,7 @@
 Generate one standalone 16:9 horizontal Chinese article illustration.
 
 Visual DNA:
-Pure white background. Minimalist black hand-drawn line art. Slightly wobbly pen lines. Lots of empty white space. Sparse red/orange/blue handwritten Chinese annotations. Clean absurd product-sketch feeling. No gradients, no shadows, no paper texture, no complex background, no commercial vector style, no PPT infographic look, no cute mascot poster, no children's illustration, no realistic UI.
+Pure white background. Minimalist black hand-drawn line art. Slightly wobbly pen lines. Lots of empty white space. Clean absurd product-sketch feeling with self-explanatory visual composition. No gradients, no shadows, no paper texture, no complex background, no commercial vector style, no PPT infographic look, no cute mascot poster, no children's illustration, no realistic UI.
 
 Recurring IP character required:
 {IP_MASCOT_NAME} ({IP_MASCOT_DESCRIPTION_EN,引自 references/character_ip.md}). {IP_MASCOT_NAME} must perform the core conceptual action, not decorate the scene. Make {IP_MASCOT_NAME} serious, deadpan, and slightly bizarre, not cute.
@@ -27,19 +27,19 @@ Core idea:
 {这张图要表达的核心意思}
 
 Composition:
-{具体画面: IP角色在哪、在做什么核心动作、主要低科技物件是什么、信息或数据如何流动}
+{具体画面: IP角色在哪、在做什么核心动作、主要低科技物件是什么、信息或数据如何流动，画面构图如何精准还原原文意图}
 
 Suggested elements:
 {元素1} / {元素2} / {元素3} / {元素4}
 
-Chinese handwritten labels (Keep native Chinese text in quotes, DO NOT translate to English unless originally in English):
-"{原生中文批注1}" / "{原生中文批注2}" / "{原生中文批注3}" / "{原生中文批注4}"
+Chinese handwritten labels (DO NOT add text annotations unless strictly necessary for clarifying technical terms. Default to empty/none. If used, keep native Chinese text in quotes):
+"{原生中文批注1,仅极少数无法图形解歧时填写}"
 
 Color use:
-Black for main line art and {IP_MASCOT_NAME}. Orange for main flow/path/arrows. Red only for key warnings/problems/results. Blue only for secondary notes or feedback/system state.
+Black for main line art and {IP_MASCOT_NAME}. Orange for main flow/path/arrows. Red only for key warnings/problems/results. Blue only for secondary feedback/system state.
 
 Constraints:
-One image explains only one core structure. Keep the main subject around 40%-60% of the canvas. Preserve at least 35% blank white space. Use at most 5-8 short handwritten Chinese labels. Do not write a title in the top-left corner. Do not write the structure type on the image. Do not make it a formal diagram, course slide, or dense explainer. Do not copy prior examples or reuse known case compositions unless explicitly requested; invent a fresh visual metaphor for this specific article. It should be clear but not instructional, interesting but not childish, strange but clean.
+One image explains only one core structure. Keep the main subject around 40%-60% of the canvas. Preserve at least 35% blank white space. Minimize text labels; default to 0 handwritten notes. Rely on the hand-drawn composition, IP Mascot physical action, and visual structure itself to accurately convey the text's core meaning. Do not write a title in the top-left corner. Do not write the structure type on the image. Do not make it a formal diagram, course slide, or dense explainer. Do not copy prior examples or reuse known case compositions unless explicitly requested; invent a fresh visual presentation for this specific article. It should be clear but not instructional, interesting but not childish, strange but clean.
 ```
 
 ---
