@@ -39,7 +39,7 @@
     {
       "unit_id": "Unit 03",
       "duration_seconds": 7,
-      "voiceover": "而 Vue 3.5 重构了反应式双向链表，内存占用骤降 56%，更新性能直接拉满。",
+      "voiceover": "而 Vue 3.5 {重|chóng}构了反应式双向链表，内存占用骤{降|jiàng} 56%，更新性能直接拉满。",
       "visual_prompt": "16:9 纯白背景，线条变得精简清爽，两条并行自愈的发光双向链表横跨画面。",
       "ip_action": "IP Mascot 角色轻巧地将两块双向插头锁扣踩入槽位，手持钢印在数据节点上盖上 [56% OFF] 绿色印章。",
       "on_screen_elements": {
