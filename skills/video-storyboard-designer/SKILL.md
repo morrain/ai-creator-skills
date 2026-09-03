@@ -95,7 +95,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    ```
 
    **`## Customizations` 板块**（强制写入）：
-   > `- 低密度与通透留白规程：一屏仅表达 1 个核心结论 (One Statement Per Frame)，任意时刻 t DOM 活跃构件总数绝对 <= 5 个 (Cap Elements <= 5)，切片交接时执行 opacity:0 淡出退场 (Visibility Timeline Matrix)，屏蔽背景网格点、装饰线条或粒子等视觉噪声 (Suppress Chrome)，保持 70%+ 通透留白，严禁侧边解说卡片 (No Side Panels)。`
+   > `- 低密度与通透留白规程：一屏仅表达 1 个核心结论 (One Statement Per Frame)，任意时刻 t DOM 活跃构件总数绝对 <= 5 个 (Cap Elements <= 5)，切片交接时执行 opacity:0 淡出退场 (Visibility Timeline Matrix)，屏蔽背景网格点、装饰线条或粒子等视觉噪声 (Suppress Chrome)，保持 70%+ 通透留白。坚决移除死板的 Dashboard 文本卡片与长篇文字，核心信息直接以极少的大字号无框融入场景 (No Text Walls)。`
 
    **`## Notes` 板块**（强制原样写入 BRIEF.md，作为传递给下游 Step 4 SubAgent 编写 index.html 时的渲染规范，本技能绝对禁止在 Step 3 自行执行或提前编辑/生成 index.html）：
    > `- 全局视觉风格与主题 Token 继承铁律：编写 index.html 时必须 100% 遵守 Frontmatter 中 theme 声明的代币（背景 Canvas BG、主色 Primary Accent 等），全集统一使用相同调色盘，绝对禁止单独更换纯黑或无关底色。`
@@ -112,7 +112,7 @@ description: 视频单元分镜与 HyperFrames BRIEF 构建技能。当需要将
    > `- 9:16 视频平台 (小红书/抖音/视频号) 底部 UI 避让留白规程：针对 9:16 竖屏，底部 Y: 1600px - 1920px (至少 320px+) 必须保留为纯净背景避让留白区，唱词字幕盒子必须向上提升放置在 bottom: 320px (Y: 1460px - 1580px) 处，绝对禁止在底部 320px 内放置任何实体构件或字幕，防止发布后被小红书/抖音的头像、作者文案与互动按钮覆盖遮挡！`
    > `- IP Mascot 全局最高 Z-Index 最顶层置顶规程：在 index.html 中，包含 <g id="mascot"> 的主 SVG 容器 (#main-stage) 在 HTML CSS 堆叠上下文中必须赋予全局最高堆叠层级 (z-index: 100; pointer-events: none;)，且浮动数据卡片 (.metric-badge) 与场景饰条的 CSS z-index 必须低于 #main-stage (如 z-index: 20)。在 SVG 画布内部，<g id="mascot"> 必须作为最下排末尾节点呈现 (Painter's Model)，确保无论 IP Mascot 巡视位移至画面任何区域（包含靠近卡片/标题栏），均 100% 保持为绝对最顶层，彻底杜绝任何图层压头遮挡！严禁在 SVG <g> 节点上误写 style="z-index: 100" 假置顶。`
    > `- 首帧防空白封面规程：t=0.0s 时首帧绝对不能是纯白画布！必须通过 gsap.set() 在 t=0 渲染主要标题、背景卡片与 IP 姿态 (opacity: 1)，确保小红书/微信视频号自动抽取的封面丰富可读。`
-   > `- 字号下限规程：主标题 ≥ 64px、副标题/卡片标题 ≥ 38px、正文/标签 ≥ 32px（绝对禁止 font-size < 30px）、数据大字 ≥ 56px、唱词字幕 ≥ 44px、SVG 图表文字 ≥ 30px。`
+   > `- 极简巨字与宁删不缩铁律 (Huge Font & No-Shrink Rule)：主标题 ≥ 80px、副标题/关键标签 ≥ 50px、数据大字 ≥ 70px、唱词字幕 ≥ 50px。绝对禁止在画布上使用小于 40px 的任何文字！如果指定的文本因为字数太多而排不下，唯一的合法操作是**精简或删除该文本**，**绝对禁止缩小 font-size 强行塞入**！`
    > `- SVG 文本字体与顶部防裁切规程：SVG 内部所有 <text> 节点必须显式指定 font-family（或在全局 CSS 中设置 svg text { font-family: "Noto Sans SC", sans-serif; }）；主标题组 transform 必须留足顶部安全距（16:9 顶部 translate.y ≥ 160px，9:16 顶部 translate.y ≥ 240px），第一行 <text> 必须显式设置 y 坐标（如 y="50" 或 dominant-baseline="hanging"），且标题进场动画禁止使用向上推顶的 y 位移（如 y: -25），绝对防止字顶向上溢出顶端边缘裁切。`
    > `- 尾部 Outro 规程：全片最后 ~5s Outro 单元必须绑定 [Action Recipe: LIKE_AND_SUBSCRIBE]，驱动 IP 欢快跳跃并举起点赞、收藏、关注互动徽章。`
    > `- 浅色画布标题彻底消除突兀黑框铁律：当 Frontmatter 中 theme.canvas_bg 为浅色/白底/淡渐变时，## Intent 与 index.html 中的 #title-group 绝对禁止包含 <rect fill="#0f172a"> 或任何深色/纯黑矩形底卡！主标题文本直接使用深色高对比文字 (如 fill="#0f172a" 或 color: #0f172a)、副标题使用 primary_accent/secondary_accent (如 fill="#2563eb")，透明无框排版，彻底消除画面顶部突兀黑块。`

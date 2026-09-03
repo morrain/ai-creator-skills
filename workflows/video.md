@@ -144,19 +144,23 @@ description: 动画讲解视频全流程生成工作流。当用户发送 /讲�
                 2) **天平/摆动杠杆 (Balance Scale & Pendulum/Lever)**：必须实现 3 层 DOM 结构解耦（静态底座固定 + 绕中央支点旋转横梁 + 保持水平的独立托盘）。横梁摆动强制使用 `svgOrigin: "cx cy"` 锁定中央销轴坐标；托盘必须独立挂载并施加逆向旋转补偿 (`-rotation`) 或独立的 `translate` 平移动画，绝对禁止将底座或托盘强行打包在横梁同一 `<g>` 组内直接旋转导致底座或托盘倾斜歪倒！
                 3) **旋转阀门/手轮/齿轮 (Valves, Wheels & Gears)**：手轮圆盘与内部轮辐线条必须统一封装在同一个 `<g id="xxx-wheel">` 矢量组内。使用 GSAP 驱动其旋转时，**必须强制使用 `svgOrigin: "X Y"` 传入其 viewBox 中心坐标**，绝对禁止误用 CSS `transformOrigin: "px px"`（因为 CSS transformOrigin 会以元素包围盒左上角二次偏移计算，导致手轮偏离原点做巨型圆周公转并甩飞出画面）。
               - **⚠️ IP Mascot 动作完成走动归位与空白待命注视规程**：IP Mascot 在物理构件处完成指定动作任务（拉手柄/搬箱子/按按钮）后，若无后续动作，必须通过 GSAP 触发双腿交替摆动（yoyo 摆腿 rotation ±25°）平移归位回退至空白待命区（Home Anchor），并微倾头部与视角（rotation: ±8°）持续注视当前核心构件，绝对禁止动作完成后长期滞留在物理实体上遮挡画面！
-         5. 画布安全隔离与平台 UI 双向 (顶底) 留白避让规程：
+          5. 极低信息密度与防文字墙排版铁律 (Anti-Text-Wall & Layout Mandates):
+              - **打破固定标题框 (Dynamic / No Title Bar)**：绝对禁止在每一个单元机械化地生成顶部 `#title-group`。若不需要标题，画面直接留白交由 IP 动作表演；若需要标题，直接将巨大字号的无框文字融入背景。
+              - **极低信息密度 (Ultra-Low Text Density)**：画面上除了核心的物理 SVG 实体（如水库、齿轮）和个别数据标签外，**严禁出现任何解说性长段落、要点列表或多卡片堆叠**。所有的信息都由语音口播和画面图形传递，而非文字。
+              - **宁可删字，绝不缩字 (Never Shrink Font)**：字号下限极其严苛！如果指定的文本在超大字号下排不下，**唯一的解法是精简、砍掉文本或使用缩写，绝对禁止缩小 font-size 来强行塞入**！
+          6. 画布安全隔离与平台 UI 双向 (顶底) 留白避让规程：
               - **9:16 竖屏画布四区隔离**：画面划分为 **顶部 UI 避让留白区**（Y: 0-200px）、**顶部标题区**（Y: 200-360px）、**中间主舞台视觉区**（Y: 380-1440px）、**唱词字幕区**（bottom: 320px，即 Y: 1460-1580px）及 **底部 UI 避让留白区**（Y: 1600-1920px）。
               - **9:16 视频平台 (小红书/抖音/视频号) 顶部 UI 避让留白**：9:16 竖屏顶部 **Y: 0px - 200px (至少 200px+)** 必须保留为纯净背景避让留白区（Zero Elements），绝对禁止放置任何标题文字、构件或图标，防止发布后被小红书/抖音的平台返回按钮、搜索键及手机刘海/状态栏遮挡！顶部标题区起始 Y 必须从 200px 开始。
               - **9:16 视频平台 (小红书/抖音/视频号) 底部 UI 避让留白**：9:16 竖屏底部 **Y: 1600px - 1920px (至少 320px+)** 必须保留为纯净背景避让留白区（Zero Elements），唱词字幕盒子向上提升至 `bottom: 320px` 处，绝对禁止在底部 320px 放置任何实体或字幕，防止发布后被小红书/抖音的作者头像、文案与互动按钮遮挡！
             - **SVG 文本防覆盖**：所有 `<text>` 标签必须放置在实体边框、管道水流或阀门外侧（保留 15px+ 间距）或显式使用 `dominant-baseline="hanging"`/`middle`，绝对禁止文本基线与实体线条重合叠加。
-          6. 物理隐喻动作绑定 (Action Recipe Execution)：
+          7. 物理隐喻动作绑定 (Action Recipe Execution)：
              - 必须严格执行 `BRIEF.md` 中指定的 Physical Action Recipe 模式（如 `[Action Recipe: PULL_DRAG]`、`[Action Recipe: PUSH_PRESS]`、`[Action Recipe: OPERATE_LEVER]`、`[Action Recipe: LIKE_AND_SUBSCRIBE]`），**且在每次物理动作任务完成后，必须强制挂载 `references/action_recipes.md` 中的 `[Action Recipe: EXECUTE_THEN_RETREAT]` 动作组，驱动 IP 双腿交替摆动走动平移回退至 BRIEF.md 约定的空白待命点**。
-          7. 音轨与字幕原生地固化：
+          8. 音轨与字幕原生地固化：
              - 在 `index.html` 中挂载 `<audio id="unit-audio" class="clip" src="./public/audio.mp3"></audio>` 播放口播音频；
              - 读取 `public/timestamps.json` 建立 GSAP 字幕时间轴，在 DOM 中原生动态展示高对比度 HTML 唱词字幕。唱词字幕 DOM (`#subtitles`) 必须强制设为 `background: transparent; border: none;`，绝对禁止使用任何背景卡片、黑框或半透明底板！浅色画布使用深色文字 (`#0f172a`)，深色画布使用纯白文字 (`#ffffff`)，保证通透无遮挡。
-         8. 首帧曝光与防白规程：
+         9. 首帧曝光与防白规程：
             - 在 `t=0.0s` 时，首帧必须通过 `gsap.set()` 渲染出主要标题、背景卡片与 IP Mascot 姿态，严禁首帧纯白空置。
-         9. 执行 9:16 竖屏渲染导出与抓帧自检：
+         10. 执行 9:16 竖屏渲染导出与抓帧自检：
             - 运行命令 `npx hyperframes render "./<article-slug>/assets/video/unit_<XX>" --output="./<article-slug>/assets/video/unit_<XX>/unit_<XX>.mp4" --resolution portrait`。
             - **抓帧自检 3 大视效硬核检查 (Keyframe Extraction & 3-Point Visual Inspection)**：
               - 导出 MP4 后，必须通过 `ffmpeg` 自动在首帧 (`t=0.5s`)、中段 (`t=mid`) 与尾帧 (`t=end`) 抽取 3 张关键帧截图至 `./<article-slug>/assets/video/unit_<XX>/frames/`：

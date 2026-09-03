@@ -19,7 +19,7 @@ description: 4 轨动画讲解视频剧本提炼技能。当需要将文章正�
      - `time_code` & `duration_seconds`: 单元编号与精准预估时长（单位：秒）。
      - `voiceover`: 极具知识博主/科普解说听感的逐字口播文案。
      - `visual_prompt & ip_action`: 画面背景描述与 IP Mascot（IP 角色）的具体物理动作指示。对于 **`duration_seconds > 20s`** 的较长单元，必须结合 `voiceover` 口播逐字逻辑进行详细的多阶段描绘（划分 `[0-10s] ➔ [10-20s] ➔ [20-30s]` 等连续演进切片），严禁写成单句概括！
-     - `on_screen_elements` (可选与极简克制原则): 画面标题花字 `title_card`（**若非确实需要，绝对不要使用 `title_card`，默认设为 `null`！通常仅在 Unit 01 Hook 开篇或重大章节转折时设置，严禁在每个单元机械堆叠**）、唱词高亮词 `highlight_keywords`（可选，非必要不堆砌）及视觉组件提示 `graphics_hint`（可选）。主要视觉布局与节奏交由下游 `video-storyboard-designer` 灵活排布。
+     - `on_screen_elements` (极简克制原则与去字化铁律): 画面信息必须保持极低密度。画面标题花字 `title_card`（**默认必须设为 `null`！只有在全片开篇 Unit 01 或极其重大的知识点转折处才允许使用简短的 2~4 个字标题，绝对禁止在每个单元机械堆叠长标题**）、唱词高亮词 `highlight_keywords`（**非核心专有名词绝对禁止高亮，严禁满屏标注**）及视觉组件提示 `graphics_hint`（严禁写出文字列表或多重卡片）。所有核心信息由口播与画面 SVG 构件传递，绝不能依赖屏幕文字！
 3. **双模式支持 (Dual-Mode Support)**：
    - **模式 1 (文章衍生 `article_derived`)**：分析长文的正文脉络与金句，保留文章插图中已确立的物理隐喻方向，将其重构为流畅的视频单元。
    - **模式 2 (独立主题 `standalone_topic`)**：直接根据输入的知识主题，自动规划引钩 (Hook)、原理解析与总结，生成 0 到 1 的讲解脚本。
