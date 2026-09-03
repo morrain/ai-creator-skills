@@ -78,7 +78,7 @@ description: 深入探讨类长文写作工作流。当用户发送 /长文 指�
 1. **强制重新读取正文源文件 (Disk Pre-Read Gate)**：
    - 用户回复 `[通过]` 或 `[设计封面]` 后，Agent **必须首先显式调用 `view_file` 重新读取磁盘上的 `./<article-slug>/<article-slug>.md` 文件**（以磁盘最新文件内容为唯一事实源，绝对禁止复用 Memory 里的旧正文缓存，确保封面方案严格提炼自主编在外部编辑器中修饰后的最终正文）。
 2. **自动硬锁调度原子技能 `cover-designer` 提炼封面方案 (`assets/cover.md`)**：
-   - **强制技能绑定**：Agent **必须且只能调度原子技能 `name: cover-designer`**，绝对禁止调度 `poster-designer` 海报技能。从正文定稿的核心观点与金句中提炼带有 10-14字爆款痛点 Hook 标题、评论区引导标记与视觉构图的封面方案，落盘至固定的 `./<article-slug>/assets/cover.md`。
+   - **强制技能绑定**：Agent **必须且只能调度原子技能 `name: cover-designer`**，绝对禁止调度 `poster-designer` 海报技能。**必须直接使用正文定稿的 H1 大标题作为封面主标题**，不再重新提炼 Hook。但在设计封面视觉（画面构图、隐喻与 IP 动作）时，**必须深入理解全文核心内容与知识隐喻，绝对不能仅仅根据标题字面意思敷衍设计。** 提炼配合该大标题的深度视觉构图与评论区引导标记，落盘至固定的 `./<article-slug>/assets/cover.md`。
 3. **呈报设计方案与按需生图卡点提示 (Image Generation Gate)**：
    - 呈报封面设计方案完成信息及本地查看链接（[`./<article-slug>/assets/cover.md`](./<article-slug>/assets/cover.md)）。
    - **统一人工生图提示**：

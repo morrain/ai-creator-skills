@@ -23,7 +23,6 @@ description: 微信公众号富文本排版工作流。当用户发送 /公众�
 1. **定位工作区与读取资产**：
    - 读取目标 `./<article-slug>/<article-slug>.md` 原文及 `./<article-slug>/assets/illustration_*.md` 方案文件。
 2. **调度原子技能 `wx-formatter` 格式化重构**：
-   - 检查 `./<article-slug>/assets/cover.md` 是否存在。若不存在或需更新，自动调度原子技能 `name: cover-designer`（`platform: weixin`），提炼微信公众号 2.35:1 爆款头图封面方案，落盘至统一资产文件 `./<article-slug>/assets/cover.md`。
    - 调度原子技能 `wx-formatter`，将正文消解表格后套用居中 H2 胶囊角标、左立边 H3、**`💡 金句总结` 暖金虚线边框卡片**及居中插图容器（按 `illustration_N` 主干匹配识别 `./<article-slug>/images/` 下实际存在的图片，嵌合 `images/illustration_N.<ext>`，动态自适应 `.png` / `.jpg` / `.jpeg` / `.webp` 等后缀），并在文章最末尾嵌入 `🔥 结尾互动与引导关注卡片`（组件 7）。
 3. **SubAgent 盲审闭环**：
    - 检查项目根目录是否存在项目进化规则 `./learnings/weixin.md`。若存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（传入 `default_standards: skills/wx-formatter/references/mp_reviewer_standards.md` 与 `learnings_file: ./learnings/weixin.md`）；若不存在，显式调用 `invoke_subagent` 启动 `blind-reviewer`（仅传入 `default_standards: skills/wx-formatter/references/mp_reviewer_standards.md`）。苛刻校验零表格残留、零字句改动、草稿防擦除白名单属性与结尾互动卡片。
