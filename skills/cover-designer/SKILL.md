@@ -16,7 +16,7 @@ description: 自媒体爆款封面设计与 Prompt 提炼技能。分析文章�
    - **绝对禁止将封面混淆为长文海报或私域导流单**：
      - ❌ **严禁包含“留言/私信领资料”、“关注公众号”、“加微信”等私域导流/广告 CTA 贴纸**；
      - ❌ **严禁堆叠“卡片 A：...”、“卡片 B：...”等多段总结卡片与要点清单**（知识总结海报由 `poster-designer` / `/海报` 工作流专门负责）；
-   - 封面仅保留 **主标题（10-14字爆款 Hook，或由上游工作流指定的精准标题）+ 主视觉/IP Mascot 动作 + 必要的单句副标题**，保持高级清爽，严禁牛皮癣感。若上游明确指定了标题（如文章定稿的 H1），必须完全复用，绝不擅自缩减或改写，保证表里如一。
+   - 封面仅保留 **中文主标题（10-14字爆款 Hook，或由上游工作流指定的精准标题）+ 主视觉/IP Mascot 动作 + 必要的单句副标题**，保持高级清爽，严禁牛皮癣感。若上游明确指定了标题（如文章定稿的 H1），**必须一字不差地完全复用该中文标题，绝不擅自缩减、改写或翻译成英文**，保证表里如一。
 2. **文风自适应与多样化美学矩阵 (Content-Driven & Diverse Aesthetic Matrix)**：
    - **解封固定画风限制，杜绝模版化套路**：Agent 须根据文章/剧本文风与情绪，自适应匹配最佳美学画风，绝不搞千篇一律的模板：
      - 🌟 **干货指南 / 小红书清爽** ➔ **暖米白莫兰迪手绘风** (`#FAF6F0` 羊膏纸底色、雾霾蓝/焦糖橙、极简手绘线条)；
@@ -28,11 +28,11 @@ description: 自媒体爆款封面设计与 Prompt 提炼技能。分析文章�
    - **强概念视觉隐喻 (Strong Conceptual Visual Metaphor)**：封面必须将文章的核心逻辑、痛点或解决方案转化为**极其具象且极具吸引力的视觉场景**，绝不能仅仅描述一个普通的背景或字面意思上的静物。例如，如果是关于“内存泄漏”，应描绘一个“发光容器破裂、数字液体流失”的强隐喻场景，而不是仅仅画一台电脑。视觉隐喻必须精准表达核心含义，做到既吸引人又有深度。
    - **构图铁律**：无论采用何种画风，画面均须**主次分明、中央焦点清晰、留足呼吸空间**，杜绝多场景拼盘与杂乱元素堆叠！
 3. **文字排版清晰度与超大字号视觉冲击力 (Massive Typography & Anti-Clutter Protocol)**：
-   - 封面文案必须**服务于核心主题与意思表达**，主次分明：突出醒目的爆款主标题，可按需配置 1 处强化痛点的副标题作为补充。若输入中明确指定了主标题内容，必须一字不差地复用。
+   - 封面文案必须**服务于核心主题与意思表达**，主次分明：突出醒目的爆款中文主标题，可按需配置 1 处强化痛点的副标题作为补充。若输入中明确指定了主标题内容，**必须一字不差地复用原始中文（绝对禁止翻译为英文）**。
    - **超大字号与高亮对比规程**：主标题字号必须极具视觉冲击力（$\ge 120px$ 极粗体），副标题绝不能是被忽视的小字（字号 $\ge 80px$），并且副标题必须带有**高对比度底色背景或粗黑包边**（high contrast background block or thick stroke），确保在手机端缩略图尺寸下依然清晰可读，绝不融合在背景中。
    - **顶部呼吸留白安全区（防贴边与防数字噪点）**：标题文字**绝对不能紧贴画布顶端边缘**，必须预留充足的垂直呼吸留白（`generous top margin padding away from top border`），保证视觉舒展；
    - ⚠️ **英文 Prompt 绝对防噪铁律**：**英文 Prompt 中绝对禁止出现任何百分比数字**（如 `15%`, `20%`, `70%`）！因为 AI 生图模型会将 Prompt 中的 `15%` 误判定为要打印出来的文字标签并渲染在画布上。一律使用纯定性英文描述：`generous top margin, spacious edge padding, centered upper safety zone`；
-   - 英文生图 Prompt 需明确渲染的文字内容（用单引号包裹），并强调超大字号、高亮对比与清晰度：`massive and clear typography hierarchy, giant bold main title centered inside upper safety zone with generous margins, crisp massive secondary subtitle with high-contrast background block, strictly NO text touching canvas border, NO garbled text, NO random percentage numbers`。
+   - 英文生图 Prompt 需明确渲染的文字内容（用单引号包裹，**并且文字内容本身必须原封不动地保留中文，绝对禁止将其翻译为英文！**），并强调超大字号、高亮对比与清晰度：`massive and clear typography hierarchy, giant bold Chinese main title '此处填入原版中文标题' centered inside upper safety zone with generous margins, crisp massive secondary subtitle with high-contrast background block, strictly NO text touching canvas border, NO garbled text, NO random percentage numbers`。
 4. **深度内容契合与条件评论钩子 (Deep Content-Driven CTR & Conditional Comment Gate)**：
    - **拒绝“望文生义”**：在设计封面视觉（画面构图、物理隐喻与角色动作）时，**必须深入研读内容的核心干货与逻辑，绝对不能仅仅根据标题的字面意思敷衍设计**。封面必须 100% 忠实且深度体现内容的核心内涵。
    - **按需启用评论钩子**：仅当内容具备天然互动切口时配置 `👉 评论区...` 引导标记（仅在中文排版说明中展现，生图 Prompt 中不写小字）；纯干货/教程设为 `null`。
