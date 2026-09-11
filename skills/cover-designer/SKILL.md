@@ -77,9 +77,9 @@ description: 自媒体爆款封面设计与 Prompt 提炼技能。分析文章�
 A 3:4 minimalist hand-drawn cover illustration for Xiaohongshu...
 ```
 
-### 2️⃣ 微信公众号版 Prompt (受模型支持度采用 16:9 画幅，必须绝对垂直居中)
+### 2️⃣ 微信公众号版 Prompt (采用 2.35:1 超宽画幅，以完美适配微信头图不被裁剪)
 ```text
-A 16:9 wide cover illustration for WeChat Official Account. All text and core subjects MUST be strictly placed in the absolute vertical center safe zone...
+A 2.35:1 ultra-wide cover illustration for WeChat Official Account. All text and core subjects MUST be strictly placed in the absolute vertical center safe zone...
 ```
 
 ### 3️⃣ 视频号/抖音/B站版 Prompt (竖屏画幅 9:16 / 1080x1920)
