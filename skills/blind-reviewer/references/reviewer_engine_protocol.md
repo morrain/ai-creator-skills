@@ -6,7 +6,7 @@
 
 ## 1. 规则装载规范 (Domain Baseline + Project Learnings Loading)
 
-上层工作流（Workflow）在发起盲审前，已提前完成 `./learnings/<phase_id>.md` 是否存在的逻辑判定，并向 `blind-reviewer` 显式透传参数：
+上层编排 Skill (Orchestrator Skill) 在发起盲审前，已提前完成 `./learnings/<phase_id>.md` 是否存在的逻辑判定，并向 `blind-reviewer` 显式透传参数：
 
 - **若 `./learnings/<phase_id>.md` 存在** ➔ 工作流透传：
   - `default_standards: skills/<domain-skill>/references/*_reviewer_standards.md`

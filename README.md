@@ -4,13 +4,13 @@
 
 ### 面向高级创作者与总编辑的 AI 全流程内容工程化套件
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Skills Platform](https://img.shields.io/badge/Skills-Atomic%20%26%20Decoupled-9932CC.svg)](#-底层纯粹原子技能库) [![Architecture](https://img.shields.io/badge/Architecture-Dual--Layer-success.svg)](#-双层架构设计) [![Blind Review Engine](https://img.shields.io/badge/Review-SubAgent%20Blind--Review-orange.svg)](#-通用盲审引擎-blind-reviewer) [![Self Evolution](https://img.shields.io/badge/Evolution-%2Fworkflow--learn-ff69b4.svg)](#-审稿规则自进化机制-workflow-learn)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Skills Platform](https://img.shields.io/badge/Skills-100%25%20Agent%20Skills-9932CC.svg)](#-底层纯粹原子技能库) [![Architecture](https://img.shields.io/badge/Architecture-Dual--Layer-success.svg)](#-100-agent-skills-架构设计) [![Blind Review Engine](https://img.shields.io/badge/Review-SubAgent%20Blind--Review-orange.svg)](#-通用盲审引擎-blind-reviewer) [![Self Evolution](https://img.shields.io/badge/Evolution-%2Fworkflow--learn-ff69b4.svg)](#-审稿规则自进化机制-workflow-learn)
 
 <p align="center">
-  <b>包含端到端爆款长文写作、认知隐喻插图设计、微信公众号防擦除 HTML 排版、3:4 莫兰迪图文海报与自进化审稿系统</b>
+  <b>包含端到端爆款长文写作、认知隐喻插图设计、微信公众号防擦除 HTML 排版、3:4 莫兰迪图文海报、动画讲解视频与自进化审稿系统</b>
 </p>
 
-[✨ 核心亮点](#-为什么选择-ai-creator-studio) • [🏛️ 架构设计](#-双层架构设计-dual-layer-architecture) • [🚀 快速上手](#-安装与使用指引) • [🖼️ 案例展示](#️-真实案例展示) • [🤖 业务工作流](#-端到端业务工作流-workflows)
+[✨ 核心亮点](#-为什么选择-ai-creator-studio) • [🏛️ 架构设计](#-100-agent-skills-架构设计) • [🚀 快速上手](#-安装与使用指引) • [🖼️ 案例展示](#️-真实案例展示) • [🤖 业务编排 Skills](#-端到端业务编排-skills)
 [🧠 规则自进化](#-审稿规则自进化机制-workflow-learn) • [🛠️ 原子技能库](#-底层纯粹原子技能库) • [🎨 IP 角色体系](#-配图角色-ip-自定义指引) • [📁 目录结构](#-项目目录结构)
 
 ---
@@ -20,9 +20,9 @@
 ## 💡 为什么选择 AI Creator Studio？
 
 > [!NOTE]
-> 传统 AI 创作工具往往存在 **AI 味浓厚、格式挤压乱码、排版依赖微信后台被擦除、且“不长记性重复踩坑”** 等痛点。本套件通过 **双层解耦架构 + SubAgent 独立盲审 + 人工修改自进化闭环**，打造专业编辑级的内容产出工程。
+> 传统 AI 创作工具往往存在 **AI 味浓厚、格式挤压乱码、排版依赖微信后台被擦除、且“不长记性重复踩坑”** 等痛点。本套件通过 **双层解耦 Agent Skills 架构 + SubAgent 独立盲审 + 人工修改自进化闭环**，打造专业编辑级的内容产出工程。
 
-* **⚡ 双层解耦架构设计**：底层原子技能 (`skills/`) 纯粹无状态、零依赖，可拆分单独安装；上层工作流 (`workflows/`) 串联检索、编排、盲审与人审卡点。
+* **⚡ 100% Agent Skills 架构设计**：底层原子技能 (`skills/<atomic>`) 纯粹无状态、零依赖，可拆分单独安装；上层编排技能 (`skills/workflow-<name>`) 采用渐进式上下文加载 (`references/`) 极小化 Token 消耗，串联检索、编排、盲审与人审卡点。
 * **🔍 独立 SubAgent 盲审引擎 (`blind-reviewer`)**：打破“AI 既当作者又当裁判”的自夸误区，启动独立审稿子进程进行苛刻质检与诊断打回。
 * **🧠 审稿规则自进化机制 (`/workflow-learn`)**：自动搜集最近一轮审核中的意见归纳，呈报带编号候选条目供主编选择，所选规则精准沉淀至项目规范，实现“精准关卡控制与规则自进化”。
 * **🎨 离线美学排版系统**：提供微信公众号离线 HTML 防擦除视觉系统、以及防乱码的 3:4 莫兰迪手绘社媒海报套件。
@@ -94,13 +94,14 @@
 
 ---
 
-## 🏛️ 双层架构设计 (Dual-Layer Architecture)
+## 🏛️ 100% Agent Skills 架构设计 (Agent Skills Architecture)
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
-│                         上层业务工作流 (Workflows Layer)                         │
-│    workflows/article.md  │  illustrations.md  │  weixin.md  │  poster.md  │  video.md │
-│    - 联网事实检索、文件夹自动创建、SubAgent 盲审调度、人工 Gate 确认卡点         │
+│                      上层业务编排 Skills (Orchestrator Skills)                   │
+│  skills/workflow-article  │  workflow-illustrations  │  workflow-weixin            │
+│  skills/workflow-poster   │  workflow-video          │  workflow-learn             │
+│  - 渐进式加载 (references/)、联网检索、工作区建立、SubAgent 盲审调度、人工 Gate 确认 │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │ 调度技能 & 传递上下文
                                          ▼
@@ -113,8 +114,8 @@
 
 | 架构层级 | 所在目录 | 核心定位 | 最佳使用场景 |
 | :--- | :--- | :--- | :--- |
-| **底层：纯粹原子技能** | `skills/` | 零依赖、纯粹的单点能力工具。只处理具体输入文本，生成高质量的内容或生图提示词。 | 可通过 `npx skills add` 独立安装到任意 Agent 运行环境中拆用。 |
-| **上层：业务工作流** | `workflows/` | 多步骤场景编排。负责联网检索、建立主题目录、执行 AI 盲审与人工确认。 | 将工作流放入项目的 Agent 配置目录（如 `.agents/workflows/`）全自动运行。 |
+| **底层：纯粹原子技能** | `skills/<atomic-name>` | 零依赖、纯粹的单点能力工具。只处理具体输入文本，生成高质量的内容或生图提示词。 | 可通过 `npx skills add` 独立安装到任意 Agent 运行环境中拆用。 |
+| **上层：业务编排 Skill** | `skills/workflow-<name>` | 多步骤场景编排。通过 `references/` 渐进式加载大幅降低 Token 消耗，负责联网检索、建立主题目录、执行 AI 盲审与人工确认。 | 符合开放 Agent Skills 标准，直接放入 `skills/` 或 `.agents/skills/` 开启自动化编排。 |
 
 ---
 
@@ -135,7 +136,7 @@
 如果您只需要在自己的 Agent 中单独使用某个写作或设计能力（例如仅需长文写作或海报设计）：
 
 ```bash
-# 全量安装本仓库的所有原子技能
+# 全量安装本仓库的所有技能
 npx skills add morrain/ai-creator-skills
 
 # 或仅安装指定的单个技能（例如：文章写作技能）
@@ -149,24 +150,24 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 
 ---
 
-## 🤖 端到端业务工作流 (Workflows)
+## 🤖 端到端业务编排 Skills (Business Orchestration Skills)
 
-将本仓库的 `workflows/` 目录放入项目的 Agent 配置路径（如 `.agents/workflows/`）中，即可在对话框中直接通过命令触发：
+所有业务编排均已升级为合规 Agent Skills，支持渐进式加载与按需 Token 降本：
 
-| 触发命令 | 工作流文件 | 功能说明 | 交付产物 |
+| 触发命令 | 技能目录 | 功能说明 | 交付产物 |
 | :--- | :--- | :--- | :--- |
-| **`/写文章 [主题]`** | [`workflows/article.md`](workflows/article.md) | 联网检索事实，拟定大纲待人工确认，生成呼吸感排版文章正文。 | `./<主题目录>/outline.md`<br>`./<主题目录>/<文章标题>.md` |
-| **`/正文插图`** | [`workflows/illustrations.md`](workflows/illustrations.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
-| **`/微信公众号`** | [`workflows/weixin.md`](workflows/weixin.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
-| **`/海报`** | [`workflows/poster.md`](workflows/poster.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
-| **`/讲解视频`** | [`workflows/video.md`](workflows/video.md) | 提炼 4 轨剧本与 3 幕动态动作链，呈报剧本拆分方案经人工确认后落盘脚本，TTS 配音，派发 SubAgent 逐单元渲染 MP4 并经逐单元人工确认后，FFmpeg 极速缝合成品。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/<文章标题>_9x16.mp4`<br>`./<主题目录>/<文章标题>_16x9.mp4` (按需生成) |
-| **`/workflow-learn [环节]`** | [`workflows/learn.md`](workflows/learn.md) | 搜集最近一轮审核意见归纳供用户选择，将所选规则沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
+| **`/写文章 [主题]`** | [`skills/workflow-article`](skills/workflow-article/SKILL.md) | 联网检索事实，拟定大纲待人工确认，生成呼吸感排版文章正文。 | `./<主题目录>/outline.md`<br>`./<主题目录>/<文章标题>.md` |
+| **`/正文插图`** | [`skills/workflow-illustrations`](skills/workflow-illustrations/SKILL.md) | 提取文章核心金句与概念，设计认知隐喻配图方案与英文 Prompt。 | `./<主题目录>/assets/illustration_*.md`<br>`./<主题目录>/images/illustration_*.png` (确认后生成) |
+| **`/微信公众号`** | [`skills/workflow-weixin`](skills/workflow-weixin/SKILL.md) | 排版为微信专用离线 HTML 网页，自动消解表格与注入防擦除 CSS。 | `./<主题目录>/mp_article.html` |
+| **`/海报`** | [`skills/workflow-poster`](skills/workflow-poster/SKILL.md) | 提取海报组图蓝图与版式，生成 3:4 生图配置与纯文本社媒文案。 | `./<主题目录>/assets/poster_*.md`<br>`./<主题目录>/poster_post.md`<br>`./<主题目录>/images/poster_*.png` (确认后生成) |
+| **`/讲解视频`** | [`skills/workflow-video`](skills/workflow-video/SKILL.md) | 提炼 4 轨剧本与 3 幕动态动作链，呈报剧本拆分方案经人工确认后落盘脚本，TTS 配音，派发 SubAgent 逐单元渲染 MP4 并经逐单元人工确认后，FFmpeg 极速缝合成品。 | `./<主题目录>/assets/video/video_script.json`<br>`./<主题目录>/assets/video/unit_XX/BRIEF.md`<br>`./<主题目录>/<文章标题>_9x16.mp4`<br>`./<主题目录>/<文章标题>_16x9.mp4` (按需生成) |
+| **`/workflow-learn [环节]`** | [`skills/workflow-learn`](skills/workflow-learn/SKILL.md) | 搜集最近一轮审核意见归纳供用户选择，将所选规则沉淀至对应的审稿规则库。 | `./learnings/<phase>.md` (项目根目录) |
 
 ---
 
 ## 🛡️ 人机协同与防翻车机制
 
-工作流内部设计了严格的防翻车机制与按需生成规则：
+编排 Skill 内部设计了严格的防翻车机制与按需生成规则：
 
 1. **大纲人工确认卡点**：
    - 执行 `/写文章` 时，完成联网检索和大纲审稿后，会自动存盘 `outline.md` 并**显式暂停对话**。
@@ -187,7 +188,7 @@ npx skills add morrain/ai-creator-skills --skill article-writer
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │  1. 盲审质检阶段 (SubAgent 盲审)                                                 │
-│  - 工作流在各个关键节点自动启动 `blind-reviewer` 进行冷酷苛刻质检                │
+│  - 编排 Skill 在各个关键节点自动启动 `blind-reviewer` 进行冷酷苛刻质检           │
 │  - 自动装载【技能默认基线】+【项目专属进化规则 (`./learnings/<phase_id>.md`)】   │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │ 生成初始产物 / 呈现给主编审阅
@@ -279,7 +280,7 @@ ai-creator-skills/
 │   │   └── 0002-multi-aspect-ratio-video-pipeline.md     # 双比例视频渲染管道架构 ADR
 │   ├── spec-multi-aspect-ratio-rendering.md              # 多比例渐进式视频渲染功能规格
 │   └── agents/
-├── skills/                                 # 底层纯粹原子技能 (可单独安装)
+├── skills/                                 # 100% Agent Skills 集合 (原子技能 + 编排技能)
 │   ├── hot-topics/                         # 1. 热门话题抓取
 │   ├── article-writer/                     # 2. 文章与大纲写作
 │   ├── illustration-designer/              # 3. 单图视觉隐喻设计
@@ -289,14 +290,13 @@ ai-creator-skills/
 │   ├── video-script-writer/                # 7. 4 轨讲解剧本提炼
 │   ├── voiceover-generator/                # 8. TTS 配音与字幕轴提取
 │   ├── video-storyboard-designer/          # 9. 视频单元 3 幕动作链与 HyperFrames BRIEF 契约
-│   └── video-renderer/                     # 10. FFmpeg 视频拼接与 Sidechain Audio Ducking 混流
-├── workflows/                              # 上层业务工作流 (自动化编排与审查)
-│   ├── article.md                          # 写文章工作流 (/写文章)
-│   ├── illustrations.md                    # 正文插图工作流 (/正文插图)
-│   ├── weixin.md                           # 微信公众号排版工作流 (/微信公众号)
-│   ├── poster.md                           # 图文海报工作流 (/海报)
-│   ├── video.md                            # 讲解视频工作流 (/讲解视频)
-│   └── learn.md                            # 规则自进化反哺工作流 (/workflow-learn)
+│   ├── video-renderer/                     # 10. FFmpeg 视频拼接与 Sidechain Audio Ducking 混流
+│   ├── workflow-article/                   # 11. 写文章编排 Skill (/写文章)
+│   ├── workflow-illustrations/             # 12. 正文插图编排 Skill (/正文插图)
+│   ├── workflow-weixin/                    # 13. 微信排版编排 Skill (/微信公众号)
+│   ├── workflow-poster/                    # 14. 图文海报编排 Skill (/海报)
+│   ├── workflow-video/                     # 15. 讲解视频编排 Skill (/讲解视频)
+│   └── workflow-learn/                     # 16. 规则自进化编排 Skill (/workflow-learn)
 └── <topic-slug>/                           # 实例：主题文件目录 (拟定大纲时自动新建)
     ├── outline.md                          # 文章大纲
     ├── <topic-slug>.md                     # 文章正文

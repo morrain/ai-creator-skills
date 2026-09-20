@@ -46,7 +46,7 @@ Implement multi-aspect ratio progressive rendering in the explainer video pipeli
    - Verify lossless `-c copy` concatenation produces valid playable MP4s for both 16:9 and 9:16 resolutions.
 
 2. **Workflow Seam**:
-   - High-level workflow seam at Stage 3 & Stage 4 in `workflows/video.md`.
+   - High-level workflow seam at Stage 3 & Stage 4 in `skills/workflow-video/SKILL.md`.
    - Script-level seam at `render_final_video.py`.
 
 ## Out of Scope
