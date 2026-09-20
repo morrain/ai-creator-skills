@@ -56,15 +56,19 @@
 
 ---
 
-## 6. 渲染后抓帧视效 3 项自检标准 (Post-Render Keyframe Visual Inspection)
+## 6. 渲染后抓帧视效与代码双重自检标准 (Post-Render Visual & Code Audit)
 
-渲染完成 MP4 后，必须通过 `ffmpeg` 自动抽取首帧 (`t=0.5s`)、中段 (`t=mid`) 与尾帧 (`t=end`) 关键帧截图，执行 3 项硬核视效质检：
+SubAgent 在生成 `index.html` 并渲染 MP4 后，必须通过静态代码审查与 `ffmpeg` 自动抽取关键帧截图（`t=0.5s`、`t=mid`、`t=end`），执行 4 项硬核视效质检门控：
 
-1. 🔍 **清晰度与字号门控 (No Illegible Small Text)**：
+1. 🛠️ **静态原点与控制权代码门控 (Static Origin & Control Lock Audit)**：
+   - 检查 `index.html` 代码，凡包含 `rotation` / `scale` / `skew` 的 SVG 动画节点，**强制必须使用 GSAP `svgOrigin: "X Y"` 锁死 viewBox 绝对轴心坐标（绝对禁止使用 CSS `transformOrigin`，防止包围盒二次偏移导致脱臼甩飞）**。
+   - 检查控制权竞争：严禁 CSS Keyframes/Transitions 与 GSAP Timeline 同时控制同一个 SVG 构件的 `transform` 或 `opacity`，彻底杜绝帧计算冲撞导致的手臂/构件闪烁。
+2. 🔍 **清晰度与字号门控 (No Illegible Small Text)**：
    - 检查画面内所有文字与标签，绝不能出现 `<30px` 的模糊看不清文字。
    - 严格卡点字号：正文/标签 $\ge 32px$、主标题 $\ge 64px$、数据大字 $\ge 56px$、唱词字幕 $\ge 44px$。
-2. 🙈 **图层避让与遮挡门控 (No Abnormal Occlusion & UI Intrusion)**：
+3. 🙈 **图层避让与遮挡门控 (No Abnormal Occlusion & UI Intrusion)**：
    - 检查 IP Mascot 动作路径，必须全局置顶，禁止被场景构件、数据卡片或标题栏遮挡。
    - 检查顶部标题与唱词字幕，绝对禁止侵入 9:16 顶部 Y: 0-200px 或底部 Y: 1600-1920px (bottom: 320px) 平台 UI 避让区域。
-3. 🎯 **旋转原点防甩飞门控 (Pivot & Origin Stability)**：
-   - 检查仪表指针、天平横梁、手轮齿轮等旋转元素在 keyframe 中的旋转轨迹，必须精准围绕 `svgOrigin` 销轴/针座旋转，严禁脱离原点甩飞或天平托盘倾斜。
+4. 🎯 **原点稳定性与动态撕裂/脱离门控 (Pivot Stability & No Detachment/Tear)**：
+   - **组件连通性与防脱离**：检查仪表指针、阀门手柄、摇杆、天平托盘、机械连杆等构件在关键帧中的轨迹，必须绝对连通并精准围绕轴心旋转/平移，严禁脱离底座、脱落断裂或飞出视野。
+   - **动态无撕裂与无闪烁**：检查 IP 手臂、场景遮罩与活跃构件，绝对禁止在动作过渡中出现突然消失/显现、瞬间拉伸撕裂或逐帧闪烁跳变。
