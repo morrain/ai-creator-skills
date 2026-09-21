@@ -27,10 +27,10 @@ Core idea:
 {这张图要表达的核心意思}
 
 Composition:
-{具体画面: IP角色在哪、在做什么核心动作、主要低科技物件是什么、信息或数据如何流动，画面构图如何精准还原原文意图}
+{具体具象画面: 详尽描述空间构图(左中右分布/视角)、低科技道具的具体材质与结构(如带手摇把的木箱/生锈齿轮/金属漏斗)、IP 角色具体身体倾角/手部动作与 deadpan 表情，以及数据/路径物理流动细节。严禁抽象概括，字数保持在 80-150 英文单词}
 
 Suggested elements:
-{元素1} / {元素2} / {元素3} / {元素4}
+{具象低科技元素1} / {具象低科技元素2} / {具象低科技元素3} / {具象低科技元素4}
 
 Chinese handwritten labels:
 "{原生中文批注1,仅极少数无法图形解歧时填写}"
@@ -40,6 +40,24 @@ Black for main line art and {IP_MASCOT_NAME}. Orange for main flow/path/arrows. 
 
 Constraints:
 One image explains only one core structure. Keep the main subject around 40%-60% of the canvas. Preserve at least 35% blank white space. Rely on the hand-drawn composition, IP Mascot physical action, and visual structure itself to accurately convey the text's core meaning. Do not add any random, made-up, or pseudo-characters; strictly use only the exact text labels provided in the prompt. Do not write a title in the top-left corner. Do not write the structure type on the image. Do not make it a formal diagram, course slide, or dense explainer. Do not copy prior examples or reuse known case compositions unless explicitly requested; invent a fresh visual presentation for this specific article. It should be clear but not instructional, interesting but not childish, strange but clean.
+```
+
+---
+
+## 1.1 具象提示词 vs 劣质抽象提示词标杆对比 (Concrete vs Abstract Prompt Examples)
+
+为了防止提示词过分简单空洞，在拼装 `prompt_en` 时必须参照以下标杆：
+
+❌ **劣质抽象提示词 (Bad Sparse Prompt - 严禁打回)**：
+```text
+Composition: Xiao Zhi is operating a machine. Data flows from left to right.
+Suggested elements: machine / cable
+```
+
+🟢 **高质量视觉具象提示词 (Good Concrete Prompt - 标杆推荐)**：
+```text
+Composition: On the left side of the 16:9 canvas, a wobbly hand-drawn paper hopper collects loose data strips. In the center, a retro wooden box machine sits with an exposed iron crank and a rusty gear mechanism. Xiao Zhi (a young male engineer with messy dark hair, black-rimmed glasses, wearing a simple dark blue hoodie, deadpan blank expression) stands in the center, leaning back 30 degrees with both hands straining to pull down a large wooden lever connected to the gear. An orange dotted arrow flows out from the bottom slot of the machine, carrying neat stackable cards to the right side where a small wooden sorting tray catches them. The overall scene is sparse, clean, hand-drawn black line art on pure white paper, with generous negative white space around the top and background.
+Suggested elements: hand-drawn paper hopper / retro wooden box machine with exposed rusty gears / oversized wooden lever / orange dotted flow line / small wooden sorting tray
 ```
 
 ---

@@ -14,7 +14,7 @@
 
 1. 读取 target `<article-slug>.md`，确认 `assets/` 存在。
 2. 按短路规则装载 1 份 IP 描述文件 `character_ip.md`。
-3. 提取 4-8 个认知锚点（强制包含所有代码块图表）。
+3. **全文深度消化**：通读 `<article-slug>.md` 全文，解析核心痛点、认知演进与底层业务/技术机制，提炼 4-8 个深度认知锚点（强制包含所有代码块图表），严禁脱离全文上下文孤立提炼锚点。
 4. 调度原子技能 `illustration-designer` 生成构图与双语 Prompt，存盘 `assets/illustration_N.md`。
 5. 唤起 `blind-reviewer` SubAgent（读取 `./learnings/illustrations.md` 若存在），审查通过后呈报列表与可点击链接。
 
